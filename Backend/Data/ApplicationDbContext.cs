@@ -12,7 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
-    // DbSets
+    // DbSets - Messages
     public DbSet<Message> Messages { get; set; }
     public DbSet<MessageFolder> MessageFolders { get; set; }
     public DbSet<MessageCategory> MessageCategories { get; set; }
@@ -23,6 +23,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<MessageTracking> MessageTrackings { get; set; }
     public DbSet<ConversationThread> ConversationThreads { get; set; }
     public DbSet<MessageRule> MessageRules { get; set; }
+
+    // DbSets - Calendar
+    public DbSet<Calendar> Calendars { get; set; }
+    public DbSet<CalendarShare> CalendarShares { get; set; }
+    public DbSet<CalendarEvent> CalendarEvents { get; set; }
+    public DbSet<EventAttendee> EventAttendees { get; set; }
+    public DbSet<EventReminder> EventReminders { get; set; }
+    public DbSet<EventResource> EventResources { get; set; }
+    public DbSet<Resource> Resources { get; set; }
+    public DbSet<EventAttachment> EventAttachments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -211,6 +221,160 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasIndex(e => new { e.UserId, e.Priority });
 
             entity.Property(e => e.Name).HasMaxLength(200);
+        });
+
+        // Calendar configuration
+        builder.Entity<Calendar>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.UserId, e.IsDefault });
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Calendars)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Events)
+                .WithOne(ev => ev.Calendar)
+                .HasForeignKey(ev => ev.CalendarId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Shares)
+                .WithOne(s => s.Calendar)
+                .HasForeignKey(s => s.CalendarId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Color).HasMaxLength(20);
+        });
+
+        // CalendarShare configuration
+        builder.Entity<CalendarShare>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.CalendarId, e.SharedWithUserId });
+
+            entity.HasOne(e => e.SharedWithUser)
+                .WithMany()
+                .HasForeignKey(e => e.SharedWithUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // CalendarEvent configuration
+        builder.Entity<CalendarEvent>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EventId).IsUnique();
+            entity.HasIndex(e => e.CalendarId);
+            entity.HasIndex(e => e.OrganizerId);
+            entity.HasIndex(e => e.StartDateTime);
+            entity.HasIndex(e => e.EndDateTime);
+            entity.HasIndex(e => new { e.CalendarId, e.StartDateTime, e.EndDateTime });
+
+            entity.HasOne(e => e.Organizer)
+                .WithMany()
+                .HasForeignKey(e => e.OrganizerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasMany(e => e.Attendees)
+                .WithOne(a => a.Event)
+                .HasForeignKey(a => a.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Reminders)
+                .WithOne(r => r.Event)
+                .HasForeignKey(r => r.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Resources)
+                .WithOne(r => r.Event)
+                .HasForeignKey(r => r.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Attachments)
+                .WithOne(a => a.Event)
+                .HasForeignKey(a => a.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // JSON column conversions
+            entity.Property(e => e.Categories)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>());
+
+            entity.Property(e => e.RecurrenceExceptions)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<DateTime>>(v) ?? new List<DateTime>());
+
+            entity.Property(e => e.Title).HasMaxLength(500);
+            entity.Property(e => e.Location).HasMaxLength(500);
+        });
+
+        // EventAttendee configuration
+        builder.Entity<EventAttendee>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EventId);
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.UserId);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.DisplayName).HasMaxLength(256);
+        });
+
+        // EventReminder configuration
+        builder.Entity<EventReminder>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EventId);
+            entity.HasIndex(e => new { e.IsTriggered, e.TriggeredAt });
+        });
+
+        // Resource configuration
+        builder.Entity<Resource>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Type);
+            entity.HasIndex(e => e.IsAvailable);
+
+            entity.HasMany(e => e.EventResources)
+                .WithOne(er => er.Resource)
+                .HasForeignKey(er => er.ResourceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Equipment)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>());
+
+            entity.Property(e => e.Name).HasMaxLength(200);
+            entity.Property(e => e.Email).HasMaxLength(256);
+        });
+
+        // EventResource configuration
+        builder.Entity<EventResource>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.EventId, e.ResourceId });
+            entity.HasIndex(e => e.ResourceId);
+        });
+
+        // EventAttachment configuration
+        builder.Entity<EventAttachment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EventId);
+
+            entity.Property(e => e.FileName).HasMaxLength(500);
+            entity.Property(e => e.ContentType).HasMaxLength(200);
+            entity.Property(e => e.FilePath).HasMaxLength(1000);
         });
 
         // Seed default folders

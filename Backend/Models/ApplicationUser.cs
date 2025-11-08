@@ -14,4 +14,5 @@ public class ApplicationUser : IdentityUser
     public List<MessageFolder> Folders { get; set; } = new();
     public List<MessageCategory> Categories { get; set; } = new();
     public List<MessageRule> Rules { get; set; } = new();
+    public List<Calendar> Calendars { get; set; } = new();
 }
