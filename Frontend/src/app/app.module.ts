@@ -27,6 +27,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDividerModule } from '@angular/material/divider';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // FullCalendar
@@ -37,17 +39,22 @@ import { AppComponent } from './app.component';
 import { InboxComponent } from './components/inbox/inbox.component';
 import { CalendarComponent } from './components/calendar/calendar.component';
 import { EventDialogComponent } from './components/calendar/event-dialog/event-dialog.component';
+import { ContactsComponent } from './components/contacts/contacts.component';
+import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
 
 // Services
 import { InboxService } from './services/inbox.service';
 import { CalendarService } from './services/calendar.service';
+import { ContactsService } from './services/contacts.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     InboxComponent,
     CalendarComponent,
-    EventDialogComponent
+    EventDialogComponent,
+    ContactsComponent,
+    ContactDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -79,6 +86,8 @@ import { CalendarService } from './services/calendar.service';
     MatBadgeModule,
     MatTreeModule,
     MatTabsModule,
+    MatButtonToggleModule,
+    MatDividerModule,
     ScrollingModule,
 
     // FullCalendar
@@ -86,7 +95,8 @@ import { CalendarService } from './services/calendar.service';
   ],
   providers: [
     InboxService,
-    CalendarService
+    CalendarService,
+    ContactsService
   ],
   bootstrap: [AppComponent]
 })
