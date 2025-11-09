@@ -96,11 +96,19 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
+// ===== Authentication & Authorization Services =====
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+
+// ===== Feature Services =====
+// TODO: Implement and register feature services:
+// builder.Services.AddScoped<IMessageService, MessageService>();
+// builder.Services.AddScoped<ICalendarService, CalendarService>();
+// builder.Services.AddScoped<IContactsService, ContactsService>();
+// builder.Services.AddScoped<IVideoConferenceService, VideoConferenceService>();
 
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
