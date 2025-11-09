@@ -43,6 +43,7 @@ builder.Services.AddScoped<IInboxService, InboxService>();
 builder.Services.AddScoped<IMessageRuleEngine, MessageRuleEngine>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IContactsService, ContactsService>();
 
 // Add SignalR
 builder.Services.AddSignalR();

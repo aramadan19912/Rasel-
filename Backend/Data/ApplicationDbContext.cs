@@ -34,6 +34,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Resource> Resources { get; set; }
     public DbSet<EventAttachment> EventAttachments { get; set; }
 
+    // DbSets - Contacts
+    public DbSet<Contact> Contacts { get; set; }
+    public DbSet<ContactEmail> ContactEmails { get; set; }
+    public DbSet<ContactPhone> ContactPhones { get; set; }
+    public DbSet<ContactAddress> ContactAddresses { get; set; }
+    public DbSet<ContactWebsite> ContactWebsites { get; set; }
+    public DbSet<ContactCustomField> ContactCustomFields { get; set; }
+    public DbSet<ContactRelationship> ContactRelationships { get; set; }
+    public DbSet<ContactGroup> ContactGroups { get; set; }
+    public DbSet<ContactGroupMembership> ContactGroupMemberships { get; set; }
+    public DbSet<ContactInteraction> ContactInteractions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -375,6 +387,124 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.FileName).HasMaxLength(500);
             entity.Property(e => e.ContentType).HasMaxLength(200);
             entity.Property(e => e.FilePath).HasMaxLength(1000);
+        });
+
+        // Contact configuration
+        builder.Entity<Contact>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactId).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => new { e.UserId, e.IsFavorite });
+            entity.HasIndex(e => new { e.UserId, e.LastName, e.FirstName });
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Contacts)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.EmailAddresses)
+                .WithOne(ea => ea.Contact)
+                .HasForeignKey(ea => ea.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.PhoneNumbers)
+                .WithOne(p => p.Contact)
+                .HasForeignKey(p => p.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Addresses)
+                .WithOne(a => a.Contact)
+                .HasForeignKey(a => a.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.Websites)
+                .WithOne(w => w.Contact)
+                .HasForeignKey(w => w.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.CustomFields)
+                .WithOne(cf => cf.Contact)
+                .HasForeignKey(cf => cf.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.GroupMemberships)
+                .WithOne(gm => gm.Contact)
+                .HasForeignKey(gm => gm.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // JSON conversions
+            entity.Property(e => e.Categories)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>());
+
+            entity.Property(e => e.Tags)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<string>>(v) ?? new List<string>());
+
+            entity.Property(e => e.DisplayName).HasMaxLength(500);
+            entity.Property(e => e.Company).HasMaxLength(200);
+        });
+
+        // ContactEmail configuration
+        builder.Entity<ContactEmail>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactId);
+            entity.HasIndex(e => e.Email);
+            entity.Property(e => e.Email).HasMaxLength(256);
+        });
+
+        // ContactPhone configuration
+        builder.Entity<ContactPhone>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactId);
+            entity.Property(e => e.PhoneNumber).HasMaxLength(50);
+        });
+
+        // ContactAddress configuration
+        builder.Entity<ContactAddress>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactId);
+        });
+
+        // ContactGroup configuration
+        builder.Entity<ContactGroup>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.GroupId).IsUnique();
+            entity.HasIndex(e => e.UserId);
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.ContactGroups)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Name).HasMaxLength(200);
+        });
+
+        // ContactGroupMembership configuration
+        builder.Entity<ContactGroupMembership>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.ContactId, e.GroupId }).IsUnique();
+        });
+
+        // ContactInteraction configuration
+        builder.Entity<ContactInteraction>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactId);
+            entity.HasIndex(e => e.InteractionDate);
+
+            entity.HasOne(e => e.Contact)
+                .WithMany()
+                .HasForeignKey(e => e.ContactId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Seed default folders
