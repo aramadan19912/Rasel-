@@ -1,0 +1,176 @@
+<div class="calendar-container">
+  <!-- Header -->
+  <mat-toolbar color="primary" class="calendar-header">
+    <button mat-icon-button (click)="toggleCalendarList()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <span class="toolbar-title">Calendar</span>
+
+    <span class="spacer"></span>
+
+    <!-- View Buttons -->
+    <button mat-icon-button [matMenuTriggerFor]="viewMenu">
+      <mat-icon>view_module</mat-icon>
+    </button>
+    <mat-menu #viewMenu="matMenu">
+      <button mat-menu-item (click)="changeView('day')">
+        <mat-icon>view_day</mat-icon>
+        <span>Day</span>
+      </button>
+      <button mat-menu-item (click)="changeView('week')">
+        <mat-icon>view_week</mat-icon>
+        <span>Week</span>
+      </button>
+      <button mat-menu-item (click)="changeView('month')">
+        <mat-icon>view_module</mat-icon>
+        <span>Month</span>
+      </button>
+      <button mat-menu-item (click)="changeView('agenda')">
+        <mat-icon>list</mat-icon>
+        <span>Agenda</span>
+      </button>
+    </mat-menu>
+
+    <!-- Create Event Button -->
+    <button mat-raised-button color="accent" (click)="openEventDialog(null)">
+      <mat-icon>add</mat-icon>
+      New Event
+    </button>
+
+    <!-- More Options -->
+    <button mat-icon-button [matMenuTriggerFor]="moreMenu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #moreMenu="matMenu">
+      <button mat-menu-item (click)="createCalendar()">
+        <mat-icon>add</mat-icon>
+        <span>Create Calendar</span>
+      </button>
+      <button mat-menu-item (click)="loadStatistics()">
+        <mat-icon>analytics</mat-icon>
+        <span>View Statistics</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="toggleMiniCalendar()">
+        <mat-icon>{{ showMiniCalendar ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+        <span>Show Mini Calendar</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <div class="calendar-content">
+    <!-- Left Sidebar -->
+    <mat-sidenav-container class="calendar-sidenav-container" autosize>
+      <mat-sidenav #sidenav mode="side" [opened]="showCalendarList" class="calendar-sidenav">
+        <div class="sidebar-content">
+          <!-- Mini Calendar -->
+          <div class="mini-calendar" *ngIf="showMiniCalendar">
+            <mat-card>
+              <mat-card-content>
+                <mat-calendar [(selected)]="miniCalendarDate"></mat-calendar>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Calendars List -->
+          <div class="calendars-list">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>My Calendars</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <mat-list>
+                  <mat-list-item *ngFor="let calendar of calendars">
+                    <mat-checkbox
+                      [checked]="isCalendarSelected(calendar.id)"
+                      (change)="toggleCalendar(calendar.id)"
+                      [color]="'primary'">
+                      <div class="calendar-item">
+                        <span class="calendar-color" [style.background-color]="calendar.color"></span>
+                        <span class="calendar-name">{{ calendar.name }}</span>
+                        <mat-icon *ngIf="calendar.isDefault" class="default-icon">star</mat-icon>
+                      </div>
+                    </mat-checkbox>
+                    <button mat-icon-button [matMenuTriggerFor]="calendarMenu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #calendarMenu="matMenu">
+                      <button mat-menu-item (click)="exportCalendar(calendar.id)">
+                        <mat-icon>download</mat-icon>
+                        <span>Export</span>
+                      </button>
+                      <button mat-menu-item>
+                        <mat-icon>upload</mat-icon>
+                        <label for="import-{{calendar.id}}" style="cursor: pointer; margin: 0;">
+                          Import
+                          <input
+                            type="file"
+                            id="import-{{calendar.id}}"
+                            accept=".ics"
+                            (change)="importCalendar(calendar.id, $event)"
+                            style="display: none;">
+                        </label>
+                      </button>
+                      <button mat-menu-item>
+                        <mat-icon>share</mat-icon>
+                        <span>Share</span>
+                      </button>
+                      <button mat-menu-item>
+                        <mat-icon>settings</mat-icon>
+                        <span>Settings</span>
+                      </button>
+                    </mat-menu>
+                  </mat-list-item>
+                </mat-list>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <!-- Statistics -->
+          <div class="calendar-stats" *ngIf="statistics">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>Statistics</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="stat-item">
+                  <mat-icon>event</mat-icon>
+                  <span class="stat-label">Total Events:</span>
+                  <span class="stat-value">{{ statistics.totalEvents }}</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>group</mat-icon>
+                  <span class="stat-label">Meetings:</span>
+                  <span class="stat-value">{{ statistics.totalMeetings }}</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>upcoming</mat-icon>
+                  <span class="stat-label">Upcoming:</span>
+                  <span class="stat-value">{{ statistics.upcomingEvents }}</span>
+                </div>
+                <div class="stat-item">
+                  <mat-icon>pending</mat-icon>
+                  <span class="stat-label">Pending:</span>
+                  <span class="stat-value">{{ statistics.pendingResponses }}</span>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </mat-sidenav>
+
+      <!-- Calendar View -->
+      <mat-sidenav-content class="calendar-main">
+        <div class="calendar-wrapper">
+          <div *ngIf="isLoading" class="loading-overlay">
+            <mat-spinner></mat-spinner>
+          </div>
+
+          <full-calendar [options]="calendarOptions"></full-calendar>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+</div>

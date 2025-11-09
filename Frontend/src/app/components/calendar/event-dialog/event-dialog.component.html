@@ -1,0 +1,326 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+  {{ isEditMode ? 'Edit Event' : 'New Event' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="eventForm">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+      <!-- Basic Information Tab -->
+      <mat-tab label="Details">
+        <div class="tab-content">
+          <!-- Calendar Selection -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Calendar</mat-label>
+            <mat-select formControlName="calendarId" required>
+              <mat-option *ngFor="let calendar of calendars" [value]="calendar.id">
+                <span class="calendar-color-indicator" [style.background-color]="calendar.color"></span>
+                {{ calendar.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="isFieldInvalid('calendarId')">{{ getErrorMessage('calendarId') }}</mat-error>
+          </mat-form-field>
+
+          <!-- Title -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" required placeholder="Event title">
+            <mat-icon matPrefix>title</mat-icon>
+            <mat-error *ngIf="isFieldInvalid('title')">{{ getErrorMessage('title') }}</mat-error>
+          </mat-form-field>
+
+          <!-- Location -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="Add location">
+            <mat-icon matPrefix>place</mat-icon>
+          </mat-form-field>
+
+          <!-- Date & Time -->
+          <div class="date-time-group">
+            <mat-form-field appearance="outline" class="date-field">
+              <mat-label>Start Date & Time</mat-label>
+              <input matInput [matDatepicker]="startPicker" formControlName="startDateTime" required>
+              <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+              <mat-datepicker #startPicker></mat-datepicker>
+              <mat-error *ngIf="isFieldInvalid('startDateTime')">{{ getErrorMessage('startDateTime') }}</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="date-field">
+              <mat-label>End Date & Time</mat-label>
+              <input matInput [matDatepicker]="endPicker" formControlName="endDateTime" required>
+              <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+              <mat-datepicker #endPicker></mat-datepicker>
+              <mat-error *ngIf="isFieldInvalid('endDateTime')">{{ getErrorMessage('endDateTime') }}</mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Quick Duration Buttons -->
+          <div class="quick-actions">
+            <span class="quick-label">Quick Duration:</span>
+            <button mat-button type="button" (click)="setQuickDuration(30)">30 min</button>
+            <button mat-button type="button" (click)="setQuickDuration(60)">1 hour</button>
+            <button mat-button type="button" (click)="setQuickDuration(120)">2 hours</button>
+          </div>
+
+          <!-- All Day Toggle -->
+          <mat-checkbox formControlName="isAllDay" class="checkbox-field">
+            All day event
+          </mat-checkbox>
+
+          <!-- Description -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="body" rows="4" placeholder="Add description"></textarea>
+            <mat-icon matPrefix>notes</mat-icon>
+          </mat-form-field>
+
+          <!-- Status Options -->
+          <div class="status-group">
+            <mat-form-field appearance="outline" class="status-field">
+              <mat-label>Show As</mat-label>
+              <mat-select formControlName="busyStatus">
+                <mat-option *ngFor="let option of busyStatusOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="status-field">
+              <mat-label>Importance</mat-label>
+              <mat-select formControlName="importance">
+                <mat-option *ngFor="let option of importanceOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="status-field">
+              <mat-label>Sensitivity</mat-label>
+              <mat-select formControlName="sensitivity">
+                <mat-option *ngFor="let option of sensitivityOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Check Conflicts Button -->
+          <button mat-raised-button type="button" color="accent" (click)="checkConflicts()">
+            <mat-icon>warning</mat-icon>
+            Check Conflicts
+          </button>
+        </div>
+      </mat-tab>
+
+      <!-- Meeting Tab -->
+      <mat-tab label="Meeting">
+        <div class="tab-content">
+          <!-- Is Meeting Toggle -->
+          <mat-checkbox formControlName="isMeeting" class="checkbox-field">
+            This is a meeting (with attendees)
+          </mat-checkbox>
+
+          <!-- Online Meeting -->
+          <div *ngIf="eventForm.get('isMeeting')?.value">
+            <mat-checkbox formControlName="isOnlineMeeting" class="checkbox-field">
+              Online meeting
+            </mat-checkbox>
+
+            <mat-form-field appearance="outline" class="full-width" *ngIf="eventForm.get('isOnlineMeeting')?.value">
+              <mat-label>Meeting Provider</mat-label>
+              <mat-select formControlName="onlineMeetingProvider">
+                <mat-option *ngFor="let provider of onlineMeetingProviders" [value]="provider.value">
+                  {{ provider.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Attendees -->
+            <div class="attendees-section">
+              <h3>Attendees</h3>
+
+              <div formArrayName="attendees">
+                <div *ngFor="let attendee of attendees.controls; let i = index" [formGroupName]="i" class="attendee-item">
+                  <mat-form-field appearance="outline" class="attendee-email">
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email" type="email" placeholder="attendee@example.com">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="attendee-name">
+                    <mat-label>Display Name</mat-label>
+                    <input matInput formControlName="displayName" placeholder="Name (optional)">
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="attendee-type">
+                    <mat-label>Type</mat-label>
+                    <mat-select formControlName="type">
+                      <mat-option *ngFor="let option of attendeeTypeOptions" [value]="option.value">
+                        {{ option.label }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <button mat-icon-button type="button" color="warn" (click)="removeAttendee(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+
+              <button mat-raised-button type="button" (click)="addAttendee()">
+                <mat-icon>add</mat-icon>
+                Add Attendee
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Reminders Tab -->
+      <mat-tab label="Reminders">
+        <div class="tab-content">
+          <div class="reminders-section">
+            <h3>Reminders</h3>
+
+            <!-- Quick Reminder Buttons -->
+            <div class="quick-actions">
+              <span class="quick-label">Quick:</span>
+              <button mat-button type="button" (click)="setQuickReminder(0)">At start</button>
+              <button mat-button type="button" (click)="setQuickReminder(15)">15 min</button>
+              <button mat-button type="button" (click)="setQuickReminder(60)">1 hour</button>
+              <button mat-button type="button" (click)="setQuickReminder(1440)">1 day</button>
+            </div>
+
+            <div formArrayName="reminders">
+              <div *ngFor="let reminder of reminders.controls; let i = index" [formGroupName]="i" class="reminder-item">
+                <mat-form-field appearance="outline" class="reminder-time">
+                  <mat-label>Minutes Before</mat-label>
+                  <input matInput formControlName="minutesBeforeStart" type="number" min="0">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="reminder-method">
+                  <mat-label>Method</mat-label>
+                  <mat-select formControlName="method">
+                    <mat-option *ngFor="let option of reminderMethodOptions" [value]="option.value">
+                      {{ option.label }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <button mat-icon-button type="button" color="warn" (click)="removeReminder(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <button mat-raised-button type="button" (click)="addReminder()">
+              <mat-icon>add</mat-icon>
+              Add Reminder
+            </button>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Resources Tab -->
+      <mat-tab label="Resources">
+        <div class="tab-content">
+          <div class="resources-section">
+            <h3>Book Resources</h3>
+            <p class="helper-text">Select meeting rooms or equipment for this event</p>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Resources</mat-label>
+              <mat-select formControlName="resourceIds" multiple>
+                <mat-option *ngFor="let resource of availableResources" [value]="resource.id">
+                  <mat-icon>{{ resource.type === 0 ? 'meeting_room' : 'devices' }}</mat-icon>
+                  {{ resource.name }}
+                  <span *ngIf="resource.capacity" class="resource-capacity">({{ resource.capacity }} people)</span>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div *ngIf="availableResources.length === 0" class="no-resources">
+              <mat-icon>info</mat-icon>
+              <p>No resources available for the selected time slot</p>
+            </div>
+          </div>
+
+          <!-- Travel Time -->
+          <div class="travel-time-section">
+            <h3>Travel Time</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Travel Time (minutes)</mat-label>
+              <input matInput formControlName="travelTimeMinutes" type="number" min="0">
+              <mat-hint>Time needed to get to this event</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Advanced Tab -->
+      <mat-tab label="Advanced">
+        <div class="tab-content">
+          <!-- Recurrence -->
+          <div class="recurrence-section">
+            <h3>Recurrence</h3>
+            <mat-checkbox formControlName="isRecurring" class="checkbox-field">
+              Recurring event
+            </mat-checkbox>
+
+            <div *ngIf="eventForm.get('isRecurring')?.value">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Recurrence Rule (RRULE)</mat-label>
+                <input matInput formControlName="recurrenceRule" placeholder="FREQ=DAILY;INTERVAL=1">
+                <mat-hint>Use iCalendar RRULE format</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Recurrence End Date</mat-label>
+                <input matInput [matDatepicker]="recurrenceEndPicker" formControlName="recurrenceEnd">
+                <mat-datepicker-toggle matSuffix [for]="recurrenceEndPicker"></mat-datepicker-toggle>
+                <mat-datepicker #recurrenceEndPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="categories-section">
+            <h3>Categories</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Categories</mat-label>
+              <mat-chip-list #categoryList formControlName="categories">
+                <mat-chip *ngFor="let category of eventForm.get('categories')?.value"
+                         [removable]="true"
+                         (removed)="removeCategory(category)">
+                  {{ category }}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input placeholder="Add category..."
+                       [matChipInputFor]="categoryList"
+                       (matChipInputTokenEnd)="addCategory($event)">
+              </mat-chip-list>
+            </mat-form-field>
+          </div>
+
+          <!-- Time Zone -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Time Zone</mat-label>
+            <input matInput formControlName="timeZone" placeholder="UTC">
+          </mat-form-field>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()">Cancel</button>
+  <button mat-raised-button type="button" color="warn" (click)="onDelete()" *ngIf="isEditMode">
+    <mat-icon>delete</mat-icon>
+    Delete
+  </button>
+  <button mat-raised-button type="button" color="primary" (click)="onSave()" [disabled]="!eventForm.valid">
+    <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+    {{ isEditMode ? 'Save' : 'Create' }}
+  </button>
+</mat-dialog-actions>

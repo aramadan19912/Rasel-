@@ -26,19 +26,28 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTreeModule } from '@angular/material/tree';
+import { MatTabsModule } from '@angular/material/tabs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+
+// FullCalendar
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 // Components
 import { AppComponent } from './app.component';
 import { InboxComponent } from './components/inbox/inbox.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
+import { EventDialogComponent } from './components/calendar/event-dialog/event-dialog.component';
 
 // Services
 import { InboxService } from './services/inbox.service';
+import { CalendarService } from './services/calendar.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    InboxComponent
+    InboxComponent,
+    CalendarComponent,
+    EventDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -69,9 +78,16 @@ import { InboxService } from './services/inbox.service';
     MatCardModule,
     MatBadgeModule,
     MatTreeModule,
-    ScrollingModule
+    MatTabsModule,
+    ScrollingModule,
+
+    // FullCalendar
+    FullCalendarModule
   ],
-  providers: [InboxService],
+  providers: [
+    InboxService,
+    CalendarService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,238 @@
+h2[mat-dialog-title] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+  mat-icon {
+    color: #1976d2;
+  }
+}
+
+mat-dialog-content {
+  padding: 0;
+  margin: 0;
+  max-height: 70vh;
+  overflow: hidden;
+
+  .mat-tab-body-wrapper {
+    flex-grow: 1;
+  }
+}
+
+.tab-content {
+  padding: 24px;
+  min-height: 400px;
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 16px 0 8px 0;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .helper-text {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.54);
+    margin: 0 0 16px 0;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  margin: 0;
+
+  button {
+    margin-left: 8px;
+  }
+}
+
+// Form Fields
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.calendar-color-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.date-time-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .date-field {
+    margin-bottom: 0;
+  }
+}
+
+.status-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .status-field {
+    margin-bottom: 0;
+  }
+}
+
+.checkbox-field {
+  display: block;
+  margin: 16px 0;
+}
+
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  .quick-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.54);
+  }
+
+  button {
+    text-transform: none;
+  }
+}
+
+// Attendees Section
+.attendees-section {
+  margin-top: 16px;
+
+  .attendee-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .attendee-email {
+      flex: 2;
+      margin-bottom: 0;
+    }
+
+    .attendee-name {
+      flex: 1.5;
+      margin-bottom: 0;
+    }
+
+    .attendee-type {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    button {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Reminders Section
+.reminders-section {
+  margin-top: 16px;
+
+  .reminder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .reminder-time {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .reminder-method {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    button {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Resources Section
+.resources-section {
+  .resource-capacity {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.54);
+    margin-left: 4px;
+  }
+
+  .no-resources {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin-top: 16px;
+
+    mat-icon {
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+}
+
+.travel-time-section {
+  margin-top: 24px;
+}
+
+// Recurrence Section
+.recurrence-section {
+  margin-top: 16px;
+}
+
+// Categories Section
+.categories-section {
+  margin-top: 16px;
+
+  mat-chip {
+    background-color: #1976d2;
+    color: white;
+  }
+}
+
+// Responsive Design
+@media (max-width: 600px) {
+  .date-time-group,
+  .status-group {
+    grid-template-columns: 1fr;
+  }
+
+  .attendee-item,
+  .reminder-item {
+    flex-direction: column;
+    align-items: stretch;
+
+    .attendee-email,
+    .attendee-name,
+    .attendee-type,
+    .reminder-time,
+    .reminder-method {
+      margin-bottom: 12px;
+    }
+  }
+}
