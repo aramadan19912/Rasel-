@@ -1,0 +1,64 @@
+<div class="chat-panel">
+  <!-- Header -->
+  <div class="chat-header">
+    <h3>{{ 'videoConference.chat' | translate }}</h3>
+    <span class="message-count">{{ messages.length }}</span>
+  </div>
+
+  <!-- Messages Container -->
+  <div class="messages-container" #messagesContainer>
+    <div *ngIf="messages.length === 0" class="empty-state">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <p>{{ 'videoConference.noMessages' | translate }}</p>
+    </div>
+
+    <div *ngFor="let message of messages"
+         class="message"
+         [class.own-message]="isOwnMessage(message)"
+         [class.private-message]="message.isPrivate">
+
+      <!-- Message Header -->
+      <div class="message-header">
+        <span class="sender-name">{{ message.senderName }}</span>
+        <span class="message-time">{{ formatTime(message.sentAt) }}</span>
+        <mat-icon *ngIf="message.isPrivate" class="private-icon" matTooltip="Private Message">
+          lock
+        </mat-icon>
+      </div>
+
+      <!-- Message Content -->
+      <div class="message-content">
+        {{ message.message }}
+      </div>
+
+      <!-- Attachments -->
+      <div class="message-attachments" *ngIf="message.attachments && message.attachments.length > 0">
+        <div *ngFor="let attachment of message.attachments" class="attachment">
+          <mat-icon>attach_file</mat-icon>
+          <span>{{ attachment.fileName }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="chat-input-container">
+    <mat-form-field appearance="outline" class="message-input">
+      <textarea matInput
+                [(ngModel)]="messageText"
+                (keypress)="onKeyPress($event)"
+                [placeholder]="'videoConference.typeMessage' | translate"
+                rows="3"
+                maxlength="1000">
+      </textarea>
+    </mat-form-field>
+
+    <button mat-fab
+            color="primary"
+            (click)="onSendMessage()"
+            [disabled]="!messageText.trim()"
+            [matTooltip]="'videoConference.sendMessage' | translate">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>
