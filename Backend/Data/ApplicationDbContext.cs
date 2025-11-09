@@ -46,6 +46,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ContactGroupMembership> ContactGroupMemberships { get; set; }
     public DbSet<ContactInteraction> ContactInteractions { get; set; }
 
+    // DbSets - Video Conferences
+    public DbSet<Backend.Models.VideoConference> VideoConferences { get; set; }
+    public DbSet<Backend.Models.ConferenceParticipant> ConferenceParticipants { get; set; }
+    public DbSet<Backend.Models.BreakoutRoom> BreakoutRooms { get; set; }
+    public DbSet<Backend.Models.ConferenceChatMessage> ConferenceChatMessages { get; set; }
+    public DbSet<Backend.Models.ChatAttachment> ChatAttachments { get; set; }
+    public DbSet<Backend.Models.WhiteboardData> WhiteboardData { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -505,6 +513,127 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany()
                 .HasForeignKey(e => e.ContactId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // VideoConference configuration
+        builder.Entity<Backend.Models.VideoConference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ConferenceId).IsUnique();
+            entity.HasIndex(e => e.HostId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.ScheduledStartTime);
+            entity.HasIndex(e => new { e.HostId, e.ScheduledStartTime });
+
+            entity.HasOne(e => e.Host)
+                .WithMany(u => u.HostedConferences)
+                .HasForeignKey(e => e.HostId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.CalendarEvent)
+                .WithOne()
+                .HasForeignKey<Backend.Models.VideoConference>(e => e.CalendarEventId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasMany(e => e.Participants)
+                .WithOne(p => p.Conference)
+                .HasForeignKey(p => p.ConferenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.BreakoutRooms)
+                .WithOne(b => b.Conference)
+                .HasForeignKey(b => b.ConferenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(e => e.ChatMessages)
+                .WithOne(c => c.Conference)
+                .HasForeignKey(c => c.ConferenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.Whiteboard)
+                .WithOne(w => w.Conference)
+                .HasForeignKey<Backend.Models.WhiteboardData>(w => w.ConferenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Title).HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.ConferenceId).HasMaxLength(20);
+        });
+
+        // ConferenceParticipant configuration
+        builder.Entity<Backend.Models.ConferenceParticipant>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.ConferenceId, e.UserId });
+            entity.HasIndex(e => e.PeerId);
+            entity.HasIndex(e => e.Status);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(e => e.BreakoutRoom)
+                .WithMany(b => b.Participants)
+                .HasForeignKey(e => e.BreakoutRoomId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.Property(e => e.DisplayName).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.PeerId).HasMaxLength(100);
+        });
+
+        // BreakoutRoom configuration
+        builder.Entity<Backend.Models.BreakoutRoom>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.ConferenceId, e.RoomNumber }).IsUnique();
+
+            entity.Property(e => e.RoomName).HasMaxLength(200);
+        });
+
+        // ConferenceChatMessage configuration
+        builder.Entity<Backend.Models.ConferenceChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ConferenceId);
+            entity.HasIndex(e => e.SenderId);
+            entity.HasIndex(e => e.SentAt);
+
+            entity.HasOne(e => e.Sender)
+                .WithMany()
+                .HasForeignKey(e => e.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasMany(e => e.Attachments)
+                .WithOne(a => a.ChatMessage)
+                .HasForeignKey(a => a.ChatMessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.Property(e => e.Message).HasMaxLength(2000);
+        });
+
+        // ChatAttachment configuration
+        builder.Entity<Backend.Models.ChatAttachment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ChatMessageId);
+
+            entity.Property(e => e.FileName).HasMaxLength(500);
+            entity.Property(e => e.FileUrl).HasMaxLength(1000);
+            entity.Property(e => e.ContentType).HasMaxLength(200);
+        });
+
+        // WhiteboardData configuration
+        builder.Entity<Backend.Models.WhiteboardData>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ConferenceId).IsUnique();
+
+            entity.HasOne(e => e.LastModifiedBy)
+                .WithMany()
+                .HasForeignKey(e => e.LastModifiedById)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Seed default folders

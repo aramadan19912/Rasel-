@@ -17,4 +17,5 @@ public class ApplicationUser : IdentityUser
     public List<Calendar> Calendars { get; set; } = new();
     public List<Contact> Contacts { get; set; } = new();
     public List<ContactGroup> ContactGroups { get; set; } = new();
+    public List<Backend.Models.VideoConference> HostedConferences { get; set; } = new();
 }

@@ -44,6 +44,7 @@ builder.Services.AddScoped<IMessageRuleEngine, MessageRuleEngine>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IContactsService, ContactsService>();
+builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -148,6 +149,7 @@ app.MapControllers();
 
 // Map SignalR Hubs
 app.MapHub<InboxHub>("/hubs/inbox");
+app.MapHub<Backend.Hubs.VideoConferenceHub>("/hubs/video-conference");
 
 // Initialize database and seed data
 using (var scope = app.Services.CreateScope())
