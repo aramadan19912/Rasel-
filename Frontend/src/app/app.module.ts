@@ -1,8 +1,17 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// ngx-translate
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+// Translation loader factory
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 // Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -41,11 +50,13 @@ import { CalendarComponent } from './components/calendar/calendar.component';
 import { EventDialogComponent } from './components/calendar/event-dialog/event-dialog.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
+import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
 
 // Services
 import { InboxService } from './services/inbox.service';
 import { CalendarService } from './services/calendar.service';
 import { ContactsService } from './services/contacts.service';
+import { TranslationService } from './services/translation.service';
 
 @NgModule({
   declarations: [
@@ -54,7 +65,8 @@ import { ContactsService } from './services/contacts.service';
     CalendarComponent,
     EventDialogComponent,
     ContactsComponent,
-    ContactDialogComponent
+    ContactDialogComponent,
+    LanguageSwitcherComponent
   ],
   imports: [
     BrowserModule,
@@ -91,12 +103,23 @@ import { ContactsService } from './services/contacts.service';
     ScrollingModule,
 
     // FullCalendar
-    FullCalendarModule
+    FullCalendarModule,
+
+    // Translation
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     InboxService,
     CalendarService,
-    ContactsService
+    ContactsService,
+    TranslationService
   ],
   bootstrap: [AppComponent]
 })

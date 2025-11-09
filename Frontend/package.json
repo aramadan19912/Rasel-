@@ -28,6 +28,8 @@
     "@fullcalendar/interaction": "^6.1.10",
     "@fullcalendar/list": "^6.1.10",
     "@microsoft/signalr": "^8.0.0",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",
     "zone.js": "^0.14.3"
