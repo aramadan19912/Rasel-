@@ -1,6 +1,6 @@
 <div class="contact-dialog">
   <h2 mat-dialog-title>
-    {{ isEditMode ? 'Edit Contact' : 'New Contact' }}
+    {{ (isEditMode ? 'contacts.editContact' : 'contacts.newContact') | translate }}
   </h2>
 
   <mat-dialog-content>
@@ -8,60 +8,59 @@
       <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="200ms">
 
         <!-- Basic Information Tab -->
-        <mat-tab label="Basic Info">
+        <mat-tab [label]="'contacts.tabs.basicInfo' | translate">
           <div class="tab-content">
             <div class="form-row">
               <mat-form-field appearance="outline" class="small-field">
-                <mat-label>Title</mat-label>
-                <input matInput formControlName="title" placeholder="Mr., Ms., Dr.">
+                <mat-label>{{ 'contacts.fields.title' | translate }}</mat-label>
+                <input matInput formControlName="title">
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="flex-field">
-                <mat-label>First Name</mat-label>
-                <input matInput formControlName="firstName" placeholder="John" required>
-                <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+                <mat-label>{{ 'contacts.fields.firstName' | translate }}</mat-label>
+                <input matInput formControlName="firstName" [placeholder]="'contacts.placeholders.firstName' | translate" required>
+                <mat-error>{{ 'errors.required' | translate }}</mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="flex-field">
-                <mat-label>Middle Name</mat-label>
-                <input matInput formControlName="middleName" placeholder="Michael">
+                <mat-label>{{ 'contacts.fields.middleName' | translate }}</mat-label>
+                <input matInput formControlName="middleName">
               </mat-form-field>
             </div>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="flex-field">
-                <mat-label>Last Name</mat-label>
-                <input matInput formControlName="lastName" placeholder="Doe" required>
-                <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+                <mat-label>{{ 'contacts.fields.lastName' | translate }}</mat-label>
+                <input matInput formControlName="lastName" [placeholder]="'contacts.placeholders.lastName' | translate" required>
+                <mat-error>{{ 'errors.required' | translate }}</mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="small-field">
-                <mat-label>Suffix</mat-label>
-                <input matInput formControlName="suffix" placeholder="Jr., Sr., III">
+                <mat-label>{{ 'contacts.fields.suffix' | translate }}</mat-label>
+                <input matInput formControlName="suffix">
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="flex-field">
-                <mat-label>Nickname</mat-label>
-                <input matInput formControlName="nickname" placeholder="Johnny">
+                <mat-label>{{ 'contacts.fields.nickname' | translate }}</mat-label>
+                <input matInput formControlName="nickname">
               </mat-form-field>
             </div>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Privacy</mat-label>
+                <mat-label>{{ 'contacts.fields.privacy' | translate }}</mat-label>
                 <mat-select formControlName="privacy" required>
-                  <mat-option *ngFor="let option of privacyOptions" [value]="option.value">
-                    {{ option.label }}
-                  </mat-option>
+                  <mat-option value="0">{{ 'contacts.privacy.private' | translate }}</mat-option>
+                  <mat-option value="1">{{ 'contacts.privacy.public' | translate }}</mat-option>
+                  <mat-option value="2">{{ 'contacts.privacy.shared' | translate }}</mat-option>
                 </mat-select>
-                <mat-icon matSuffix matTooltip="Choose who can see this contact">info</mat-icon>
               </mat-form-field>
             </div>
           </div>
         </mat-tab>
 
         <!-- Contact Details Tab -->
-        <mat-tab label="Contact Details">
+        <mat-tab [label]="'contacts.tabs.contactDetails' | translate">
           <div class="tab-content">
 
             <!-- Email Addresses -->
@@ -293,7 +292,7 @@
         </mat-tab>
 
         <!-- Professional Information Tab -->
-        <mat-tab label="Professional">
+        <mat-tab [label]="'contacts.tabs.professional' | translate">
           <div class="tab-content">
             <div class="form-row">
               <mat-form-field appearance="outline" class="flex-field">
@@ -336,7 +335,7 @@
         </mat-tab>
 
         <!-- Personal Information Tab -->
-        <mat-tab label="Personal">
+        <mat-tab [label]="'contacts.tabs.personal' | translate">
           <div class="tab-content">
             <div class="form-row">
               <mat-form-field appearance="outline" class="flex-field">
@@ -371,7 +370,7 @@
         </mat-tab>
 
         <!-- Additional Details Tab -->
-        <mat-tab label="Additional">
+        <mat-tab [label]="'contacts.tabs.additional' | translate">
           <div class="tab-content">
 
             <!-- Social Media -->
@@ -501,7 +500,7 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancel()">Cancel</button>
+    <button mat-button type="button" (click)="onCancel()">{{ 'common.cancel' | translate }}</button>
     <button mat-raised-button
             color="warn"
             type="button"
@@ -509,7 +508,7 @@
             (click)="onDelete()"
             class="delete-button">
       <mat-icon>delete</mat-icon>
-      Delete
+      {{ 'common.delete' | translate }}
     </button>
     <button mat-raised-button
             color="primary"
@@ -517,7 +516,7 @@
             (click)="onSave()"
             [disabled]="contactForm.invalid">
       <mat-icon>save</mat-icon>
-      {{ isEditMode ? 'Save Changes' : 'Create Contact' }}
+      {{ 'common.save' | translate }}
     </button>
   </mat-dialog-actions>
 </div>

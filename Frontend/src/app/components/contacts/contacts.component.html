@@ -5,14 +5,14 @@
       <mat-icon>menu</mat-icon>
     </button>
 
-    <span class="toolbar-title">Contacts</span>
+    <span class="toolbar-title">{{ 'contacts.title' | translate }}</span>
 
     <!-- Search Bar -->
     <div class="search-container">
       <mat-form-field appearance="outline" class="search-field">
         <mat-icon matPrefix>search</mat-icon>
         <input matInput
-               placeholder="Search contacts..."
+               [placeholder]="'contacts.searchContacts' | translate"
                [(ngModel)]="searchTerm"
                (keyup.enter)="onSearch()">
         <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
@@ -25,13 +25,13 @@
 
     <!-- View Toggle -->
     <mat-button-toggle-group [(value)]="currentView" (change)="changeView($event.value)">
-      <mat-button-toggle value="list" matTooltip="List View">
+      <mat-button-toggle value="list" [matTooltip]="'contacts.views.list' | translate">
         <mat-icon>view_list</mat-icon>
       </mat-button-toggle>
-      <mat-button-toggle value="grid" matTooltip="Grid View">
+      <mat-button-toggle value="grid" [matTooltip]="'contacts.views.grid' | translate">
         <mat-icon>view_module</mat-icon>
       </mat-button-toggle>
-      <mat-button-toggle value="details" matTooltip="Details View">
+      <mat-button-toggle value="details" [matTooltip]="'contacts.views.details' | translate">
         <mat-icon>view_agenda</mat-icon>
       </mat-button-toggle>
     </mat-button-toggle-group>
@@ -39,20 +39,23 @@
     <!-- Actions -->
     <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button">
       <mat-icon>person_add</mat-icon>
-      New Contact
+      {{ 'contacts.newContact' | translate }}
     </button>
 
-    <button mat-icon-button [matMenuTrigger]="toolbarMenu" matTooltip="More Options">
+    <!-- Language Switcher -->
+    <app-language-switcher></app-language-switcher>
+
+    <button mat-icon-button [matMenuTrigger]="toolbarMenu" [matTooltip]="'common.moreOptions' | translate">
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #toolbarMenu="matMenu">
       <button mat-menu-item (click)="refreshContacts()">
         <mat-icon>refresh</mat-icon>
-        <span>Refresh</span>
+        <span>{{ 'common.refresh' | translate }}</span>
       </button>
       <button mat-menu-item (click)="toggleFavoritesFilter()">
         <mat-icon>{{ showOnlyFavorites ? 'star' : 'star_border' }}</mat-icon>
-        <span>{{ showOnlyFavorites ? 'Show All' : 'Show Favorites' }}</span>
+        <span>{{ (showOnlyFavorites ? 'contacts.filters.showAll' : 'contacts.filters.showFavorites') | translate }}</span>
       </button>
     </mat-menu>
   </mat-toolbar>
@@ -64,7 +67,7 @@
       <div class="sidebar-content">
         <!-- Groups Section -->
         <div class="sidebar-section">
-          <h3 class="section-title">Groups</h3>
+          <h3 class="section-title">{{ 'contacts.groups' | translate }}</h3>
           <mat-nav-list>
             <mat-list-item *ngFor="let group of groups"
                           [class.selected]="isGroupSelected(group.id)"
@@ -80,11 +83,11 @@
 
         <!-- Categories Section -->
         <div class="sidebar-section">
-          <h3 class="section-title">Categories</h3>
+          <h3 class="section-title">{{ 'contacts.categories' | translate }}</h3>
           <mat-nav-list>
             <mat-list-item [class.selected]="!selectedCategory" (click)="clearCategoryFilter()">
               <mat-icon matListItemIcon>label_off</mat-icon>
-              <span matListItemTitle>All Categories</span>
+              <span matListItemTitle>{{ 'contacts.filters.allCategories' | translate }}</span>
             </mat-list-item>
             <mat-list-item *ngFor="let category of categories"
                           [class.selected]="selectedCategory === category"
@@ -99,11 +102,11 @@
 
         <!-- Quick Filters -->
         <div class="sidebar-section">
-          <h3 class="section-title">Quick Filters</h3>
+          <h3 class="section-title">{{ 'contacts.filters.quickFilters' | translate }}</h3>
           <mat-nav-list>
             <mat-list-item (click)="toggleFavoritesFilter()" [class.selected]="showOnlyFavorites">
               <mat-icon matListItemIcon>{{ showOnlyFavorites ? 'star' : 'star_border' }}</mat-icon>
-              <span matListItemTitle>Favorites</span>
+              <span matListItemTitle>{{ 'contacts.filters.favorites' | translate }}</span>
             </mat-list-item>
           </mat-nav-list>
         </div>
@@ -209,11 +212,11 @@
         <!-- Empty State -->
         <div *ngIf="filteredContacts.length === 0" class="empty-state">
           <mat-icon>contacts</mat-icon>
-          <h2>No contacts found</h2>
-          <p>Try adjusting your search or filters</p>
+          <h2>{{ 'contacts.noContacts' | translate }}</h2>
+          <p>{{ 'contacts.tryAdjustingFilters' | translate }}</p>
           <button mat-raised-button color="primary" (click)="openContactDialog()">
             <mat-icon>person_add</mat-icon>
-            Create New Contact
+            {{ 'contacts.createNewContact' | translate }}
           </button>
         </div>
       </div>
@@ -291,11 +294,11 @@
         <!-- Empty State -->
         <div *ngIf="filteredContacts.length === 0" class="empty-state">
           <mat-icon>contacts</mat-icon>
-          <h2>No contacts found</h2>
-          <p>Try adjusting your search or filters</p>
+          <h2>{{ 'contacts.noContacts' | translate }}</h2>
+          <p>{{ 'contacts.tryAdjustingFilters' | translate }}</p>
           <button mat-raised-button color="primary" (click)="openContactDialog()">
             <mat-icon>person_add</mat-icon>
-            Create New Contact
+            {{ 'contacts.createNewContact' | translate }}
           </button>
         </div>
       </div>
