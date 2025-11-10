@@ -22,7 +22,7 @@ import {
   providedIn: 'root'
 })
 export class ContactsService {
-  private apiUrl = `${environment.apiUrl}/contacts`;
+  private apiUrl = `${environment.apiUrl}/api/Contacts`;
 
   // State management
   private contactsSubject = new BehaviorSubject<Contact[]>([]);

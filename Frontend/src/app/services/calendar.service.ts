@@ -31,7 +31,7 @@ import {
   providedIn: 'root'
 })
 export class CalendarService {
-  private apiUrl = `${environment.apiUrl}/calendar`;
+  private apiUrl = `${environment.apiUrl}/api/Calendar`;
 
   // State management
   private calendarsSubject = new BehaviorSubject<Calendar[]>([]);

@@ -24,7 +24,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class InboxService {
-  private readonly apiUrl = `${environment.apiUrl}/api/inbox`;
+  private readonly apiUrl = `${environment.apiUrl}/api/Messages`;
 
   // State management
   private messagesSubject = new BehaviorSubject<Message[]>([]);

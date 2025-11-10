@@ -27,7 +27,7 @@ import {
   providedIn: 'root'
 })
 export class VideoConferenceService {
-  private apiUrl = `${environment.apiUrl}/video-conference`;
+  private apiUrl = `${environment.apiUrl}/api/VideoConference`;
   private hubConnection!: signalR.HubConnection;
 
   // State management

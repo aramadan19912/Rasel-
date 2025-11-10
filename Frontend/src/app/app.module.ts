@@ -1,12 +1,19 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// Routing
+import { AppRoutingModule } from './app-routing.module';
 
 // ngx-translate
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+// Interceptors
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { ErrorInterceptor } from './interceptors/error.interceptor';
 
 // Translation loader factory
 export function HttpLoaderFactory(http: HttpClient) {
@@ -50,13 +57,24 @@ import { CalendarComponent } from './components/calendar/calendar.component';
 import { EventDialogComponent } from './components/calendar/event-dialog/event-dialog.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
+import { VideoConferenceComponent } from './components/video-conference/video-conference.component';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+
+// Auth Components
+import { LoginComponent } from './components/auth/login/login.component';
+import { RegisterComponent } from './components/auth/register/register.component';
+import { UnauthorizedComponent } from './components/auth/unauthorized/unauthorized.component';
+
+// Layout Components
+import { MainLayoutComponent } from './components/layout/main-layout/main-layout.component';
 
 // Services
 import { InboxService } from './services/inbox.service';
 import { CalendarService } from './services/calendar.service';
 import { ContactsService } from './services/contacts.service';
+import { VideoConferenceService } from './services/video-conference.service';
 import { TranslationService } from './services/translation.service';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -66,7 +84,12 @@ import { TranslationService } from './services/translation.service';
     EventDialogComponent,
     ContactsComponent,
     ContactDialogComponent,
-    LanguageSwitcherComponent
+    VideoConferenceComponent,
+    LanguageSwitcherComponent,
+    LoginComponent,
+    RegisterComponent,
+    UnauthorizedComponent,
+    MainLayoutComponent
   ],
   imports: [
     BrowserModule,
@@ -74,6 +97,7 @@ import { TranslationService } from './services/translation.service';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    AppRoutingModule,
 
     // Angular Material
     MatToolbarModule,
@@ -116,10 +140,25 @@ import { TranslationService } from './services/translation.service';
     })
   ],
   providers: [
+    // Services
     InboxService,
     CalendarService,
     ContactsService,
-    TranslationService
+    VideoConferenceService,
+    TranslationService,
+    AuthService,
+
+    // HTTP Interceptors
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

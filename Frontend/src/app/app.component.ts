@@ -3,18 +3,8 @@ import { TranslationService } from './services/translation.service';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <div class="app-container">
-      <app-contacts></app-contacts>
-    </div>
-  `,
-  styles: [`
-    .app-container {
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-    }
-  `]
+  template: `<router-outlet></router-outlet>`,
+  styles: []
 })
 export class AppComponent implements OnInit {
   title = 'Rasel - Outlook Management System';
