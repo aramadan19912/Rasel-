@@ -104,11 +104,10 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 // ===== Feature Services =====
-// TODO: Implement and register feature services:
-// builder.Services.AddScoped<IMessageService, MessageService>();
-// builder.Services.AddScoped<ICalendarService, CalendarService>();
-// builder.Services.AddScoped<IContactsService, ContactsService>();
-// builder.Services.AddScoped<IVideoConferenceService, VideoConferenceService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
+builder.Services.AddScoped<IContactsService, ContactsService>();
+builder.Services.AddScoped<IVideoConferenceService, VideoConferenceService>();
 
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
