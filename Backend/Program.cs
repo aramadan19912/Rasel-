@@ -5,6 +5,8 @@ using OutlookInboxManagement.Helpers;
 using OutlookInboxManagement.Hubs;
 using OutlookInboxManagement.Models;
 using OutlookInboxManagement.Services;
+using Application.Interfaces;
+using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,12 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ICalendarService, CalendarService>();
 builder.Services.AddScoped<IContactsService, ContactsService>();
 builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
+
+// Register Organization Services
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IOrgChartService, OrgChartService>();
 
 // Add SignalR
 builder.Services.AddSignalR();

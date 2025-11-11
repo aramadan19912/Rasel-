@@ -6,6 +6,7 @@ using Backend.Domain.Entities.Messages;
 using Backend.Domain.Entities.Calendar;
 using Backend.Domain.Entities.Contacts;
 using Backend.Domain.Entities.VideoConference;
+using Domain.Entities.Organization;
 
 namespace Backend.Infrastructure.Data;
 
@@ -61,6 +62,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
     public DbSet<ConferenceChatMessage> ConferenceChatMessages { get; set; }
     public DbSet<ChatAttachment> ChatAttachments { get; set; }
     public DbSet<WhiteboardData> WhiteboardData { get; set; }
+
+    // Organization
+    public DbSet<Department> Departments { get; set; }
+    public DbSet<Position> Positions { get; set; }
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
+    public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
+    public DbSet<PerformanceReview> PerformanceReviews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -390,6 +399,206 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
                 .WithOne(a => a.ChatMessage)
                 .HasForeignKey(a => a.ChatMessageId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ===== Organization Configuration =====
+        builder.Entity<Department>(entity =>
+        {
+            entity.ToTable("Departments");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DepartmentCode).IsUnique();
+            entity.HasIndex(e => new { e.Name, e.IsDeleted });
+
+            entity.Property(e => e.DepartmentCode).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Mission).HasMaxLength(1000);
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(20);
+            entity.Property(e => e.Location).HasMaxLength(100);
+            entity.Property(e => e.OfficeNumber).HasMaxLength(20);
+            entity.Property(e => e.CostCenter).HasMaxLength(50);
+            entity.Property(e => e.AnnualBudget).HasPrecision(18, 2);
+
+            // Self-referencing relationship
+            entity.HasOne(d => d.ParentDepartment)
+                .WithMany(d => d.SubDepartments)
+                .HasForeignKey(d => d.ParentDepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Head of Department relationship
+            entity.HasOne(d => d.HeadOfDepartment)
+                .WithMany()
+                .HasForeignKey(d => d.HeadOfDepartmentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            // Employees relationship
+            entity.HasMany(d => d.Employees)
+                .WithOne(e => e.Department)
+                .HasForeignKey(e => e.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Position>(entity =>
+        {
+            entity.ToTable("Positions");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.PositionCode).IsUnique();
+            entity.HasIndex(e => new { e.DepartmentId, e.Title });
+            entity.HasIndex(e => e.Level);
+
+            entity.Property(e => e.PositionCode).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.MinSalary).HasPrecision(18, 2);
+            entity.Property(e => e.MaxSalary).HasPrecision(18, 2);
+            entity.Property(e => e.Currency).HasMaxLength(3);
+
+            // Department relationship
+            entity.HasOne(p => p.Department)
+                .WithMany()
+                .HasForeignKey(p => p.DepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Self-referencing relationship
+            entity.HasOne(p => p.ReportsToPosition)
+                .WithMany(p => p.SubordinatePositions)
+                .HasForeignKey(p => p.ReportsToPositionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Employees relationship
+            entity.HasMany(p => p.Employees)
+                .WithOne(e => e.Position)
+                .HasForeignKey(e => e.PositionId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Employee>(entity =>
+        {
+            entity.ToTable("Employees");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EmployeeNumber).IsUnique();
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => new { e.DepartmentId, e.IsDeleted });
+            entity.HasIndex(e => new { e.ManagerId, e.IsDeleted });
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => new { e.LastName, e.FirstName });
+
+            entity.Property(e => e.EmployeeNumber).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.UserId).HasMaxLength(450);
+            entity.Property(e => e.FirstName).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.LastName).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.MiddleName).HasMaxLength(50);
+            entity.Property(e => e.PreferredName).HasMaxLength(50);
+            entity.Property(e => e.Email).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.WorkPhone).HasMaxLength(20);
+            entity.Property(e => e.MobilePhone).HasMaxLength(20);
+            entity.Property(e => e.EmploymentStatus).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.EmploymentType).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.OfficeLocation).HasMaxLength(100);
+            entity.Property(e => e.WorkSite).HasMaxLength(100);
+            entity.Property(e => e.ProfileImageUrl).HasMaxLength(500);
+            entity.Property(e => e.EmergencyContactName).HasMaxLength(100);
+            entity.Property(e => e.EmergencyContactPhone).HasMaxLength(20);
+            entity.Property(e => e.EmergencyContactRelation).HasMaxLength(50);
+            entity.Property(e => e.Nationality).HasMaxLength(50);
+            entity.Property(e => e.NationalId).HasMaxLength(50);
+            entity.Property(e => e.PassportNumber).HasMaxLength(50);
+            entity.Property(e => e.TaxId).HasMaxLength(50);
+            entity.Property(e => e.BankAccountNumber).HasMaxLength(50);
+            entity.Property(e => e.BankName).HasMaxLength(100);
+            entity.Property(e => e.CurrentSalary).HasPrecision(18, 2);
+            entity.Property(e => e.SalaryCurrency).HasMaxLength(3);
+            entity.Property(e => e.Address).HasMaxLength(200);
+            entity.Property(e => e.City).HasMaxLength(50);
+            entity.Property(e => e.State).HasMaxLength(50);
+            entity.Property(e => e.PostalCode).HasMaxLength(20);
+            entity.Property(e => e.Country).HasMaxLength(50);
+            entity.Property(e => e.Bio).HasMaxLength(1000);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+
+            // User relationship
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Self-referencing Manager relationship
+            entity.HasOne(e => e.Manager)
+                .WithMany(e => e.DirectReports)
+                .HasForeignKey(e => e.ManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Skills relationship
+            entity.HasMany(e => e.Skills)
+                .WithOne(s => s.Employee)
+                .HasForeignKey(s => s.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Documents relationship
+            entity.HasMany(e => e.Documents)
+                .WithOne(d => d.Employee)
+                .HasForeignKey(d => d.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Performance Reviews relationship
+            entity.HasMany(e => e.PerformanceReviews)
+                .WithOne(pr => pr.Employee)
+                .HasForeignKey(pr => pr.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<EmployeeSkill>(entity =>
+        {
+            entity.ToTable("EmployeeSkills");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.EmployeeId, e.SkillName });
+
+            entity.Property(e => e.SkillName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.SkillCategory).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ProficiencyLevel).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Notes).HasMaxLength(500);
+        });
+
+        builder.Entity<EmployeeDocument>(entity =>
+        {
+            entity.ToTable("EmployeeDocuments");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.EmployeeId, e.DocumentType });
+            entity.HasIndex(e => e.ExpiryDate);
+
+            entity.Property(e => e.DocumentType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.DocumentName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.DocumentUrl).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.FileSize).IsRequired();
+            entity.Property(e => e.MimeType).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.UploadedBy).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(500);
+        });
+
+        builder.Entity<PerformanceReview>(entity =>
+        {
+            entity.ToTable("PerformanceReviews");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.EmployeeId, e.ReviewDate });
+            entity.HasIndex(e => new { e.ReviewerId, e.ReviewDate });
+
+            entity.Property(e => e.ReviewPeriodStart).IsRequired();
+            entity.Property(e => e.ReviewPeriodEnd).IsRequired();
+            entity.Property(e => e.ReviewDate).IsRequired();
+            entity.Property(e => e.ReviewerId).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.OverallRating).IsRequired();
+            entity.Property(e => e.Strengths).HasMaxLength(2000);
+            entity.Property(e => e.AreasForImprovement).HasMaxLength(2000);
+            entity.Property(e => e.Goals).HasMaxLength(2000);
+            entity.Property(e => e.ReviewerComments).HasMaxLength(2000);
+            entity.Property(e => e.EmployeeComments).HasMaxLength(2000);
+
+            // Reviewer relationship
+            entity.HasOne(pr => pr.Reviewer)
+                .WithMany()
+                .HasForeignKey(pr => pr.ReviewerId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
