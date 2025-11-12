@@ -8,6 +8,8 @@ using Backend.Domain.Entities.Contacts;
 using Backend.Domain.Entities.VideoConference;
 using Domain.Entities.Organization;
 using Domain.Entities.Archive;
+using Domain.Entities.Communication;
+using Domain.Entities.Settings;
 
 namespace Backend.Infrastructure.Data;
 
@@ -71,6 +73,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
     public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
     public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
     public DbSet<PerformanceReview> PerformanceReviews { get; set; }
+    public DbSet<OrganizationInfo> OrganizationInfos { get; set; }
+    public DbSet<LicenseInfo> LicenseInfos { get; set; }
+    public DbSet<DigitalSignature> DigitalSignatures { get; set; }
 
     // Archive & Correspondence
     public DbSet<ArchiveCategory> ArchiveCategories { get; set; }
@@ -81,6 +86,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
     public DbSet<FormField> FormFields { get; set; }
     public DbSet<FormSubmission> FormSubmissions { get; set; }
     public DbSet<ArchiveDocument> ArchiveDocuments { get; set; }
+    public DbSet<CorrespondenceTracking> CorrespondenceTrackings { get; set; }
+    public DbSet<CorrespondenceCirculation> CorrespondenceCirculations { get; set; }
+    public DbSet<CirculationRecipient> CirculationRecipients { get; set; }
+
+    // Communication
+    public DbSet<CommunicationGroup> CommunicationGroups { get; set; }
+    public DbSet<CommunicationGroupMember> CommunicationGroupMembers { get; set; }
+    public DbSet<CommunicationRule> CommunicationRules { get; set; }
+    public DbSet<ExternalEntity> ExternalEntities { get; set; }
+
+    // Settings
+    public DbSet<SystemLookup> SystemLookups { get; set; }
+    public DbSet<PrintTemplate> PrintTemplates { get; set; }
+    public DbSet<FolderPermission> FolderPermissions { get; set; }
+    public DbSet<ClassificationPermission> ClassificationPermissions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
