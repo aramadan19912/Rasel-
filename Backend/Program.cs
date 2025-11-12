@@ -7,6 +7,7 @@ using OutlookInboxManagement.Models;
 using OutlookInboxManagement.Services;
 using Application.Interfaces;
 using Infrastructure.Services;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -205,6 +206,10 @@ using (var scope = app.Services.CreateScope())
                 await inboxService.InitializeUserFoldersAsync(adminUser.Id);
             }
         }
+
+        // Seed organizational data
+        var orgSeeder = new OrganizationSeeder(context);
+        await orgSeeder.SeedAsync();
     }
     catch (Exception ex)
     {
