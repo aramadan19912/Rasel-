@@ -7,6 +7,7 @@ using Backend.Domain.Entities.Calendar;
 using Backend.Domain.Entities.Contacts;
 using Backend.Domain.Entities.VideoConference;
 using Domain.Entities.Organization;
+using Domain.Entities.Archive;
 
 namespace Backend.Infrastructure.Data;
 
@@ -70,6 +71,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
     public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
     public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
     public DbSet<PerformanceReview> PerformanceReviews { get; set; }
+
+    // Archive & Correspondence
+    public DbSet<ArchiveCategory> ArchiveCategories { get; set; }
+    public DbSet<Correspondence> Correspondences { get; set; }
+    public DbSet<CorrespondenceAttachment> CorrespondenceAttachments { get; set; }
+    public DbSet<CorrespondenceRouting> CorrespondenceRoutings { get; set; }
+    public DbSet<CorrespondenceForm> CorrespondenceForms { get; set; }
+    public DbSet<FormField> FormFields { get; set; }
+    public DbSet<FormSubmission> FormSubmissions { get; set; }
+    public DbSet<ArchiveDocument> ArchiveDocuments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -598,6 +609,261 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
             entity.HasOne(pr => pr.Reviewer)
                 .WithMany()
                 .HasForeignKey(pr => pr.ReviewerId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // ===== Archive & Correspondence Configuration =====
+        builder.Entity<ArchiveCategory>(entity =>
+        {
+            entity.ToTable("ArchiveCategories");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CategoryCode).IsUnique();
+            entity.HasIndex(e => new { e.Classification, e.IsActive });
+            entity.HasIndex(e => new { e.NameAr, e.NameEn });
+
+            entity.Property(e => e.CategoryCode).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.NameAr).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.NameEn).HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Classification).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.RetentionPeriod).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Icon).HasMaxLength(100);
+            entity.Property(e => e.Color).HasMaxLength(50);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450);
+            entity.Property(e => e.UpdatedBy).HasMaxLength(450);
+
+            // Self-referencing relationship
+            entity.HasOne(c => c.ParentCategory)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<Correspondence>(entity =>
+        {
+            entity.ToTable("Correspondences");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ReferenceNumber).IsUnique();
+            entity.HasIndex(e => new { e.CategoryId, e.Status });
+            entity.HasIndex(e => new { e.CorrespondenceDate, e.IsArchived });
+            entity.HasIndex(e => e.FromEmployeeId);
+            entity.HasIndex(e => e.ToEmployeeId);
+            entity.HasIndex(e => e.ToDepartmentId);
+            entity.HasIndex(e => e.FormSubmissionId);
+            entity.HasIndex(e => e.IsDeleted);
+
+            entity.Property(e => e.ReferenceNumber).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.SubjectAr).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.SubjectEn).HasMaxLength(500);
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Priority).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ConfidentialityLevel).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.ExternalSenderName).HasMaxLength(200);
+            entity.Property(e => e.ExternalSenderOrganization).HasMaxLength(200);
+            entity.Property(e => e.Keywords).HasMaxLength(500);
+            entity.Property(e => e.Tags).HasMaxLength(500);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.UpdatedBy).HasMaxLength(450);
+            entity.Property(e => e.ArchivedBy).HasMaxLength(450);
+
+            // Relationships
+            entity.HasOne(c => c.Category)
+                .WithMany(cat => cat.Correspondences)
+                .HasForeignKey(c => c.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.FromEmployee)
+                .WithMany()
+                .HasForeignKey(c => c.FromEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.ToEmployee)
+                .WithMany()
+                .HasForeignKey(c => c.ToEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.ToDepartment)
+                .WithMany()
+                .HasForeignKey(c => c.ToDepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.Form)
+                .WithMany()
+                .HasForeignKey(c => c.FormId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(c => c.FormSubmission)
+                .WithOne(fs => fs.Correspondence)
+                .HasForeignKey<Correspondence>(c => c.FormSubmissionId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(c => c.RelatedCorrespondence)
+                .WithMany()
+                .HasForeignKey(c => c.RelatedCorrespondenceId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CorrespondenceAttachment>(entity =>
+        {
+            entity.ToTable("CorrespondenceAttachments");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CorrespondenceId);
+            entity.HasIndex(e => new { e.CorrespondenceId, e.IsMainDocument });
+
+            entity.Property(e => e.FileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.OriginalFileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.FilePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.MimeType).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.FileExtension).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+
+            entity.HasOne(a => a.Correspondence)
+                .WithMany(c => c.Attachments)
+                .HasForeignKey(a => a.CorrespondenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CorrespondenceRouting>(entity =>
+        {
+            entity.ToTable("CorrespondenceRoutings");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CorrespondenceId);
+            entity.HasIndex(e => new { e.ToEmployeeId, e.Status });
+            entity.HasIndex(e => new { e.RoutedDate, e.DueDate });
+            entity.HasIndex(e => e.ParentRoutingId);
+
+            entity.Property(e => e.Action).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Priority).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+
+            entity.HasOne(r => r.Correspondence)
+                .WithMany(c => c.Routings)
+                .HasForeignKey(r => r.CorrespondenceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(r => r.FromEmployee)
+                .WithMany()
+                .HasForeignKey(r => r.FromEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.ToEmployee)
+                .WithMany()
+                .HasForeignKey(r => r.ToEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.ToDepartment)
+                .WithMany()
+                .HasForeignKey(r => r.ToDepartmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(r => r.ParentRouting)
+                .WithMany()
+                .HasForeignKey(r => r.ParentRoutingId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<CorrespondenceForm>(entity =>
+        {
+            entity.ToTable("CorrespondenceForms");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.FormCode).IsUnique();
+            entity.HasIndex(e => new { e.CategoryId, e.IsActive });
+            entity.HasIndex(e => new { e.IsPublished, e.IsActive });
+
+            entity.Property(e => e.FormCode).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.NameAr).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.NameEn).HasMaxLength(200);
+            entity.Property(e => e.DescriptionAr).HasMaxLength(1000);
+            entity.Property(e => e.DescriptionEn).HasMaxLength(1000);
+            entity.Property(e => e.DefaultClassification).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.UpdatedBy).HasMaxLength(450);
+
+            entity.HasOne(f => f.Category)
+                .WithMany()
+                .HasForeignKey(f => f.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<FormField>(entity =>
+        {
+            entity.ToTable("FormFields");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.FormId, e.SortOrder });
+            entity.HasIndex(e => new { e.FormId, e.FieldName });
+
+            entity.Property(e => e.FieldName).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.LabelAr).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.LabelEn).HasMaxLength(200);
+            entity.Property(e => e.FieldType).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Placeholder).HasMaxLength(500);
+            entity.Property(e => e.HelpText).HasMaxLength(1000);
+            entity.Property(e => e.CssClass).HasMaxLength(200);
+
+            entity.HasOne(f => f.Form)
+                .WithMany(form => form.Fields)
+                .HasForeignKey(f => f.FormId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<FormSubmission>(entity =>
+        {
+            entity.ToTable("FormSubmissions");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ReferenceNumber).IsUnique();
+            entity.HasIndex(e => new { e.FormId, e.SubmissionDate });
+            entity.HasIndex(e => new { e.Status, e.IsApproved });
+            entity.HasIndex(e => e.SubmittedByEmployeeId);
+
+            entity.Property(e => e.ReferenceNumber).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.SubmittedByUserId).HasMaxLength(450);
+            entity.Property(e => e.SubmitterName).HasMaxLength(200);
+            entity.Property(e => e.SubmitterEmail).HasMaxLength(200);
+            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.IpAddress).HasMaxLength(50);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+
+            entity.HasOne(s => s.Form)
+                .WithMany(f => f.Submissions)
+                .HasForeignKey(s => s.FormId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(s => s.SubmittedByEmployee)
+                .WithMany()
+                .HasForeignKey(s => s.SubmittedByEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(s => s.ApprovedByEmployee)
+                .WithMany()
+                .HasForeignKey(s => s.ApprovedByEmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ArchiveDocument>(entity =>
+        {
+            entity.ToTable("ArchiveDocuments");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ArchiveNumber).IsUnique();
+            entity.HasIndex(e => e.CorrespondenceId).IsUnique();
+            entity.HasIndex(e => new { e.IsOnLegalHold, e.IsDestroyed });
+            entity.HasIndex(e => e.DestructionDate);
+
+            entity.Property(e => e.ArchiveNumber).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.PdfFilePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.PdfFileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Checksum).HasMaxLength(128).IsRequired();
+            entity.Property(e => e.RetentionPeriod).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.LegalHoldReason).HasMaxLength(1000);
+            entity.Property(e => e.StorageLocation).HasMaxLength(500);
+            entity.Property(e => e.BackupLocation).HasMaxLength(500);
+            entity.Property(e => e.DestroyedBy).HasMaxLength(450);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+
+            entity.HasOne(d => d.Correspondence)
+                .WithOne(c => c.ArchivedDocument)
+                .HasForeignKey<ArchiveDocument>(d => d.CorrespondenceId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
