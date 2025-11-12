@@ -210,6 +210,10 @@ using (var scope = app.Services.CreateScope())
         // Seed organizational data
         var orgSeeder = new OrganizationSeeder(context);
         await orgSeeder.SeedAsync();
+
+        // Seed archive categories
+        var archiveSeeder = new ArchiveSeeder(context);
+        await archiveSeeder.SeedAsync();
     }
     catch (Exception ex)
     {
