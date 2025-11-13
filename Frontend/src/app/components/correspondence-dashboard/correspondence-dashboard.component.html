@@ -1,0 +1,246 @@
+<div class="correspondence-dashboard" dir="rtl">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1 class="title">لوحة المراسلات</h1>
+    <button class="btn btn-primary" (click)="refresh()">
+      <i class="material-icons">refresh</i>
+      تحديث
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards">
+    <div class="card summary-card total">
+      <div class="card-icon">
+        <i class="material-icons">description</i>
+      </div>
+      <div class="card-content">
+        <h3 class="count">{{ totalCorrespondences }}</h3>
+        <p class="label">إجمالي المراسلات</p>
+      </div>
+    </div>
+
+    <div class="card summary-card pending">
+      <div class="card-icon">
+        <i class="material-icons">hourglass_empty</i>
+      </div>
+      <div class="card-content">
+        <h3 class="count">{{ totalPending }}</h3>
+        <p class="label">قيد الانتظار</p>
+      </div>
+    </div>
+
+    <div class="card summary-card actions">
+      <div class="card-icon">
+        <i class="material-icons">assignment</i>
+      </div>
+      <div class="card-content">
+        <h3 class="count">{{ pendingActionsCount }}</h3>
+        <p class="label">الإجراءات المطلوبة</p>
+      </div>
+    </div>
+
+    <div class="card summary-card archived">
+      <div class="card-icon">
+        <i class="material-icons">archive</i>
+      </div>
+      <div class="card-content">
+        <h3 class="count">{{ totalArchived }}</h3>
+        <p class="label">مؤرشف</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Statistics -->
+  <div class="statistics-section">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">إحصائيات حسب الحالة</h2>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingStatusStats" class="loading">
+          <div class="spinner"></div>
+          <p>جاري التحميل...</p>
+        </div>
+        <div *ngIf="!loadingStatusStats && statusStats.length === 0" class="no-data">
+          لا توجد بيانات
+        </div>
+        <div *ngIf="!loadingStatusStats && statusStats.length > 0" class="stats-grid">
+          <div *ngFor="let stat of statusStats" class="stat-item">
+            <div class="stat-icon" [style.background-color]="stat.color">
+              <i class="material-icons">{{ stat.icon }}</i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">{{ stat.arabicLabel }}</span>
+              <span class="stat-count">{{ stat.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classification Statistics -->
+  <div class="statistics-section">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">إحصائيات حسب التصنيف</h2>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingClassificationStats" class="loading">
+          <div class="spinner"></div>
+          <p>جاري التحميل...</p>
+        </div>
+        <div *ngIf="!loadingClassificationStats && classificationStats.length === 0" class="no-data">
+          لا توجد بيانات
+        </div>
+        <div *ngIf="!loadingClassificationStats && classificationStats.length > 0" class="classification-chart">
+          <div *ngFor="let stat of classificationStats" class="classification-item">
+            <div class="classification-bar">
+              <div class="classification-label">{{ stat.arabicLabel }}</div>
+              <div class="progress-bar">
+                <div class="progress-fill"
+                     [style.width.%]="(stat.count / totalCorrespondences) * 100"
+                     [style.background-color]="stat.color">
+                </div>
+              </div>
+              <div class="classification-count">{{ stat.count }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Categories -->
+  <div class="statistics-section">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">أعلى التصنيفات استخداماً</h2>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingCategoryStats" class="loading">
+          <div class="spinner"></div>
+          <p>جاري التحميل...</p>
+        </div>
+        <div *ngIf="!loadingCategoryStats && categoryStats.length === 0" class="no-data">
+          لا توجد بيانات
+        </div>
+        <div *ngIf="!loadingCategoryStats && categoryStats.length > 0" class="category-list">
+          <div *ngFor="let category of categoryStats; let i = index" class="category-item">
+            <div class="category-rank">{{ i + 1 }}</div>
+            <div class="category-info">
+              <div class="category-name">{{ category.categoryName }}</div>
+              <div class="category-stats-details">
+                <span class="stat-badge">إجمالي: {{ category.totalCorrespondences }}</span>
+                <span class="stat-badge completed">مكتمل: {{ category.completedCorrespondences }}</span>
+                <span class="stat-badge pending">معلق: {{ category.pendingCorrespondences }}</span>
+                <span class="stat-badge archived">مؤرشف: {{ category.archivedCorrespondences }}</span>
+              </div>
+              <div class="category-size" *ngIf="category.totalSize">
+                الحجم: {{ formatFileSize(category.totalSize) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Correspondences -->
+  <div class="recent-section">
+    <!-- Recent Inbox -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">
+          <i class="material-icons">inbox</i>
+          الواردات الحديثة
+        </h2>
+        <a routerLink="/correspondence/inbox" class="view-all-link">عرض الكل</a>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingRecentCorrespondences" class="loading">
+          <div class="spinner"></div>
+        </div>
+        <div *ngIf="!loadingRecentCorrespondences && recentInbox.length === 0" class="no-data">
+          لا توجد مراسلات واردة
+        </div>
+        <div *ngIf="!loadingRecentCorrespondences && recentInbox.length > 0" class="correspondence-list">
+          <div *ngFor="let corr of recentInbox"
+               class="correspondence-item"
+               (click)="viewCorrespondence(corr.id)">
+            <div class="correspondence-icon">
+              <i class="material-icons">mail</i>
+            </div>
+            <div class="correspondence-details">
+              <div class="correspondence-subject">{{ corr.subjectAr }}</div>
+              <div class="correspondence-meta">
+                <span class="reference-number">{{ corr.referenceNumber }}</span>
+                <span class="category">{{ corr.categoryName }}</span>
+                <span class="from" *ngIf="corr.fromEmployeeName">من: {{ corr.fromEmployeeName }}</span>
+              </div>
+            </div>
+            <div class="correspondence-status">
+              <span class="status-badge" [class]="'status-' + corr.status.toLowerCase()">
+                {{ corr.status }}
+              </span>
+              <span class="priority-badge" [class]="'priority-' + corr.priority.toLowerCase()">
+                {{ corr.priority }}
+              </span>
+            </div>
+            <div class="correspondence-date">
+              {{ corr.correspondenceDate | date:'short' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Outbox -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">
+          <i class="material-icons">send</i>
+          الصادرات الحديثة
+        </h2>
+        <a routerLink="/correspondence/outbox" class="view-all-link">عرض الكل</a>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingRecentCorrespondences" class="loading">
+          <div class="spinner"></div>
+        </div>
+        <div *ngIf="!loadingRecentCorrespondences && recentOutbox.length === 0" class="no-data">
+          لا توجد مراسلات صادرة
+        </div>
+        <div *ngIf="!loadingRecentCorrespondences && recentOutbox.length > 0" class="correspondence-list">
+          <div *ngFor="let corr of recentOutbox"
+               class="correspondence-item"
+               (click)="viewCorrespondence(corr.id)">
+            <div class="correspondence-icon">
+              <i class="material-icons">send</i>
+            </div>
+            <div class="correspondence-details">
+              <div class="correspondence-subject">{{ corr.subjectAr }}</div>
+              <div class="correspondence-meta">
+                <span class="reference-number">{{ corr.referenceNumber }}</span>
+                <span class="category">{{ corr.categoryName }}</span>
+                <span class="to" *ngIf="corr.toEmployeeName">إلى: {{ corr.toEmployeeName }}</span>
+              </div>
+            </div>
+            <div class="correspondence-status">
+              <span class="status-badge" [class]="'status-' + corr.status.toLowerCase()">
+                {{ corr.status }}
+              </span>
+              <span class="priority-badge" [class]="'priority-' + corr.priority.toLowerCase()">
+                {{ corr.priority }}
+              </span>
+            </div>
+            <div class="correspondence-date">
+              {{ corr.correspondenceDate | date:'short' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
