@@ -1,0 +1,479 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "close": "إغلاق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "refresh": "تحديث",
+    "loading": "جاري التحميل...",
+    "noData": "لا توجد بيانات متاحة",
+    "actions": "إجراءات",
+    "moreOptions": "خيارات إضافية",
+    "yes": "نعم",
+    "no": "لا",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "update": "تحديث",
+    "view": "عرض",
+    "download": "تحميل",
+    "upload": "رفع",
+    "select": "اختيار",
+    "all": "الكل",
+    "none": "لا شيء",
+    "apply": "تطبيق",
+    "reset": "إعادة تعيين",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "عنوان بريد إلكتروني غير صالح",
+    "invalidFormat": "تنسيق غير صالح"
+  },
+
+  "language": {
+    "select": "اختر اللغة",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "switchLanguage": "تبديل اللغة"
+  },
+
+  "contacts": {
+    "title": "جهات الاتصال",
+    "newContact": "جهة اتصال جديدة",
+    "editContact": "تعديل جهة الاتصال",
+    "deleteContact": "حذف جهة الاتصال",
+    "searchContacts": "البحث في جهات الاتصال...",
+    "noContacts": "لا توجد جهات اتصال",
+    "tryAdjustingFilters": "حاول تعديل البحث أو التصفية",
+    "createNewContact": "إنشاء جهة اتصال جديدة",
+
+    "views": {
+      "list": "عرض القائمة",
+      "grid": "عرض الشبكة",
+      "details": "عرض التفاصيل"
+    },
+
+    "filters": {
+      "showFavorites": "عرض المفضلة",
+      "showAll": "عرض الكل",
+      "allCategories": "جميع التصنيفات",
+      "quickFilters": "فلاتر سريعة",
+      "favorites": "المفضلة"
+    },
+
+    "groups": "المجموعات",
+    "categories": "التصنيفات",
+    "tags": "الوسوم",
+
+    "fields": {
+      "title": "اللقب",
+      "firstName": "الاسم الأول",
+      "middleName": "الاسم الأوسط",
+      "lastName": "اسم العائلة",
+      "suffix": "اللاحقة",
+      "nickname": "الاسم المستعار",
+      "displayName": "اسم العرض",
+      "jobTitle": "المسمى الوظيفي",
+      "department": "القسم",
+      "company": "الشركة",
+      "manager": "المدير",
+      "assistant": "المساعد",
+      "officeLocation": "موقع المكتب",
+      "birthday": "تاريخ الميلاد",
+      "gender": "الجنس",
+      "spouseName": "اسم الزوج/الزوجة",
+      "children": "الأطفال",
+      "notes": "ملاحظات",
+      "privacy": "الخصوصية"
+    },
+
+    "tabs": {
+      "basicInfo": "معلومات أساسية",
+      "contactDetails": "تفاصيل الاتصال",
+      "professional": "معلومات مهنية",
+      "personal": "معلومات شخصية",
+      "additional": "معلومات إضافية"
+    },
+
+    "emailAddresses": "عناوين البريد الإلكتروني",
+    "phoneNumbers": "أرقام الهاتف",
+    "addresses": "العناوين",
+    "websites": "المواقع الإلكترونية",
+    "socialMedia": "وسائل التواصل الاجتماعي",
+
+    "addEmail": "إضافة بريد إلكتروني",
+    "addPhone": "إضافة هاتف",
+    "addAddress": "إضافة عنوان",
+    "addWebsite": "إضافة موقع",
+    "addCategory": "إضافة تصنيف",
+    "addTag": "إضافة وسم",
+
+    "emailType": {
+      "personal": "شخصي",
+      "work": "عمل",
+      "other": "آخر"
+    },
+
+    "phoneType": {
+      "mobile": "جوال",
+      "home": "منزل",
+      "work": "عمل",
+      "main": "رئيسي",
+      "homeFax": "فاكس منزلي",
+      "workFax": "فاكس عمل",
+      "pager": "بيجر",
+      "other": "آخر"
+    },
+
+    "addressType": {
+      "home": "منزل",
+      "work": "عمل",
+      "other": "آخر"
+    },
+
+    "websiteType": {
+      "personal": "شخصي",
+      "work": "عمل",
+      "blog": "مدونة",
+      "portfolio": "معرض أعمال",
+      "other": "آخر"
+    },
+
+    "privacy": {
+      "private": "خاص",
+      "public": "عام",
+      "shared": "مشترك"
+    },
+
+    "gender": {
+      "male": "ذكر",
+      "female": "أنثى",
+      "other": "آخر",
+      "preferNotToSay": "أفضل عدم الإفصاح"
+    },
+
+    "primary": "رئيسي",
+    "linkedIn": "رابط LinkedIn",
+    "twitter": "حساب Twitter",
+    "facebook": "رابط Facebook",
+    "instagram": "حساب Instagram",
+
+    "street": "عنوان الشارع",
+    "street2": "عنوان الشارع ٢",
+    "city": "المدينة",
+    "state": "الولاية/المحافظة",
+    "postalCode": "الرمز البريدي",
+    "country": "الدولة",
+
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "extension": "تحويلة",
+    "url": "الرابط",
+
+    "addToFavorites": "إضافة إلى المفضلة",
+    "removeFromFavorites": "إزالة من المفضلة",
+
+    "noCategoriesAdded": "لم تتم إضافة تصنيفات بعد",
+    "noTagsAdded": "لم تتم إضافة وسوم بعد",
+    "noEmailsAdded": "لم تتم إضافة عناوين بريد إلكتروني بعد",
+    "noPhonesAdded": "لم تتم إضافة أرقام هاتف بعد",
+    "noAddressesAdded": "لم تتم إضافة عناوين بعد",
+    "noWebsitesAdded": "لم تتم إضافة مواقع بعد",
+
+    "selectContact": "اختر جهة اتصال لعرض التفاصيل",
+    "showing": "عرض",
+    "of": "من",
+    "page": "صفحة",
+
+    "messages": {
+      "created": "تم إنشاء جهة الاتصال بنجاح",
+      "updated": "تم تحديث جهة الاتصال بنجاح",
+      "deleted": "تم حذف جهة الاتصال بنجاح",
+      "photoUploaded": "تم رفع الصورة بنجاح",
+      "photoDeleted": "تم حذف الصورة بنجاح",
+      "addedToFavorites": "تمت الإضافة إلى المفضلة",
+      "removedFromFavorites": "تمت الإزالة من المفضلة",
+      "createFailed": "فشل إنشاء جهة الاتصال",
+      "updateFailed": "فشل تحديث جهة الاتصال",
+      "deleteFailed": "فشل حذف جهة الاتصال",
+      "loadFailed": "فشل تحميل جهات الاتصال",
+      "photoUploadFailed": "فشل رفع الصورة",
+      "photoDeleteFailed": "فشل حذف الصورة",
+      "favoriteToggleFailed": "فشل تحديث حالة المفضلة",
+      "confirmDelete": "هل أنت متأكد من حذف جهة الاتصال هذه؟"
+    },
+
+    "placeholders": {
+      "firstName": "محمد",
+      "lastName": "أحمد",
+      "email": "mohammed@example.com",
+      "phone": "٠٥٥ ١٢٣ ٤٥٦٧",
+      "company": "شركة المثال",
+      "jobTitle": "مهندس برمجيات",
+      "notes": "أضف أي ملاحظات إضافية عن جهة الاتصال هذه..."
+    }
+  },
+
+  "calendar": {
+    "title": "التقويم",
+    "newEvent": "حدث جديد",
+    "editEvent": "تعديل الحدث",
+    "deleteEvent": "حذف الحدث",
+    "noEvents": "لا توجد أحداث مجدولة",
+
+    "views": {
+      "month": "شهر",
+      "week": "أسبوع",
+      "day": "يوم",
+      "agenda": "جدول الأعمال"
+    },
+
+    "today": "اليوم",
+    "goToDate": "الذهاب إلى تاريخ",
+
+    "fields": {
+      "title": "العنوان",
+      "location": "الموقع",
+      "description": "الوصف",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء",
+      "allDay": "طوال اليوم",
+      "calendar": "التقويم",
+      "reminder": "تذكير",
+      "attendees": "الحضور",
+      "resources": "الموارد",
+      "recurrence": "التكرار",
+      "category": "التصنيف",
+      "priority": "الأولوية",
+      "status": "الحالة",
+      "visibility": "الرؤية"
+    },
+
+    "tabs": {
+      "details": "التفاصيل",
+      "meeting": "اجتماع",
+      "reminders": "التذكيرات",
+      "resources": "الموارد",
+      "advanced": "متقدم"
+    },
+
+    "addAttendee": "إضافة حاضر",
+    "addReminder": "إضافة تذكير",
+    "addResource": "إضافة مورد",
+
+    "recurrence": {
+      "none": "لا يتكرر",
+      "daily": "يومياً",
+      "weekly": "أسبوعياً",
+      "monthly": "شهرياً",
+      "yearly": "سنوياً",
+      "custom": "مخصص"
+    },
+
+    "priority": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية"
+    },
+
+    "status": {
+      "tentative": "مبدئي",
+      "confirmed": "مؤكد",
+      "cancelled": "ملغي"
+    },
+
+    "visibility": {
+      "public": "عام",
+      "private": "خاص",
+      "confidential": "سري"
+    },
+
+    "reminderTypes": {
+      "popup": "نافذة منبثقة",
+      "email": "بريد إلكتروني",
+      "sms": "رسالة نصية"
+    },
+
+    "messages": {
+      "created": "تم إنشاء الحدث بنجاح",
+      "updated": "تم تحديث الحدث بنجاح",
+      "deleted": "تم حذف الحدث بنجاح",
+      "createFailed": "فشل إنشاء الحدث",
+      "updateFailed": "فشل تحديث الحدث",
+      "deleteFailed": "فشل حذف الحدث",
+      "loadFailed": "فشل تحميل الأحداث",
+      "confirmDelete": "هل أنت متأكد من حذف هذا الحدث؟"
+    },
+
+    "placeholders": {
+      "title": "عنوان الاجتماع",
+      "location": "قاعة الاجتماعات أ",
+      "description": "أضف وصف الحدث..."
+    }
+  },
+
+  "inbox": {
+    "title": "صندوق الوارد",
+    "compose": "إنشاء",
+    "newMessage": "رسالة جديدة",
+    "reply": "رد",
+    "replyAll": "رد على الكل",
+    "forward": "إعادة توجيه",
+    "delete": "حذف",
+    "archive": "أرشفة",
+    "markAsRead": "تحديد كمقروء",
+    "markAsUnread": "تحديد كغير مقروء",
+    "moveToFolder": "نقل إلى مجلد",
+    "addLabel": "إضافة تسمية",
+    "searchMessages": "البحث في الرسائل...",
+    "noMessages": "لا توجد رسائل",
+
+    "folders": {
+      "inbox": "صندوق الوارد",
+      "sent": "المرسلة",
+      "drafts": "المسودات",
+      "spam": "البريد المزعج",
+      "trash": "سلة المحذوفات",
+      "archive": "الأرشيف"
+    },
+
+    "filters": {
+      "all": "الكل",
+      "unread": "غير مقروء",
+      "starred": "مميزة بنجمة",
+      "important": "مهمة",
+      "attachments": "تحتوي على مرفقات"
+    },
+
+    "fields": {
+      "to": "إلى",
+      "cc": "نسخة",
+      "bcc": "نسخة مخفية",
+      "from": "من",
+      "subject": "الموضوع",
+      "body": "الرسالة",
+      "attachments": "المرفقات"
+    },
+
+    "actions": {
+      "send": "إرسال",
+      "saveDraft": "حفظ كمسودة",
+      "discard": "إلغاء",
+      "attach": "إرفاق ملف",
+      "formatting": "التنسيق"
+    },
+
+    "priority": {
+      "low": "منخفضة",
+      "normal": "عادية",
+      "high": "عالية"
+    },
+
+    "messages": {
+      "sent": "تم إرسال الرسالة بنجاح",
+      "saved": "تم حفظ المسودة بنجاح",
+      "deleted": "تم حذف الرسالة بنجاح",
+      "archived": "تم أرشفة الرسالة بنجاح",
+      "markedRead": "تم التحديد كمقروء",
+      "markedUnread": "تم التحديد كغير مقروء",
+      "sendFailed": "فشل إرسال الرسالة",
+      "saveFailed": "فشل حفظ المسودة",
+      "deleteFailed": "فشل حذف الرسالة",
+      "loadFailed": "فشل تحميل الرسائل",
+      "confirmDelete": "هل أنت متأكد من حذف هذه الرسالة؟"
+    },
+
+    "placeholders": {
+      "to": "recipient@example.com",
+      "subject": "الموضوع",
+      "body": "اكتب رسالتك هنا..."
+    },
+
+    "selectMessage": "اختر رسالة لقراءتها",
+    "showing": "عرض",
+    "of": "من",
+    "messages": "رسائل"
+  },
+
+  "sidebar": {
+    "inbox": "صندوق الوارد",
+    "calendar": "التقويم",
+    "contacts": "جهات الاتصال",
+    "tasks": "المهام",
+    "notes": "الملاحظات",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+
+  "pagination": {
+    "showing": "عرض",
+    "to": "إلى",
+    "of": "من",
+    "page": "صفحة",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "firstPage": "الصفحة الأولى",
+    "lastPage": "الصفحة الأخيرة",
+    "itemsPerPage": "عناصر لكل صفحة"
+  },
+
+  "errors": {
+    "required": "هذا الحقل مطلوب",
+    "invalidEmail": "عنوان بريد إلكتروني غير صالح",
+    "invalidUrl": "تنسيق رابط غير صالح (يجب أن يبدأ بـ http:// أو https://)",
+    "invalidPhone": "رقم هاتف غير صالح",
+    "invalidDate": "تاريخ غير صالح",
+    "minLength": "الحد الأدنى للطول هو {{min}} أحرف",
+    "maxLength": "الحد الأقصى للطول هو {{max}} أحرف",
+    "min": "الحد الأدنى للقيمة هو {{min}}",
+    "max": "الحد الأقصى للقيمة هو {{max}}",
+    "pattern": "تنسيق غير صالح",
+    "generic": "حدث خطأ. يرجى المحاولة مرة أخرى."
+  },
+
+  "success": {
+    "saved": "تم الحفظ بنجاح",
+    "updated": "تم التحديث بنجاح",
+    "deleted": "تم الحذف بنجاح",
+    "created": "تم الإنشاء بنجاح"
+  },
+
+  "dialogs": {
+    "confirm": "تأكيد",
+    "confirmDelete": "هل أنت متأكد من حذف هذا العنصر؟",
+    "confirmCancel": "هل أنت متأكد من الإلغاء؟ سيتم فقدان التغييرات غير المحفوظة.",
+    "unsavedChanges": "لديك تغييرات غير محفوظة",
+    "deleteTitle": "تأكيد الحذف",
+    "cancelTitle": "تأكيد الإلغاء"
+  },
+
+  "time": {
+    "now": "الآن",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "tomorrow": "غداً",
+    "thisWeek": "هذا الأسبوع",
+    "lastWeek": "الأسبوع الماضي",
+    "nextWeek": "الأسبوع القادم",
+    "thisMonth": "هذا الشهر",
+    "lastMonth": "الشهر الماضي",
+    "nextMonth": "الشهر القادم",
+    "minute": "دقيقة",
+    "minutes": "دقائق",
+    "hour": "ساعة",
+    "hours": "ساعات",
+    "day": "يوم",
+    "days": "أيام",
+    "week": "أسبوع",
+    "weeks": "أسابيع",
+    "month": "شهر",
+    "months": "أشهر",
+    "year": "سنة",
+    "years": "سنوات",
+    "ago": "منذ"
+  }
+}

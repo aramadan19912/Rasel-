@@ -1,0 +1,63 @@
+<div class="video-tile" [class.speaking]="isSpeaking" [class.hand-raised]="isHandRaised">
+  <!-- Video Element -->
+  <video #videoElement
+         *ngIf="!isVideoOff"
+         autoplay
+         playsinline
+         [id]="'video-' + peerId">
+  </video>
+
+  <!-- Avatar/Placeholder -->
+  <div class="video-placeholder" *ngIf="isVideoOff">
+    <div class="avatar" *ngIf="avatarUrl">
+      <img [src]="avatarUrl" [alt]="displayName">
+    </div>
+    <div class="avatar-initials" *ngIf="!avatarUrl">
+      {{ initials }}
+    </div>
+  </div>
+
+  <!-- Overlay Information -->
+  <div class="video-overlay">
+    <!-- Top Row -->
+    <div class="overlay-top">
+      <!-- Role Badge -->
+      <span class="role-badge" *ngIf="roleLabel">
+        {{ roleLabel }}
+      </span>
+
+      <!-- Connection Quality -->
+      <mat-icon class="connection-quality"
+                [class]="connectionQualityClass"
+                [matTooltip]="connectionQuality">
+        {{ connectionQualityIcon }}
+      </mat-icon>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="overlay-bottom">
+      <!-- Participant Name -->
+      <span class="participant-name">{{ displayName }}</span>
+
+      <!-- Status Icons -->
+      <div class="status-icons">
+        <mat-icon *ngIf="isAudioMuted" class="muted-icon" matTooltip="Muted">
+          mic_off
+        </mat-icon>
+
+        <mat-icon *ngIf="isHandRaised" class="hand-raised-icon" matTooltip="Hand Raised">
+          front_hand
+        </mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen Share Label -->
+  <div class="screen-share-label" *ngIf="isScreenShare">
+    <mat-icon>screen_share</mat-icon>
+    <span>{{ displayName }}'s Screen</span>
+  </div>
+
+  <!-- Speaking Indicator Border -->
+  <div class="speaking-border" *ngIf="isSpeaking"></div>
+</div>

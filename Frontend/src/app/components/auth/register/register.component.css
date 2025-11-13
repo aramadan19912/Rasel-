@@ -1,0 +1,118 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.register-card {
+  max-width: 500px;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+mat-card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+mat-card-title h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+}
+
+mat-card-subtitle {
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.name-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.half-width {
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.password-hint {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.submit-button {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.button-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.login-link span {
+  color: #666;
+  margin-right: 4px;
+}
+
+/* Material icon prefix styling */
+::ng-deep .mat-form-field-prefix {
+  margin-right: 8px;
+}
+
+::ng-deep .mat-form-field-prefix .mat-icon {
+  color: #999;
+}
+
+/* Mat-hint for password strength */
+::ng-deep .mat-form-field-hint {
+  color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .register-card {
+    padding: 16px;
+  }
+
+  mat-card-title h2 {
+    font-size: 24px;
+  }
+
+  .name-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .half-width {
+    width: 100%;
+  }
+}

@@ -1,0 +1,236 @@
+<div class="video-conference-container" [class.fullscreen]="isFullScreen">
+  <!-- Header -->
+  <div class="conference-header" *ngIf="showControls">
+    <div class="header-left">
+      <h2 class="conference-title">{{ conference?.title }}</h2>
+      <span class="participant-count">
+        <mat-icon>people</mat-icon>
+        {{ participants.length }} {{ 'videoConference.participants' | translate }}
+      </span>
+      <span class="recording-indicator" *ngIf="conference?.isRecording">
+        <mat-icon class="recording-icon">fiber_manual_record</mat-icon>
+        {{ 'videoConference.recording' | translate }}
+      </span>
+    </div>
+
+    <div class="header-right">
+      <span class="connection-quality">
+        <mat-icon [class.excellent]="connectionQuality === 'Excellent'"
+                  [class.good]="connectionQuality === 'Good'"
+                  [class.fair]="connectionQuality === 'Fair'"
+                  [class.poor]="connectionQuality === 'Poor'">
+          signal_cellular_alt
+        </mat-icon>
+        {{ connectionQuality }}
+      </span>
+      <span class="conference-time">{{ conference?.actualStartTime | date:'shortTime' }}</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="conference-content">
+    <!-- Video Grid -->
+    <div class="video-grid-container"
+         [class.grid-layout]="gridLayout === 'grid'"
+         [class.speaker-layout]="gridLayout === 'speaker'"
+         [class.sidebar-layout]="gridLayout === 'sidebar'">
+
+      <!-- Screen Share (when active) -->
+      <div class="screen-share-container" *ngIf="screenSharer">
+        <app-video-tile
+          [peerId]="screenSharer.peerId"
+          [displayName]="screenSharer.displayName"
+          [isScreenShare]="true"
+          [isAudioMuted]="screenSharer.isAudioMuted"
+          [isVideoOff]="screenSharer.isVideoOff"
+          [isHandRaised]="screenSharer.isHandRaised"
+          [connectionQuality]="screenSharer.quality"
+          class="screen-share-tile">
+        </app-video-tile>
+      </div>
+
+      <!-- Local Video -->
+      <div class="local-video-container">
+        <video #localVideo autoplay playsinline [muted]="true"></video>
+        <div class="video-overlay">
+          <span class="participant-name">{{ 'videoConference.you' | translate }}</span>
+          <mat-icon *ngIf="localMediaState.isAudioMuted" class="muted-icon">mic_off</mat-icon>
+        </div>
+      </div>
+
+      <!-- Remote Participants -->
+      <div class="remote-videos-grid">
+        <app-video-tile
+          *ngFor="let participant of participants"
+          [peerId]="participant.peerId"
+          [displayName]="participant.displayName"
+          [isHost]="participant.isHost"
+          [isCoHost]="participant.isCoHost"
+          [isAudioMuted]="participant.isAudioMuted"
+          [isVideoOff]="participant.isVideoOff"
+          [isHandRaised]="participant.isHandRaised"
+          [connectionQuality]="participant.quality">
+        </app-video-tile>
+      </div>
+    </div>
+
+    <!-- Sidebar Panels -->
+    <div class="sidebar-panel" *ngIf="isParticipantsOpen || isChatOpen">
+      <!-- Participants Panel -->
+      <app-participants-panel
+        *ngIf="isParticipantsOpen"
+        [participants]="participants"
+        [currentParticipant]="currentParticipant"
+        [isHost]="isHost"
+        [isCoHost]="isCoHost"
+        (muteParticipant)="onMuteParticipant($event)"
+        (removeParticipant)="onRemoveParticipant($event)"
+        (makeCoHost)="onMakeCoHost($event)">
+      </app-participants-panel>
+
+      <!-- Chat Panel -->
+      <app-chat-panel
+        *ngIf="isChatOpen"
+        [messages]="chatMessages"
+        [currentUserId]="currentParticipant?.peerId || ''"
+        (sendMessage)="sendMessage($event)">
+      </app-chat-panel>
+    </div>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-bar" *ngIf="showControls">
+    <div class="controls-left">
+      <!-- Layout Switcher -->
+      <button mat-icon-button [matMenuTriggerFor]="layoutMenu" matTooltip="Change Layout">
+        <mat-icon>view_compact</mat-icon>
+      </button>
+      <mat-menu #layoutMenu="matMenu">
+        <button mat-menu-item (click)="changeLayout('grid')">
+          <mat-icon>grid_view</mat-icon>
+          <span>{{ 'videoConference.gridView' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="changeLayout('speaker')">
+          <mat-icon>person</mat-icon>
+          <span>{{ 'videoConference.speakerView' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="changeLayout('sidebar')">
+          <mat-icon>view_sidebar</mat-icon>
+          <span>{{ 'videoConference.sidebarView' | translate }}</span>
+        </button>
+      </mat-menu>
+    </div>
+
+    <div class="controls-center">
+      <!-- Audio Toggle -->
+      <button mat-fab
+              [color]="localMediaState.isAudioMuted ? 'warn' : 'primary'"
+              (click)="toggleAudio()"
+              [matTooltip]="localMediaState.isAudioMuted ? ('videoConference.unmute' | translate) : ('videoConference.mute' | translate)">
+        <mat-icon>{{ localMediaState.isAudioMuted ? 'mic_off' : 'mic' }}</mat-icon>
+      </button>
+
+      <!-- Video Toggle -->
+      <button mat-fab
+              [color]="localMediaState.isVideoOff ? 'warn' : 'primary'"
+              (click)="toggleVideo()"
+              [matTooltip]="localMediaState.isVideoOff ? ('videoConference.startVideo' | translate) : ('videoConference.stopVideo' | translate)">
+        <mat-icon>{{ localMediaState.isVideoOff ? 'videocam_off' : 'videocam' }}</mat-icon>
+      </button>
+
+      <!-- Screen Share -->
+      <button mat-fab
+              [color]="localMediaState.isScreenSharing ? 'accent' : 'primary'"
+              (click)="toggleScreenShare()"
+              [matTooltip]="localMediaState.isScreenSharing ? ('videoConference.stopSharing' | translate) : ('videoConference.shareScreen' | translate)">
+        <mat-icon>{{ localMediaState.isScreenSharing ? 'stop_screen_share' : 'screen_share' }}</mat-icon>
+      </button>
+
+      <!-- Raise Hand -->
+      <button mat-fab
+              [color]="localMediaState.isHandRaised ? 'accent' : 'primary'"
+              (click)="toggleHandRaise()"
+              [matTooltip]="localMediaState.isHandRaised ? ('videoConference.lowerHand' | translate) : ('videoConference.raiseHand' | translate)">
+        <mat-icon>{{ localMediaState.isHandRaised ? 'back_hand' : 'front_hand' }}</mat-icon>
+      </button>
+
+      <!-- Leave Conference -->
+      <button mat-fab
+              color="warn"
+              (click)="leaveConference()"
+              [matTooltip]="'videoConference.leave' | translate">
+        <mat-icon>call_end</mat-icon>
+      </button>
+    </div>
+
+    <div class="controls-right">
+      <!-- Chat Toggle -->
+      <button mat-icon-button
+              [class.active]="isChatOpen"
+              (click)="toggleChat()"
+              [matTooltip]="'videoConference.chat' | translate"
+              [matBadge]="chatMessages.length"
+              [matBadgeHidden]="chatMessages.length === 0">
+        <mat-icon>chat</mat-icon>
+      </button>
+
+      <!-- Participants Toggle -->
+      <button mat-icon-button
+              [class.active]="isParticipantsOpen"
+              (click)="toggleParticipants()"
+              [matTooltip]="'videoConference.participants' | translate">
+        <mat-icon>people</mat-icon>
+      </button>
+
+      <!-- Host Controls Menu -->
+      <button mat-icon-button
+              *ngIf="isHost || isCoHost"
+              [matMenuTriggerFor]="hostMenu"
+              [matTooltip]="'videoConference.hostControls' | translate">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #hostMenu="matMenu">
+        <button mat-menu-item (click)="muteAll()">
+          <mat-icon>mic_off</mat-icon>
+          <span>{{ 'videoConference.muteAll' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="startRecording()" *ngIf="!conference?.isRecording">
+          <mat-icon>fiber_manual_record</mat-icon>
+          <span>{{ 'videoConference.startRecording' | translate }}</span>
+        </button>
+        <button mat-menu-item (click)="stopRecording()" *ngIf="conference?.isRecording">
+          <mat-icon>stop</mat-icon>
+          <span>{{ 'videoConference.stopRecording' | translate }}</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="endConference()" *ngIf="isHost">
+          <mat-icon color="warn">call_end</mat-icon>
+          <span class="warn-text">{{ 'videoConference.endForAll' | translate }}</span>
+        </button>
+      </mat-menu>
+
+      <!-- Settings -->
+      <button mat-icon-button
+              (click)="openSettings()"
+              [matTooltip]="'videoConference.settings' | translate">
+        <mat-icon>settings</mat-icon>
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button mat-icon-button
+              (click)="toggleFullScreen()"
+              [matTooltip]="isFullScreen ? ('videoConference.exitFullscreen' | translate) : ('videoConference.fullscreen' | translate)">
+        <mat-icon>{{ isFullScreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+      </button>
+
+      <!-- Language Switcher -->
+      <app-language-switcher></app-language-switcher>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isJoining || isConnecting">
+    <mat-spinner></mat-spinner>
+    <p>{{ (isJoining ? 'videoConference.joiningConference' : 'videoConference.connecting') | translate }}</p>
+  </div>
+</div>

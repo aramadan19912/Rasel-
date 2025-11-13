@@ -1,0 +1,438 @@
+.contact-dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+
+  h2[mat-dialog-title] {
+    margin: 0;
+    padding: 24px 24px 16px;
+    font-size: 24px;
+    font-weight: 500;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  mat-dialog-content {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    flex: 1;
+
+    ::ng-deep .mat-mdc-tab-body-content {
+      overflow-y: auto;
+      max-height: calc(90vh - 200px);
+    }
+
+    ::ng-deep .mat-mdc-tab-group {
+      height: 100%;
+    }
+
+    ::ng-deep .mat-mdc-tab-header {
+      border-bottom: 1px solid #e0e0e0;
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    margin: 0;
+    border-top: 1px solid #e0e0e0;
+    gap: 8px;
+
+    .delete-button {
+      margin-right: auto;
+    }
+  }
+}
+
+// ========== Tab Content ==========
+.tab-content {
+  padding: 24px;
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    mat-form-field {
+      &.small-field {
+        flex: 0 0 120px;
+      }
+
+      &.medium-field {
+        flex: 0 0 180px;
+      }
+
+      &.flex-field {
+        flex: 1;
+      }
+
+      &.full-width {
+        width: 100%;
+      }
+    }
+  }
+
+  mat-form-field.full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+}
+
+// ========== Sections ==========
+.section {
+  margin-bottom: 32px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #424242;
+    margin: 0 0 16px 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0;
+    }
+  }
+}
+
+mat-divider {
+  margin: 32px 0;
+}
+
+// ========== Array Items (Emails, Phones, etc.) ==========
+.array-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .array-item {
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-left: 3px solid #1976d2;
+
+    mat-card-content {
+      padding: 0;
+    }
+
+    .array-item-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+
+      mat-form-field {
+        margin-bottom: 0;
+
+        &.small-field {
+          flex: 0 0 100px;
+        }
+
+        &.medium-field {
+          flex: 0 0 150px;
+        }
+
+        &.flex-field {
+          flex: 1;
+        }
+      }
+
+      .primary-checkbox {
+        flex-shrink: 0;
+        margin-top: 16px;
+      }
+
+      button[mat-icon-button] {
+        flex-shrink: 0;
+        margin-top: 8px;
+      }
+    }
+
+    &.address-item {
+      .address-fields {
+        width: 100%;
+
+        .form-row {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 12px;
+
+          mat-form-field {
+            &.medium-field {
+              flex: 0 0 150px;
+            }
+
+            &.flex-field {
+              flex: 1;
+            }
+
+            &.full-width {
+              width: 100%;
+            }
+          }
+
+          .primary-checkbox {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+          }
+
+          button[mat-icon-button] {
+            flex-shrink: 0;
+            margin-left: auto;
+          }
+        }
+
+        mat-form-field.full-width {
+          width: 100%;
+          margin-bottom: 12px;
+
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 24px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 0;
+  }
+}
+
+// ========== Categories & Tags ==========
+.chip-input-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .chip-input-field {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  button {
+    flex-shrink: 0;
+    height: 56px;
+  }
+}
+
+.chips-display {
+  min-height: 60px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  mat-chip-set {
+    ::ng-deep .mat-mdc-chip {
+      margin: 4px;
+    }
+  }
+
+  .empty-message {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    margin: 0;
+    padding: 8px;
+  }
+}
+
+// ========== Responsive Design ==========
+@media (max-width: 768px) {
+  .contact-dialog {
+    h2[mat-dialog-title] {
+      font-size: 20px;
+      padding: 16px;
+    }
+
+    mat-dialog-content {
+      ::ng-deep .mat-mdc-tab-body-content {
+        max-height: calc(90vh - 180px);
+      }
+    }
+  }
+
+  .tab-content {
+    padding: 16px;
+
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+
+      mat-form-field {
+        width: 100%;
+
+        &.small-field,
+        &.medium-field,
+        &.flex-field {
+          flex: none;
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .array-items {
+    .array-item {
+      .array-item-content {
+        flex-direction: column;
+        gap: 0;
+
+        mat-form-field {
+          width: 100%;
+
+          &.small-field,
+          &.medium-field,
+          &.flex-field {
+            flex: none;
+            width: 100%;
+          }
+        }
+
+        .primary-checkbox {
+          margin-top: 8px;
+        }
+
+        button[mat-icon-button] {
+          align-self: flex-end;
+          margin-top: 8px;
+        }
+      }
+
+      &.address-item {
+        .address-fields {
+          .form-row {
+            flex-direction: column;
+            gap: 0;
+
+            mat-form-field {
+              width: 100%;
+
+              &.medium-field,
+              &.flex-field {
+                flex: none;
+                width: 100%;
+              }
+            }
+
+            .primary-checkbox {
+              margin-top: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .chip-input-container {
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      width: 100%;
+      height: 48px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-dialog {
+    mat-dialog-content {
+      ::ng-deep .mat-mdc-tab-label {
+        font-size: 12px;
+        padding: 0 12px;
+        min-width: auto;
+      }
+    }
+
+    mat-dialog-actions {
+      flex-wrap: wrap;
+
+      button {
+        flex: 1 1 auto;
+        min-width: 120px;
+      }
+
+      .delete-button {
+        margin-right: 0;
+        width: 100%;
+        order: -1;
+      }
+    }
+  }
+}
+
+// ========== Form Field Customizations ==========
+::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: white;
+    }
+
+    &.mat-focused {
+      .mat-mdc-form-field-flex {
+        border-color: #1976d2;
+      }
+    }
+  }
+
+  .mat-mdc-checkbox {
+    .mdc-checkbox__background {
+      border-color: rgba(0, 0, 0, 0.54);
+    }
+
+    &.mat-mdc-checkbox-checked {
+      .mdc-checkbox__background {
+        background-color: #1976d2;
+        border-color: #1976d2;
+      }
+    }
+  }
+
+  .mat-mdc-chip {
+    background-color: #e0e0e0;
+    color: #424242;
+
+    &:hover {
+      background-color: #d0d0d0;
+    }
+
+    .mat-icon {
+      color: #666;
+    }
+  }
+}
+
+// ========== Utilities ==========
+.primary-checkbox {
+  ::ng-deep .mdc-label {
+    font-size: 14px;
+    color: #666;
+  }
+
+  ::ng-deep .mat-mdc-checkbox-checked {
+    .mdc-label {
+      color: #1976d2;
+      font-weight: 500;
+    }
+  }
+}

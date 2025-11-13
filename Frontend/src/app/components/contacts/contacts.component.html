@@ -1,0 +1,540 @@
+<div class="contacts-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="contacts-toolbar">
+    <button mat-icon-button (click)="toggleSidebar()" matTooltip="Toggle Sidebar">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <span class="toolbar-title">{{ 'contacts.title' | translate }}</span>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput
+               [placeholder]="'contacts.searchContacts' | translate"
+               [(ngModel)]="searchTerm"
+               (keyup.enter)="onSearch()">
+        <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <span class="toolbar-spacer"></span>
+
+    <!-- View Toggle -->
+    <mat-button-toggle-group [(value)]="currentView" (change)="changeView($event.value)">
+      <mat-button-toggle value="list" [matTooltip]="'contacts.views.list' | translate">
+        <mat-icon>view_list</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle value="grid" [matTooltip]="'contacts.views.grid' | translate">
+        <mat-icon>view_module</mat-icon>
+      </mat-button-toggle>
+      <mat-button-toggle value="details" [matTooltip]="'contacts.views.details' | translate">
+        <mat-icon>view_agenda</mat-icon>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <!-- Actions -->
+    <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button">
+      <mat-icon>person_add</mat-icon>
+      {{ 'contacts.newContact' | translate }}
+    </button>
+
+    <!-- Language Switcher -->
+    <app-language-switcher></app-language-switcher>
+
+    <button mat-icon-button [matMenuTrigger]="toolbarMenu" [matTooltip]="'common.moreOptions' | translate">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #toolbarMenu="matMenu">
+      <button mat-menu-item (click)="refreshContacts()">
+        <mat-icon>refresh</mat-icon>
+        <span>{{ 'common.refresh' | translate }}</span>
+      </button>
+      <button mat-menu-item (click)="toggleFavoritesFilter()">
+        <mat-icon>{{ showOnlyFavorites ? 'star' : 'star_border' }}</mat-icon>
+        <span>{{ (showOnlyFavorites ? 'contacts.filters.showAll' : 'contacts.filters.showFavorites') | translate }}</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <mat-sidenav-container class="contacts-sidenav-container">
+    <!-- Sidebar -->
+    <mat-sidenav mode="side" [opened]="showSidebar" class="contacts-sidebar">
+      <div class="sidebar-content">
+        <!-- Groups Section -->
+        <div class="sidebar-section">
+          <h3 class="section-title">{{ 'contacts.groups' | translate }}</h3>
+          <mat-nav-list>
+            <mat-list-item *ngFor="let group of groups"
+                          [class.selected]="isGroupSelected(group.id)"
+                          (click)="toggleGroupFilter(group.id)">
+              <mat-icon matListItemIcon [style.color]="group.color">label</mat-icon>
+              <span matListItemTitle>{{ group.name }}</span>
+              <span matListItemMeta class="count-badge">{{ group.memberCount }}</span>
+            </mat-list-item>
+          </mat-nav-list>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Categories Section -->
+        <div class="sidebar-section">
+          <h3 class="section-title">{{ 'contacts.categories' | translate }}</h3>
+          <mat-nav-list>
+            <mat-list-item [class.selected]="!selectedCategory" (click)="clearCategoryFilter()">
+              <mat-icon matListItemIcon>label_off</mat-icon>
+              <span matListItemTitle>{{ 'contacts.filters.allCategories' | translate }}</span>
+            </mat-list-item>
+            <mat-list-item *ngFor="let category of categories"
+                          [class.selected]="selectedCategory === category"
+                          (click)="filterByCategory(category)">
+              <mat-icon matListItemIcon>label</mat-icon>
+              <span matListItemTitle>{{ category }}</span>
+            </mat-list-item>
+          </mat-nav-list>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Quick Filters -->
+        <div class="sidebar-section">
+          <h3 class="section-title">{{ 'contacts.filters.quickFilters' | translate }}</h3>
+          <mat-nav-list>
+            <mat-list-item (click)="toggleFavoritesFilter()" [class.selected]="showOnlyFavorites">
+              <mat-icon matListItemIcon>{{ showOnlyFavorites ? 'star' : 'star_border' }}</mat-icon>
+              <span matListItemTitle>{{ 'contacts.filters.favorites' | translate }}</span>
+            </mat-list-item>
+          </mat-nav-list>
+        </div>
+      </div>
+    </mat-sidenav>
+
+    <!-- Content Area -->
+    <mat-sidenav-content class="contacts-content">
+      <!-- Loading Spinner -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="!isLoading && currentView === ContactView.List" class="list-view">
+        <div class="contacts-list">
+          <mat-card *ngFor="let contact of filteredContacts"
+                   class="contact-card-list"
+                   (click)="selectContact(contact)"
+                   [class.selected]="selectedContact?.id === contact.id">
+            <mat-card-content class="contact-card-content">
+              <div class="contact-avatar-section">
+                <!-- Avatar -->
+                <div class="contact-avatar"
+                     [style.background-color]="contact.photoUrl ? 'transparent' : getContactColor(contact)">
+                  <img *ngIf="contact.photoUrl"
+                       [src]="contact.photoUrl"
+                       [alt]="contact.displayName"
+                       class="avatar-image">
+                  <span *ngIf="!contact.photoUrl" class="avatar-initials">
+                    {{ getInitials(contact) }}
+                  </span>
+                </div>
+
+                <!-- Favorite Star -->
+                <button mat-icon-button
+                       class="favorite-button"
+                       (click)="toggleFavorite(contact, $event)"
+                       [matTooltip]="contact.isFavorite ? 'Remove from favorites' : 'Add to favorites'">
+                  <mat-icon [class.favorite]="contact.isFavorite">
+                    {{ contact.isFavorite ? 'star' : 'star_border' }}
+                  </mat-icon>
+                </button>
+              </div>
+
+              <div class="contact-info">
+                <h3 class="contact-name">{{ contact.displayName }}</h3>
+                <div class="contact-details">
+                  <div *ngIf="getPrimaryEmail(contact)" class="detail-item">
+                    <mat-icon>email</mat-icon>
+                    <span>{{ getPrimaryEmail(contact) }}</span>
+                  </div>
+                  <div *ngIf="getPrimaryPhone(contact)" class="detail-item">
+                    <mat-icon>phone</mat-icon>
+                    <span>{{ formatPhoneNumber(getPrimaryPhone(contact)) }}</span>
+                  </div>
+                  <div *ngIf="contact.company" class="detail-item">
+                    <mat-icon>business</mat-icon>
+                    <span>{{ contact.company }}</span>
+                  </div>
+                  <div *ngIf="contact.jobTitle" class="detail-item">
+                    <mat-icon>work</mat-icon>
+                    <span>{{ contact.jobTitle }}</span>
+                  </div>
+                </div>
+
+                <!-- Tags/Categories -->
+                <div *ngIf="contact.categories.length > 0" class="contact-categories">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let category of contact.categories.slice(0, 3)">
+                      {{ category }}
+                    </mat-chip>
+                    <mat-chip *ngIf="contact.categories.length > 3">
+                      +{{ contact.categories.length - 3 }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <div class="contact-actions">
+                <button mat-icon-button [matMenuTrigger]="contactMenu" (click)="$event.stopPropagation()">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #contactMenu="matMenu">
+                  <button mat-menu-item (click)="openContactDialog(contact)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item (click)="toggleFavorite(contact, $event)">
+                    <mat-icon>{{ contact.isFavorite ? 'star_border' : 'star' }}</mat-icon>
+                    <span>{{ contact.isFavorite ? 'Remove from Favorites' : 'Add to Favorites' }}</span>
+                  </button>
+                  <button mat-menu-item (click)="deleteContact(contact.id)">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span>Delete</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="filteredContacts.length === 0" class="empty-state">
+          <mat-icon>contacts</mat-icon>
+          <h2>{{ 'contacts.noContacts' | translate }}</h2>
+          <p>{{ 'contacts.tryAdjustingFilters' | translate }}</p>
+          <button mat-raised-button color="primary" (click)="openContactDialog()">
+            <mat-icon>person_add</mat-icon>
+            {{ 'contacts.createNewContact' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid View -->
+      <div *ngIf="!isLoading && currentView === ContactView.Grid" class="grid-view">
+        <div class="contacts-grid">
+          <mat-card *ngFor="let contact of filteredContacts"
+                   class="contact-card-grid"
+                   (click)="selectContact(contact)">
+            <mat-card-header>
+              <div class="grid-avatar"
+                   [style.background-color]="contact.photoUrl ? 'transparent' : getContactColor(contact)">
+                <img *ngIf="contact.photoUrl"
+                     [src]="contact.photoUrl"
+                     [alt]="contact.displayName"
+                     class="avatar-image">
+                <span *ngIf="!contact.photoUrl" class="avatar-initials-large">
+                  {{ getInitials(contact) }}
+                </span>
+              </div>
+
+              <button mat-icon-button
+                     class="grid-favorite"
+                     (click)="toggleFavorite(contact, $event)">
+                <mat-icon [class.favorite]="contact.isFavorite">
+                  {{ contact.isFavorite ? 'star' : 'star_border' }}
+                </mat-icon>
+              </button>
+            </mat-card-header>
+
+            <mat-card-content>
+              <h3 class="grid-contact-name">{{ contact.displayName }}</h3>
+              <p class="grid-company" *ngIf="contact.company">{{ contact.company }}</p>
+              <p class="grid-job-title" *ngIf="contact.jobTitle">{{ contact.jobTitle }}</p>
+
+              <div class="grid-contact-info">
+                <div *ngIf="getPrimaryEmail(contact)" class="grid-info-item">
+                  <mat-icon>email</mat-icon>
+                  <span>{{ getPrimaryEmail(contact) }}</span>
+                </div>
+                <div *ngIf="getPrimaryPhone(contact)" class="grid-info-item">
+                  <mat-icon>phone</mat-icon>
+                  <span>{{ formatPhoneNumber(getPrimaryPhone(contact)) }}</span>
+                </div>
+              </div>
+
+              <div *ngIf="contact.categories.length > 0" class="grid-categories">
+                <mat-chip-set>
+                  <mat-chip *ngFor="let category of contact.categories.slice(0, 2)">
+                    {{ category }}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              <button mat-button (click)="openContactDialog(contact); $event.stopPropagation()">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-icon-button [matMenuTrigger]="gridMenu" (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #gridMenu="matMenu">
+                <button mat-menu-item (click)="deleteContact(contact.id)">
+                  <mat-icon color="warn">delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="filteredContacts.length === 0" class="empty-state">
+          <mat-icon>contacts</mat-icon>
+          <h2>{{ 'contacts.noContacts' | translate }}</h2>
+          <p>{{ 'contacts.tryAdjustingFilters' | translate }}</p>
+          <button mat-raised-button color="primary" (click)="openContactDialog()">
+            <mat-icon>person_add</mat-icon>
+            {{ 'contacts.createNewContact' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Details View -->
+      <div *ngIf="!isLoading && currentView === ContactView.Details" class="details-view">
+        <div class="details-layout">
+          <!-- Contact List Panel -->
+          <div class="details-list-panel">
+            <mat-nav-list>
+              <mat-list-item *ngFor="let contact of filteredContacts"
+                           (click)="selectContact(contact)"
+                           [class.selected]="selectedContact?.id === contact.id">
+                <div class="details-list-avatar"
+                     [style.background-color]="contact.photoUrl ? 'transparent' : getContactColor(contact)">
+                  <img *ngIf="contact.photoUrl"
+                       [src]="contact.photoUrl"
+                       [alt]="contact.displayName"
+                       class="avatar-image-small">
+                  <span *ngIf="!contact.photoUrl" class="avatar-initials-small">
+                    {{ getInitials(contact) }}
+                  </span>
+                </div>
+                <div matListItemTitle>{{ contact.displayName }}</div>
+                <div matListItemLine *ngIf="getPrimaryEmail(contact)">{{ getPrimaryEmail(contact) }}</div>
+                <mat-icon matListItemMeta *ngIf="contact.isFavorite" class="favorite">star</mat-icon>
+              </mat-list-item>
+            </mat-nav-list>
+
+            <div *ngIf="filteredContacts.length === 0" class="empty-list">
+              <p>No contacts to display</p>
+            </div>
+          </div>
+
+          <!-- Contact Details Panel -->
+          <div class="details-info-panel" *ngIf="selectedContact">
+            <div class="details-header">
+              <div class="details-avatar-large"
+                   [style.background-color]="selectedContact.photoUrl ? 'transparent' : getContactColor(selectedContact)">
+                <img *ngIf="selectedContact.photoUrl"
+                     [src]="selectedContact.photoUrl"
+                     [alt]="selectedContact.displayName"
+                     class="avatar-image-large">
+                <span *ngIf="!selectedContact.photoUrl" class="avatar-initials-xlarge">
+                  {{ getInitials(selectedContact) }}
+                </span>
+              </div>
+
+              <div class="details-header-info">
+                <h2>{{ selectedContact.displayName }}</h2>
+                <p *ngIf="selectedContact.jobTitle" class="job-title">{{ selectedContact.jobTitle }}</p>
+                <p *ngIf="selectedContact.company" class="company">{{ selectedContact.company }}</p>
+              </div>
+
+              <div class="details-header-actions">
+                <button mat-icon-button
+                       (click)="toggleFavorite(selectedContact, $event)"
+                       [matTooltip]="selectedContact.isFavorite ? 'Remove from favorites' : 'Add to favorites'">
+                  <mat-icon [class.favorite]="selectedContact.isFavorite">
+                    {{ selectedContact.isFavorite ? 'star' : 'star_border' }}
+                  </mat-icon>
+                </button>
+                <button mat-icon-button (click)="openContactDialog(selectedContact)" matTooltip="Edit Contact">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button [matMenuTrigger]="detailsMenu" matTooltip="More Actions">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #detailsMenu="matMenu">
+                  <button mat-menu-item (click)="deleteContact(selectedContact.id)">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span>Delete Contact</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Contact Information Sections -->
+            <div class="details-body">
+              <!-- Email Addresses -->
+              <div class="info-section" *ngIf="selectedContact.emailAddresses.length > 0">
+                <h3><mat-icon>email</mat-icon> Email Addresses</h3>
+                <div class="info-list">
+                  <div *ngFor="let email of selectedContact.emailAddresses" class="info-item">
+                    <span class="info-label">{{ email.type === 0 ? 'Personal' : email.type === 1 ? 'Work' : 'Other' }}</span>
+                    <a [href]="'mailto:' + email.email" class="info-value">{{ email.email }}</a>
+                    <mat-icon *ngIf="email.isPrimary" class="primary-badge" matTooltip="Primary">check_circle</mat-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Phone Numbers -->
+              <div class="info-section" *ngIf="selectedContact.phoneNumbers.length > 0">
+                <h3><mat-icon>phone</mat-icon> Phone Numbers</h3>
+                <div class="info-list">
+                  <div *ngFor="let phone of selectedContact.phoneNumbers" class="info-item">
+                    <span class="info-label">
+                      {{ phone.type === 0 ? 'Mobile' : phone.type === 1 ? 'Home' : phone.type === 2 ? 'Work' : 'Other' }}
+                    </span>
+                    <a [href]="'tel:' + phone.phoneNumber" class="info-value">{{ formatPhoneNumber(phone.phoneNumber) }}</a>
+                    <mat-icon *ngIf="phone.isPrimary" class="primary-badge" matTooltip="Primary">check_circle</mat-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Addresses -->
+              <div class="info-section" *ngIf="selectedContact.addresses.length > 0">
+                <h3><mat-icon>location_on</mat-icon> Addresses</h3>
+                <div class="info-list">
+                  <div *ngFor="let address of selectedContact.addresses" class="info-item address-item">
+                    <span class="info-label">{{ address.type === 0 ? 'Home' : address.type === 1 ? 'Work' : 'Other' }}</span>
+                    <div class="address-value">
+                      <p *ngIf="address.street">{{ address.street }}</p>
+                      <p *ngIf="address.street2">{{ address.street2 }}</p>
+                      <p *ngIf="address.city || address.state || address.postalCode">
+                        {{ address.city }}{{ address.city && address.state ? ', ' : '' }}{{ address.state }} {{ address.postalCode }}
+                      </p>
+                      <p *ngIf="address.country">{{ address.country }}</p>
+                    </div>
+                    <mat-icon *ngIf="address.isPrimary" class="primary-badge" matTooltip="Primary">check_circle</mat-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Websites -->
+              <div class="info-section" *ngIf="selectedContact.websites.length > 0">
+                <h3><mat-icon>link</mat-icon> Websites</h3>
+                <div class="info-list">
+                  <div *ngFor="let website of selectedContact.websites" class="info-item">
+                    <span class="info-label">
+                      {{ website.type === 0 ? 'Personal' : website.type === 1 ? 'Work' : website.type === 2 ? 'Blog' : 'Portfolio' }}
+                    </span>
+                    <a [href]="website.url" target="_blank" class="info-value">{{ website.url }}</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Professional Information -->
+              <div class="info-section" *ngIf="selectedContact.department || selectedContact.manager || selectedContact.officeLocation">
+                <h3><mat-icon>work</mat-icon> Professional Information</h3>
+                <div class="info-list">
+                  <div *ngIf="selectedContact.department" class="info-item">
+                    <span class="info-label">Department</span>
+                    <span class="info-value">{{ selectedContact.department }}</span>
+                  </div>
+                  <div *ngIf="selectedContact.manager" class="info-item">
+                    <span class="info-label">Manager</span>
+                    <span class="info-value">{{ selectedContact.manager }}</span>
+                  </div>
+                  <div *ngIf="selectedContact.officeLocation" class="info-item">
+                    <span class="info-label">Office</span>
+                    <span class="info-value">{{ selectedContact.officeLocation }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Personal Information -->
+              <div class="info-section" *ngIf="selectedContact.birthday || selectedContact.spouseName">
+                <h3><mat-icon>person</mat-icon> Personal Information</h3>
+                <div class="info-list">
+                  <div *ngIf="selectedContact.birthday" class="info-item">
+                    <span class="info-label">Birthday</span>
+                    <span class="info-value">{{ selectedContact.birthday | date:'longDate' }}</span>
+                  </div>
+                  <div *ngIf="selectedContact.spouseName" class="info-item">
+                    <span class="info-label">Spouse</span>
+                    <span class="info-value">{{ selectedContact.spouseName }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Groups -->
+              <div class="info-section" *ngIf="selectedContact.groups.length > 0">
+                <h3><mat-icon>label</mat-icon> Groups</h3>
+                <div class="groups-chips">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let group of selectedContact.groups" [style.background-color]="group.color">
+                      {{ group.name }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <!-- Categories -->
+              <div class="info-section" *ngIf="selectedContact.categories.length > 0">
+                <h3><mat-icon>bookmark</mat-icon> Categories</h3>
+                <div class="categories-chips">
+                  <mat-chip-set>
+                    <mat-chip *ngFor="let category of selectedContact.categories">
+                      {{ category }}
+                    </mat-chip>
+                  </mat-chip-set>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div class="info-section" *ngIf="selectedContact.notes">
+                <h3><mat-icon>notes</mat-icon> Notes</h3>
+                <p class="notes-text">{{ selectedContact.notes }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- No Contact Selected -->
+          <div class="details-info-panel no-selection" *ngIf="!selectedContact">
+            <div class="no-selection-content">
+              <mat-icon>person_outline</mat-icon>
+              <h3>Select a contact to view details</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" *ngIf="!isLoading && filteredContacts.length > 0">
+        <div class="pagination-info">
+          Showing {{ (pageNumber - 1) * pageSize + 1 }} - {{ Math.min(pageNumber * pageSize, totalCount) }} of {{ totalCount }} contacts
+        </div>
+        <div class="pagination-controls">
+          <button mat-icon-button
+                  [disabled]="pageNumber === 1"
+                  (click)="previousPage()"
+                  matTooltip="Previous Page">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-number">Page {{ pageNumber }} of {{ totalPages }}</span>
+          <button mat-icon-button
+                  [disabled]="pageNumber >= totalPages"
+                  (click)="nextPage()"
+                  matTooltip="Next Page">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

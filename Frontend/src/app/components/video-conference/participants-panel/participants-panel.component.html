@@ -1,0 +1,192 @@
+<div class="participants-panel">
+  <!-- Header -->
+  <div class="panel-header">
+    <h3>{{ 'videoConference.participants' | translate }}</h3>
+    <span class="participant-count">{{ participants.length }}</span>
+  </div>
+
+  <!-- Search -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput
+             [(ngModel)]="searchText"
+             [placeholder]="'videoConference.searchParticipants' | translate">
+      <button mat-icon-button matSuffix *ngIf="searchText" (click)="searchText = ''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Participants List -->
+  <div class="participants-list">
+    <!-- Hosts -->
+    <div class="participant-group" *ngIf="hostParticipants.length > 0">
+      <div class="group-header">
+        <span>{{ 'videoConference.hosts' | translate }}</span>
+        <span class="group-count">{{ hostParticipants.length }}</span>
+      </div>
+
+      <div *ngFor="let participant of hostParticipants" class="participant-item">
+        <div class="participant-avatar">
+          <div class="avatar-initials">
+            {{ getInitials(participant.displayName) }}
+          </div>
+          <mat-icon *ngIf="participant.isHandRaised" class="hand-raised-badge">
+            front_hand
+          </mat-icon>
+        </div>
+
+        <div class="participant-info">
+          <div class="participant-name">
+            {{ participant.displayName }}
+            <span class="you-badge" *ngIf="participant.id === currentParticipant?.id">
+              ({{ 'videoConference.you' | translate }})
+            </span>
+          </div>
+          <div class="participant-status">
+            <mat-icon [class.muted]="participant.isAudioMuted">
+              {{ participant.isAudioMuted ? 'mic_off' : 'mic' }}
+            </mat-icon>
+            <mat-icon [class.video-off]="participant.isVideoOff">
+              {{ participant.isVideoOff ? 'videocam_off' : 'videocam' }}
+            </mat-icon>
+            <span class="role-badge host-badge">HOST</span>
+          </div>
+        </div>
+
+        <div class="participant-actions" *ngIf="canModerateParticipant(participant)">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onMuteParticipant(participant)">
+              <mat-icon>mic_off</mat-icon>
+              <span>{{ 'videoConference.mute' | translate }}</span>
+            </button>
+            <button mat-menu-item (click)="onRemoveParticipant(participant)">
+              <mat-icon>person_remove</mat-icon>
+              <span>{{ 'videoConference.remove' | translate }}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+
+    <!-- Co-Hosts -->
+    <div class="participant-group" *ngIf="coHostParticipants.length > 0">
+      <div class="group-header">
+        <span>{{ 'videoConference.coHosts' | translate }}</span>
+        <span class="group-count">{{ coHostParticipants.length }}</span>
+      </div>
+
+      <div *ngFor="let participant of coHostParticipants" class="participant-item">
+        <div class="participant-avatar">
+          <div class="avatar-initials">
+            {{ getInitials(participant.displayName) }}
+          </div>
+          <mat-icon *ngIf="participant.isHandRaised" class="hand-raised-badge">
+            front_hand
+          </mat-icon>
+        </div>
+
+        <div class="participant-info">
+          <div class="participant-name">
+            {{ participant.displayName }}
+            <span class="you-badge" *ngIf="participant.id === currentParticipant?.id">
+              ({{ 'videoConference.you' | translate }})
+            </span>
+          </div>
+          <div class="participant-status">
+            <mat-icon [class.muted]="participant.isAudioMuted">
+              {{ participant.isAudioMuted ? 'mic_off' : 'mic' }}
+            </mat-icon>
+            <mat-icon [class.video-off]="participant.isVideoOff">
+              {{ participant.isVideoOff ? 'videocam_off' : 'videocam' }}
+            </mat-icon>
+            <span class="role-badge cohost-badge">CO-HOST</span>
+          </div>
+        </div>
+
+        <div class="participant-actions" *ngIf="canModerateParticipant(participant)">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onMuteParticipant(participant)">
+              <mat-icon>mic_off</mat-icon>
+              <span>{{ 'videoConference.mute' | translate }}</span>
+            </button>
+            <button mat-menu-item (click)="onRemoveParticipant(participant)">
+              <mat-icon>person_remove</mat-icon>
+              <span>{{ 'videoConference.remove' | translate }}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regular Participants -->
+    <div class="participant-group" *ngIf="regularParticipants.length > 0">
+      <div class="group-header">
+        <span>{{ 'videoConference.attendees' | translate }}</span>
+        <span class="group-count">{{ regularParticipants.length }}</span>
+      </div>
+
+      <div *ngFor="let participant of regularParticipants" class="participant-item">
+        <div class="participant-avatar">
+          <div class="avatar-initials">
+            {{ getInitials(participant.displayName) }}
+          </div>
+          <mat-icon *ngIf="participant.isHandRaised" class="hand-raised-badge">
+            front_hand
+          </mat-icon>
+        </div>
+
+        <div class="participant-info">
+          <div class="participant-name">
+            {{ participant.displayName }}
+            <span class="you-badge" *ngIf="participant.id === currentParticipant?.id">
+              ({{ 'videoConference.you' | translate }})
+            </span>
+          </div>
+          <div class="participant-status">
+            <mat-icon [class.muted]="participant.isAudioMuted">
+              {{ participant.isAudioMuted ? 'mic_off' : 'mic' }}
+            </mat-icon>
+            <mat-icon [class.video-off]="participant.isVideoOff">
+              {{ participant.isVideoOff ? 'videocam_off' : 'videocam' }}
+            </mat-icon>
+            <span class="guest-badge" *ngIf="participant.isGuest">GUEST</span>
+          </div>
+        </div>
+
+        <div class="participant-actions" *ngIf="canModerateParticipant(participant)">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onMuteParticipant(participant)">
+              <mat-icon>mic_off</mat-icon>
+              <span>{{ 'videoConference.mute' | translate }}</span>
+            </button>
+            <button mat-menu-item (click)="onMakeCoHost(participant)" *ngIf="isHost && !participant.isCoHost">
+              <mat-icon>shield</mat-icon>
+              <span>{{ 'videoConference.makeCoHost' | translate }}</span>
+            </button>
+            <button mat-menu-item (click)="onRemoveParticipant(participant)">
+              <mat-icon>person_remove</mat-icon>
+              <span>{{ 'videoConference.remove' | translate }}</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredParticipants.length === 0">
+      <mat-icon>search_off</mat-icon>
+      <p>{{ 'videoConference.noParticipantsFound' | translate }}</p>
+    </div>
+  </div>
+</div>

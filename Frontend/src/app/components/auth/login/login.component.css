@@ -1,0 +1,105 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.login-card {
+  max-width: 450px;
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+mat-card-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+mat-card-title h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+}
+
+mat-card-subtitle {
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.forgot-password-link {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.submit-button {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.button-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.register-link {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.register-link span {
+  color: #666;
+  margin-right: 4px;
+}
+
+/* Material icon prefix styling */
+::ng-deep .mat-form-field-prefix {
+  margin-right: 8px;
+}
+
+::ng-deep .mat-form-field-prefix .mat-icon {
+  color: #999;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .login-card {
+    padding: 16px;
+  }
+
+  mat-card-title h2 {
+    font-size: 24px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

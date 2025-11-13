@@ -1,0 +1,213 @@
+<div class="inbox-container">
+  <!-- Top Toolbar -->
+  <mat-toolbar class="inbox-toolbar">
+    <div class="left-section">
+      <button mat-icon-button>
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <button mat-raised-button color="accent" (click)="openCompose()">
+        <mat-icon>edit</mat-icon>
+        New Message
+      </button>
+    </div>
+
+    <div class="center-section">
+      <mat-form-field class="search-field" appearance="outline">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput
+               placeholder="Search messages..."
+               [(ngModel)]="searchQuery"
+               (keyup.enter)="search()">
+        <button mat-icon-button matSuffix
+                *ngIf="searchQuery"
+                (click)="searchQuery=''; search()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="right-section">
+      <button mat-icon-button matTooltip="Refresh">
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <button mat-icon-button matTooltip="Settings">
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <!-- Main Content -->
+  <mat-sidenav-container class="inbox-content">
+    <!-- Sidebar -->
+    <mat-sidenav mode="side" opened class="inbox-sidenav">
+      <!-- Folders -->
+      <div class="folders-section">
+        <h3>Folders</h3>
+        <div *ngFor="let folder of folders"
+             class="folder-item"
+             [class.active]="currentFolder?.id === folder.id"
+             (click)="currentFolder = folder; loadMessages()">
+          <mat-icon>{{folder.icon}}</mat-icon>
+          <span>{{folder.displayName}}</span>
+          <span class="unread-count" *ngIf="folder.unreadCount > 0">
+            {{folder.unreadCount}}
+          </span>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="categories-section">
+        <h3>Categories</h3>
+        <div *ngFor="let category of categories" class="category-item">
+          <div class="category-color" [style.background-color]="category.color"></div>
+          <span>{{category.name}}</span>
+        </div>
+      </div>
+    </mat-sidenav>
+
+    <!-- Messages List -->
+    <mat-sidenav-content>
+      <div class="messages-container" [class.with-reading-pane]="showReadingPane">
+
+        <!-- Action Bar -->
+        <div class="action-bar" *ngIf="selectedMessages.size > 0">
+          <mat-checkbox
+            [checked]="selectedMessages.size === messages.length"
+            (change)="selectAll()">
+          </mat-checkbox>
+
+          <span class="selected-count">
+            {{selectedMessages.size}} selected
+          </span>
+
+          <button mat-icon-button matTooltip="Delete" (click)="deleteSelected()">
+            <mat-icon>delete</mat-icon>
+          </button>
+
+          <button mat-icon-button matTooltip="Archive">
+            <mat-icon>archive</mat-icon>
+          </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" style="display: flex; justify-content: center; padding: 24px;">
+          <mat-spinner></mat-spinner>
+        </div>
+
+        <!-- Messages List -->
+        <cdk-virtual-scroll-viewport
+          *ngIf="!isLoading"
+          itemSize="80"
+          class="messages-list">
+
+          <div *cdkVirtualFor="let message of messages"
+               class="message-item"
+               [class.unread]="!message.isRead"
+               [class.selected]="selectedMessage?.id === message.id"
+               (click)="selectMessage(message)">
+
+            <mat-checkbox
+              (click)="toggleMessageSelection(message, $event)"
+              [checked]="selectedMessages.has(message.id)">
+            </mat-checkbox>
+
+            <mat-icon class="star-icon"
+                     [class.starred]="message.isFlagged"
+                     (click)="$event.stopPropagation(); flagMessage(message)">
+              {{message.isFlagged ? 'star' : 'star_border'}}
+            </mat-icon>
+
+            <div class="sender-avatar">
+              <img [src]="message.sender?.avatar || 'assets/default-avatar.png'"
+                   [alt]="message.sender?.fullName">
+            </div>
+
+            <div class="message-content">
+              <div class="message-header">
+                <span class="sender-name">{{message.sender?.fullName}}</span>
+                <span class="message-date">{{message.receivedAt | date:'short'}}</span>
+              </div>
+
+              <div class="message-subject">
+                <mat-icon *ngIf="message.hasAttachments" class="attachment-icon">
+                  attach_file
+                </mat-icon>
+                <mat-icon *ngIf="message.importance === 2" class="importance-icon">
+                  priority_high
+                </mat-icon>
+                {{message.subject}}
+              </div>
+
+              <div class="message-preview">
+                {{message.bodyPreview}}
+              </div>
+
+              <div class="message-meta" *ngIf="message.categories?.length > 0">
+                <mat-chip-set>
+                  <mat-chip *ngFor="let category of message.categories"
+                           [style.background-color]="category.color">
+                    {{category.name}}
+                  </mat-chip>
+                </mat-chip-set>
+              </div>
+            </div>
+
+            <div class="message-actions">
+              <button mat-icon-button [matMenuTriggerFor]="messageMenu"
+                     (click)="$event.stopPropagation()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <mat-menu #messageMenu="matMenu">
+                <button mat-menu-item (click)="reply(message)">
+                  <mat-icon>reply</mat-icon>
+                  Reply
+                </button>
+                <button mat-menu-item (click)="replyAll(message)">
+                  <mat-icon>reply_all</mat-icon>
+                  Reply All
+                </button>
+                <button mat-menu-item (click)="forward(message)">
+                  <mat-icon>forward</mat-icon>
+                  Forward
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="exportToPdf(message)">
+                  <mat-icon>picture_as_pdf</mat-icon>
+                  Export PDF
+                </button>
+              </mat-menu>
+            </div>
+          </div>
+        </cdk-virtual-scroll-viewport>
+
+        <!-- Pagination -->
+        <mat-paginator
+          [length]="totalCount"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[25, 50, 100]"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+
+      <!-- Reading Pane -->
+      <div class="reading-pane" *ngIf="showReadingPane && selectedMessage">
+        <h2>{{selectedMessage.subject}}</h2>
+        <p>From: {{selectedMessage.sender?.fullName}} ({{selectedMessage.sender?.email}})</p>
+        <p>Date: {{selectedMessage.receivedAt | date:'full'}}</p>
+        <hr>
+        <div [innerHTML]="selectedMessage.body"></div>
+
+        <div *ngIf="selectedMessage.attachments?.length > 0">
+          <h3>Attachments ({{selectedMessage.attachments.length}})</h3>
+          <div *ngFor="let attachment of selectedMessage.attachments">
+            <mat-icon>attach_file</mat-icon>
+            {{attachment.name}} ({{attachment.size / 1024 | number:'1.0-0'}} KB)
+          </div>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

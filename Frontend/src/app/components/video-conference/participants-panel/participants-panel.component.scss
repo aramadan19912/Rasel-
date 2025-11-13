@@ -1,0 +1,294 @@
+.participants-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  color: #fff;
+}
+
+// ========== Header ==========
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .participant-count {
+    padding: 4px 8px;
+    background: rgba(63, 81, 181, 0.2);
+    border-radius: 12px;
+    font-size: 12px;
+    color: #3f51b5;
+  }
+}
+
+// ========== Search ==========
+
+.search-container {
+  padding: 12px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .search-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mat-form-field-wrapper {
+        padding-bottom: 0;
+      }
+
+      .mat-form-field-outline {
+        color: rgba(255, 255, 255, 0.3);
+      }
+
+      .mat-form-field-outline-thick {
+        color: rgba(63, 81, 181, 0.8);
+      }
+
+      input {
+        color: #fff;
+      }
+
+      .mat-form-field-label,
+      mat-icon {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}
+
+// ========== Participants List ==========
+
+.participants-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: rgba(255, 255, 255, 0.5);
+    gap: 16px;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    p {
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+}
+
+// ========== Participant Group ==========
+
+.participant-group {
+  margin-bottom: 16px;
+
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+
+    .group-count {
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+  }
+}
+
+// ========== Participant Item ==========
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .participant-avatar {
+    position: relative;
+    flex-shrink: 0;
+
+    .avatar-initials {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .hand-raised-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      font-size: 16px;
+      background: #ff9800;
+      border-radius: 50%;
+      padding: 2px;
+      color: #fff;
+    }
+  }
+
+  .participant-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .participant-name {
+      font-size: 14px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .you-badge {
+        font-size: 12px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+
+    .participant-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: rgba(255, 255, 255, 0.6);
+
+        &.muted {
+          color: #f44336;
+        }
+
+        &.video-off {
+          color: #f44336;
+        }
+      }
+
+      .role-badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .host-badge {
+        background: rgba(63, 81, 181, 0.3);
+        color: #3f51b5;
+      }
+
+      .cohost-badge {
+        background: rgba(103, 58, 183, 0.3);
+        color: #673ab7;
+      }
+
+      .guest-badge {
+        background: rgba(255, 152, 0, 0.3);
+        color: #ff9800;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .participant-actions {
+    flex-shrink: 0;
+  }
+}
+
+// ========== Scrollbar Styling ==========
+
+.participants-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.participants-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.participants-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+// ========== Responsive Design ==========
+
+@media (max-width: 768px) {
+  .panel-header {
+    padding: 12px 16px;
+
+    h3 {
+      font-size: 16px;
+    }
+  }
+
+  .search-container {
+    padding: 8px 16px;
+  }
+
+  .participant-group .group-header {
+    padding: 6px 16px;
+  }
+
+  .participant-item {
+    padding: 8px 16px;
+
+    .participant-avatar .avatar-initials {
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+
+    .participant-info .participant-name {
+      font-size: 13px;
+    }
+  }
+}

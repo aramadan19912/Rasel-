@@ -1,0 +1,479 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "actions": "Actions",
+    "moreOptions": "More Options",
+    "yes": "Yes",
+    "no": "No",
+    "add": "Add",
+    "remove": "Remove",
+    "update": "Update",
+    "view": "View",
+    "download": "Download",
+    "upload": "Upload",
+    "select": "Select",
+    "all": "All",
+    "none": "None",
+    "apply": "Apply",
+    "reset": "Reset",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidFormat": "Invalid format"
+  },
+
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "switchLanguage": "Switch Language"
+  },
+
+  "contacts": {
+    "title": "Contacts",
+    "newContact": "New Contact",
+    "editContact": "Edit Contact",
+    "deleteContact": "Delete Contact",
+    "searchContacts": "Search contacts...",
+    "noContacts": "No contacts found",
+    "tryAdjustingFilters": "Try adjusting your search or filters",
+    "createNewContact": "Create New Contact",
+
+    "views": {
+      "list": "List View",
+      "grid": "Grid View",
+      "details": "Details View"
+    },
+
+    "filters": {
+      "showFavorites": "Show Favorites",
+      "showAll": "Show All",
+      "allCategories": "All Categories",
+      "quickFilters": "Quick Filters",
+      "favorites": "Favorites"
+    },
+
+    "groups": "Groups",
+    "categories": "Categories",
+    "tags": "Tags",
+
+    "fields": {
+      "title": "Title",
+      "firstName": "First Name",
+      "middleName": "Middle Name",
+      "lastName": "Last Name",
+      "suffix": "Suffix",
+      "nickname": "Nickname",
+      "displayName": "Display Name",
+      "jobTitle": "Job Title",
+      "department": "Department",
+      "company": "Company",
+      "manager": "Manager",
+      "assistant": "Assistant",
+      "officeLocation": "Office Location",
+      "birthday": "Birthday",
+      "gender": "Gender",
+      "spouseName": "Spouse Name",
+      "children": "Children",
+      "notes": "Notes",
+      "privacy": "Privacy"
+    },
+
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "contactDetails": "Contact Details",
+      "professional": "Professional",
+      "personal": "Personal",
+      "additional": "Additional"
+    },
+
+    "emailAddresses": "Email Addresses",
+    "phoneNumbers": "Phone Numbers",
+    "addresses": "Addresses",
+    "websites": "Websites",
+    "socialMedia": "Social Media",
+
+    "addEmail": "Add Email",
+    "addPhone": "Add Phone",
+    "addAddress": "Add Address",
+    "addWebsite": "Add Website",
+    "addCategory": "Add Category",
+    "addTag": "Add Tag",
+
+    "emailType": {
+      "personal": "Personal",
+      "work": "Work",
+      "other": "Other"
+    },
+
+    "phoneType": {
+      "mobile": "Mobile",
+      "home": "Home",
+      "work": "Work",
+      "main": "Main",
+      "homeFax": "Home Fax",
+      "workFax": "Work Fax",
+      "pager": "Pager",
+      "other": "Other"
+    },
+
+    "addressType": {
+      "home": "Home",
+      "work": "Work",
+      "other": "Other"
+    },
+
+    "websiteType": {
+      "personal": "Personal",
+      "work": "Work",
+      "blog": "Blog",
+      "portfolio": "Portfolio",
+      "other": "Other"
+    },
+
+    "privacy": {
+      "private": "Private",
+      "public": "Public",
+      "shared": "Shared"
+    },
+
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "preferNotToSay": "Prefer not to say"
+    },
+
+    "primary": "Primary",
+    "linkedIn": "LinkedIn URL",
+    "twitter": "Twitter Handle",
+    "facebook": "Facebook URL",
+    "instagram": "Instagram Handle",
+
+    "street": "Street Address",
+    "street2": "Street Address 2",
+    "city": "City",
+    "state": "State/Province",
+    "postalCode": "Postal Code",
+    "country": "Country",
+
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "extension": "Ext.",
+    "url": "URL",
+
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+
+    "noCategoriesAdded": "No categories added yet",
+    "noTagsAdded": "No tags added yet",
+    "noEmailsAdded": "No email addresses added yet",
+    "noPhonesAdded": "No phone numbers added yet",
+    "noAddressesAdded": "No addresses added yet",
+    "noWebsitesAdded": "No websites added yet",
+
+    "selectContact": "Select a contact to view details",
+    "showing": "Showing",
+    "of": "of",
+    "page": "Page",
+
+    "messages": {
+      "created": "Contact created successfully",
+      "updated": "Contact updated successfully",
+      "deleted": "Contact deleted successfully",
+      "photoUploaded": "Photo uploaded successfully",
+      "photoDeleted": "Photo deleted successfully",
+      "addedToFavorites": "Added to favorites",
+      "removedFromFavorites": "Removed from favorites",
+      "createFailed": "Failed to create contact",
+      "updateFailed": "Failed to update contact",
+      "deleteFailed": "Failed to delete contact",
+      "loadFailed": "Failed to load contacts",
+      "photoUploadFailed": "Failed to upload photo",
+      "photoDeleteFailed": "Failed to delete photo",
+      "favoriteToggleFailed": "Failed to update favorite status",
+      "confirmDelete": "Are you sure you want to delete this contact?"
+    },
+
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com",
+      "phone": "(555) 123-4567",
+      "company": "Acme Corporation",
+      "jobTitle": "Software Engineer",
+      "notes": "Add any additional notes about this contact..."
+    }
+  },
+
+  "calendar": {
+    "title": "Calendar",
+    "newEvent": "New Event",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event",
+    "noEvents": "No events scheduled",
+
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda"
+    },
+
+    "today": "Today",
+    "goToDate": "Go to Date",
+
+    "fields": {
+      "title": "Title",
+      "location": "Location",
+      "description": "Description",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "allDay": "All Day",
+      "calendar": "Calendar",
+      "reminder": "Reminder",
+      "attendees": "Attendees",
+      "resources": "Resources",
+      "recurrence": "Recurrence",
+      "category": "Category",
+      "priority": "Priority",
+      "status": "Status",
+      "visibility": "Visibility"
+    },
+
+    "tabs": {
+      "details": "Details",
+      "meeting": "Meeting",
+      "reminders": "Reminders",
+      "resources": "Resources",
+      "advanced": "Advanced"
+    },
+
+    "addAttendee": "Add Attendee",
+    "addReminder": "Add Reminder",
+    "addResource": "Add Resource",
+
+    "recurrence": {
+      "none": "Does not repeat",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "custom": "Custom"
+    },
+
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    },
+
+    "status": {
+      "tentative": "Tentative",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    },
+
+    "visibility": {
+      "public": "Public",
+      "private": "Private",
+      "confidential": "Confidential"
+    },
+
+    "reminderTypes": {
+      "popup": "Popup",
+      "email": "Email",
+      "sms": "SMS"
+    },
+
+    "messages": {
+      "created": "Event created successfully",
+      "updated": "Event updated successfully",
+      "deleted": "Event deleted successfully",
+      "createFailed": "Failed to create event",
+      "updateFailed": "Failed to update event",
+      "deleteFailed": "Failed to delete event",
+      "loadFailed": "Failed to load events",
+      "confirmDelete": "Are you sure you want to delete this event?"
+    },
+
+    "placeholders": {
+      "title": "Meeting Title",
+      "location": "Conference Room A",
+      "description": "Add event description..."
+    }
+  },
+
+  "inbox": {
+    "title": "Inbox",
+    "compose": "Compose",
+    "newMessage": "New Message",
+    "reply": "Reply",
+    "replyAll": "Reply All",
+    "forward": "Forward",
+    "delete": "Delete",
+    "archive": "Archive",
+    "markAsRead": "Mark as Read",
+    "markAsUnread": "Mark as Unread",
+    "moveToFolder": "Move to Folder",
+    "addLabel": "Add Label",
+    "searchMessages": "Search messages...",
+    "noMessages": "No messages found",
+
+    "folders": {
+      "inbox": "Inbox",
+      "sent": "Sent",
+      "drafts": "Drafts",
+      "spam": "Spam",
+      "trash": "Trash",
+      "archive": "Archive"
+    },
+
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "starred": "Starred",
+      "important": "Important",
+      "attachments": "Has Attachments"
+    },
+
+    "fields": {
+      "to": "To",
+      "cc": "Cc",
+      "bcc": "Bcc",
+      "from": "From",
+      "subject": "Subject",
+      "body": "Message",
+      "attachments": "Attachments"
+    },
+
+    "actions": {
+      "send": "Send",
+      "saveDraft": "Save Draft",
+      "discard": "Discard",
+      "attach": "Attach File",
+      "formatting": "Formatting"
+    },
+
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High"
+    },
+
+    "messages": {
+      "sent": "Message sent successfully",
+      "saved": "Draft saved successfully",
+      "deleted": "Message deleted successfully",
+      "archived": "Message archived successfully",
+      "markedRead": "Marked as read",
+      "markedUnread": "Marked as unread",
+      "sendFailed": "Failed to send message",
+      "saveFailed": "Failed to save draft",
+      "deleteFailed": "Failed to delete message",
+      "loadFailed": "Failed to load messages",
+      "confirmDelete": "Are you sure you want to delete this message?"
+    },
+
+    "placeholders": {
+      "to": "recipient@example.com",
+      "subject": "Subject",
+      "body": "Type your message here..."
+    },
+
+    "selectMessage": "Select a message to read",
+    "showing": "Showing",
+    "of": "of",
+    "messages": "messages"
+  },
+
+  "sidebar": {
+    "inbox": "Inbox",
+    "calendar": "Calendar",
+    "contacts": "Contacts",
+    "tasks": "Tasks",
+    "notes": "Notes",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+
+  "pagination": {
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "page": "Page",
+    "previousPage": "Previous Page",
+    "nextPage": "Next Page",
+    "firstPage": "First Page",
+    "lastPage": "Last Page",
+    "itemsPerPage": "Items per page"
+  },
+
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidUrl": "Invalid URL format (must start with http:// or https://)",
+    "invalidPhone": "Invalid phone number",
+    "invalidDate": "Invalid date",
+    "minLength": "Minimum length is {{min}} characters",
+    "maxLength": "Maximum length is {{max}} characters",
+    "min": "Minimum value is {{min}}",
+    "max": "Maximum value is {{max}}",
+    "pattern": "Invalid format",
+    "generic": "An error occurred. Please try again."
+  },
+
+  "success": {
+    "saved": "Saved successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "created": "Created successfully"
+  },
+
+  "dialogs": {
+    "confirm": "Confirm",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "confirmCancel": "Are you sure you want to cancel? Unsaved changes will be lost.",
+    "unsavedChanges": "You have unsaved changes",
+    "deleteTitle": "Delete Confirmation",
+    "cancelTitle": "Cancel Confirmation"
+  },
+
+  "time": {
+    "now": "Now",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "nextMonth": "Next Month",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours",
+    "day": "day",
+    "days": "days",
+    "week": "week",
+    "weeks": "weeks",
+    "month": "month",
+    "months": "months",
+    "year": "year",
+    "years": "years",
+    "ago": "ago"
+  }
+}
