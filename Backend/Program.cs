@@ -55,6 +55,11 @@ builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IOrgChartService, OrgChartService>();
 
+// Register Archive Services
+builder.Services.AddScoped<Application.Interfaces.Archive.IArchiveCategoryService, Infrastructure.Services.Archive.ArchiveCategoryService>();
+builder.Services.AddScoped<Application.Interfaces.Archive.ICorrespondenceService, Infrastructure.Services.Archive.CorrespondenceService>();
+builder.Services.AddScoped<Application.Interfaces.Archive.IPdfConversionService, Infrastructure.Services.Archive.PdfConversionService>();
+
 // Add SignalR
 builder.Services.AddSignalR();
 
