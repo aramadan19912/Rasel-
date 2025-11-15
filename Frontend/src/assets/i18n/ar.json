@@ -31,7 +31,10 @@
     "previous": "السابق",
     "required": "هذا الحقل مطلوب",
     "invalidEmail": "عنوان بريد إلكتروني غير صالح",
-    "invalidFormat": "تنسيق غير صالح"
+    "invalidFormat": "تنسيق غير صالح",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "status": "الحالة"
   },
 
   "language": {
@@ -475,5 +478,188 @@
     "year": "سنة",
     "years": "سنوات",
     "ago": "منذ"
+  },
+
+  "correspondence": {
+    "title": "المراسلات",
+    "createCorrespondence": "إنشاء مراسلة",
+    "editCorrespondence": "تعديل المراسلة",
+    "viewCorrespondence": "عرض المراسلة",
+    "deleteCorrespondence": "حذف المراسلة",
+    "routeCorrespondence": "توجيه المراسلة",
+    "archiveCorrespondence": "أرشفة المراسلة",
+
+    "basicInfo": "المعلومات الأساسية",
+    "classification": "التصنيف",
+    "dates": "التواريخ",
+    "senderReceiver": "المرسل والمستقبل",
+    "additionalInfo": "معلومات إضافية",
+    "attachments": "المرفقات",
+
+    "subjectAr": "الموضوع (عربي)",
+    "subjectEn": "الموضوع (إنجليزي)",
+    "subjectArPlaceholder": "أدخل الموضوع بالعربية",
+    "subjectEnPlaceholder": "أدخل الموضوع بالإنجليزية",
+    "contentAr": "المحتوى (عربي)",
+    "contentEn": "المحتوى (إنجليزي)",
+    "contentArPlaceholder": "أدخل المحتوى بالعربية",
+    "contentEnPlaceholder": "أدخل المحتوى بالإنجليزية",
+
+    "category": "التصنيف",
+    "status": {
+      "label": "الحالة",
+      "Draft": "مسودة",
+      "Pending": "قيد الانتظار",
+      "UnderReview": "قيد المراجعة",
+      "Approved": "معتمد",
+      "Rejected": "مرفوض",
+      "InProgress": "قيد التنفيذ",
+      "Completed": "مكتمل",
+      "Archived": "مؤرشف",
+      "Cancelled": "ملغي"
+    },
+
+    "priority": {
+      "label": "الأولوية",
+      "Low": "منخفضة",
+      "Normal": "عادية",
+      "High": "عالية",
+      "Urgent": "عاجلة",
+      "Critical": "حرجة"
+    },
+
+    "confidentiality": {
+      "label": "مستوى السرية",
+      "Public": "عام",
+      "Internal": "داخلي",
+      "Confidential": "سري",
+      "Secret": "سري للغاية",
+      "TopSecret": "سري جداً"
+    },
+
+    "correspondenceDate": "تاريخ المراسلة",
+    "dueDate": "تاريخ الاستحقاق",
+    "fromEmployeeId": "من موظف",
+    "externalSenderName": "اسم المرسل الخارجي",
+    "externalSenderOrganization": "جهة المرسل الخارجي",
+    "toDepartmentId": "إلى قسم",
+    "toEmployeeId": "إلى موظف",
+    "relatedCorrespondenceId": "المراسلة ذات الصلة",
+
+    "keywords": "الكلمات المفتاحية",
+    "keywordsPlaceholder": "أدخل الكلمات المفتاحية مفصولة بفواصل",
+    "tags": "الوسوم",
+    "tagsPlaceholder": "أدخل الوسوم مفصولة بفواصل",
+    "notes": "ملاحظات",
+    "notesPlaceholder": "أدخل أي ملاحظات إضافية",
+
+    "selectFiles": "اختر الملفات",
+    "selectedFiles": "الملفات المحددة",
+    "saveDraft": "حفظ كمسودة",
+    "submit": "إرسال",
+
+    "classifications": {
+      "Incoming": "وارد",
+      "Outgoing": "صادر",
+      "Internal": "داخلي"
+    },
+
+    "actions": {
+      "route": "توجيه",
+      "approve": "اعتماد",
+      "reject": "رفض",
+      "archive": "أرشفة",
+      "print": "طباعة",
+      "export": "تصدير"
+    }
+  },
+
+  "archive": {
+    "title": "إدارة الأرشيف",
+    "addCategory": "إضافة تصنيف",
+    "noCategories": "لا توجد تصنيفات أرشيف متاحة",
+    "categoryCode": "رمز التصنيف",
+    "name": "الاسم",
+    "classification": "التصنيف",
+    "retentionPeriod": "فترة الاحتفاظ",
+    "status": "الحالة",
+
+    "views": {
+      "tree": "عرض شجري",
+      "list": "عرض قائمة",
+      "statistics": "الإحصائيات"
+    },
+
+    "retentionPeriods": {
+      "OneYear": "سنة واحدة",
+      "TwoYears": "سنتان",
+      "ThreeYears": "ثلاث سنوات",
+      "FiveYears": "خمس سنوات",
+      "TenYears": "عشر سنوات",
+      "Permanent": "دائم"
+    }
+  },
+
+  "admin": {
+    "title": "الإدارة",
+
+    "dashboard": {
+      "title": "لوحة الإدارة",
+      "totalUsers": "إجمالي المستخدمين",
+      "totalEmployees": "إجمالي الموظفين",
+      "totalDepartments": "إجمالي الأقسام",
+      "totalRoles": "إجمالي الأدوار",
+      "quickActions": "إجراءات سريعة",
+      "addUser": "إضافة مستخدم",
+      "addEmployee": "إضافة موظف",
+      "addDepartment": "إضافة قسم",
+      "viewAuditLogs": "عرض سجلات التدقيق",
+      "recentActivities": "الأنشطة الأخيرة"
+    },
+
+    "users": {
+      "title": "إدارة المستخدمين",
+      "addUser": "إضافة مستخدم",
+      "editUser": "تعديل مستخدم",
+      "deleteUser": "حذف مستخدم",
+      "comingSoon": "ميزات إدارة المستخدمين قادمة قريباً..."
+    },
+
+    "roles": {
+      "title": "إدارة الأدوار",
+      "addRole": "إضافة دور",
+      "editRole": "تعديل دور",
+      "deleteRole": "حذف دور",
+      "comingSoon": "ميزات إدارة الأدوار قادمة قريباً..."
+    },
+
+    "departments": {
+      "title": "إدارة الأقسام",
+      "addDepartment": "إضافة قسم",
+      "editDepartment": "تعديل قسم",
+      "deleteDepartment": "حذف قسم",
+      "comingSoon": "ميزات إدارة الأقسام قادمة قريباً..."
+    },
+
+    "employees": {
+      "title": "إدارة الموظفين",
+      "addEmployee": "إضافة موظف",
+      "editEmployee": "تعديل موظف",
+      "deleteEmployee": "حذف موظف",
+      "comingSoon": "ميزات إدارة الموظفين قادمة قريباً..."
+    },
+
+    "permissions": {
+      "title": "إدارة الصلاحيات",
+      "addPermission": "إضافة صلاحية",
+      "editPermission": "تعديل صلاحية",
+      "deletePermission": "حذف صلاحية"
+    },
+
+    "audit": {
+      "title": "سجلات التدقيق",
+      "viewLogs": "عرض السجلات",
+      "exportLogs": "تصدير السجلات"
+    }
   }
 }
