@@ -45,6 +45,9 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // FullCalendar
@@ -59,6 +62,12 @@ import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
 import { VideoConferenceComponent } from './components/video-conference/video-conference.component';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+import { CorrespondenceDashboardComponent } from './components/correspondence-dashboard/correspondence-dashboard.component';
+import { CorrespondenceListComponent } from './components/correspondence-list/correspondence-list.component';
+import { CorrespondenceDetailComponent } from './components/correspondence-detail/correspondence-detail.component';
+import { CorrespondenceFormComponent } from './components/correspondence-form/correspondence-form.component';
+import { CorrespondenceRoutingDialogComponent } from './components/correspondence-routing-dialog/correspondence-routing-dialog.component';
+import { ArchiveManagementComponent } from './components/archive-management/archive-management.component';
 
 // Auth Components
 import { LoginComponent } from './components/auth/login/login.component';
@@ -75,6 +84,8 @@ import { ContactsService } from './services/contacts.service';
 import { VideoConferenceService } from './services/video-conference.service';
 import { TranslationService } from './services/translation.service';
 import { AuthService } from './services/auth.service';
+import { CorrespondenceService } from './services/correspondence.service';
+import { ArchiveCategoryService } from './services/archive-category.service';
 
 @NgModule({
   declarations: [
@@ -89,7 +100,13 @@ import { AuthService } from './services/auth.service';
     LoginComponent,
     RegisterComponent,
     UnauthorizedComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    CorrespondenceDashboardComponent,
+    CorrespondenceListComponent,
+    CorrespondenceDetailComponent,
+    CorrespondenceFormComponent,
+    CorrespondenceRoutingDialogComponent,
+    ArchiveManagementComponent
   ],
   imports: [
     BrowserModule,
@@ -124,6 +141,9 @@ import { AuthService } from './services/auth.service';
     MatTabsModule,
     MatButtonToggleModule,
     MatDividerModule,
+    MatStepperModule,
+    MatSlideToggleModule,
+    MatTableModule,
     ScrollingModule,
 
     // FullCalendar
@@ -147,6 +167,8 @@ import { AuthService } from './services/auth.service';
     VideoConferenceService,
     TranslationService,
     AuthService,
+    CorrespondenceService,
+    ArchiveCategoryService,
 
     // HTTP Interceptors
     {

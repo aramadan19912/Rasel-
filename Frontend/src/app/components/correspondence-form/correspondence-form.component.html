@@ -1,0 +1,248 @@
+<div class="correspondence-form-container" *ngIf="!loading">
+  <div class="form-header">
+    <h1>{{ (isEditMode ? 'correspondence.editCorrespondence' : 'correspondence.createCorrespondence') | translate }}</h1>
+  </div>
+
+  <form [formGroup]="correspondenceForm" (ngSubmit)="submitForm()">
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.basicInfo' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Subject (Arabic) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.subjectAr' | translate }} *</mat-label>
+            <input matInput formControlName="subjectAr" [placeholder]="'correspondence.subjectArPlaceholder' | translate">
+            <mat-error *ngIf="correspondenceForm.get('subjectAr')?.invalid">
+              {{ getErrorMessage('subjectAr') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Subject (English) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.subjectEn' | translate }}</mat-label>
+            <input matInput formControlName="subjectEn" [placeholder]="'correspondence.subjectEnPlaceholder' | translate">
+            <mat-error *ngIf="correspondenceForm.get('subjectEn')?.invalid">
+              {{ getErrorMessage('subjectEn') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Content (Arabic) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.contentAr' | translate }} *</mat-label>
+            <textarea matInput formControlName="contentAr" rows="8" [placeholder]="'correspondence.contentArPlaceholder' | translate"></textarea>
+            <mat-error *ngIf="correspondenceForm.get('contentAr')?.invalid">
+              {{ getErrorMessage('contentAr') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Content (English) -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.contentEn' | translate }}</mat-label>
+            <textarea matInput formControlName="contentEn" rows="8" [placeholder]="'correspondence.contentEnPlaceholder' | translate"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.classification' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Category -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.category' | translate }} *</mat-label>
+            <mat-select formControlName="categoryId">
+              <mat-option *ngFor="let category of categories" [value]="category.id">
+                {{ translate.currentLang === 'ar' ? category.nameAr : category.nameEn }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="correspondenceForm.get('categoryId')?.invalid">
+              {{ getErrorMessage('categoryId') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Status -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.status.label' | translate }} *</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of statuses" [value]="status">
+                {{ 'correspondence.status.' + status | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Priority -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.priority.label' | translate }} *</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option *ngFor="let priority of priorities" [value]="priority">
+                {{ 'correspondence.priority.' + priority | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Confidentiality Level -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.confidentiality.label' | translate }} *</mat-label>
+            <mat-select formControlName="confidentialityLevel">
+              <mat-option *ngFor="let level of confidentialityLevels" [value]="level">
+                {{ 'correspondence.confidentiality.' + level | translate }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.dates' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Correspondence Date -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.correspondenceDate' | translate }} *</mat-label>
+            <input matInput [matDatepicker]="correspondenceDatePicker" formControlName="correspondenceDate">
+            <mat-datepicker-toggle matIconSuffix [for]="correspondenceDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #correspondenceDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <!-- Due Date -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.dueDate' | translate }}</mat-label>
+            <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate">
+            <mat-datepicker-toggle matIconSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #dueDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.senderReceiver' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- From Employee ID -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.fromEmployeeId' | translate }}</mat-label>
+            <input matInput type="number" formControlName="fromEmployeeId">
+          </mat-form-field>
+
+          <!-- External Sender Name -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.externalSenderName' | translate }}</mat-label>
+            <input matInput formControlName="externalSenderName">
+          </mat-form-field>
+
+          <!-- External Sender Organization -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.externalSenderOrganization' | translate }}</mat-label>
+            <input matInput formControlName="externalSenderOrganization">
+          </mat-form-field>
+
+          <!-- To Department ID -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.toDepartmentId' | translate }}</mat-label>
+            <input matInput type="number" formControlName="toDepartmentId">
+          </mat-form-field>
+
+          <!-- To Employee ID -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.toEmployeeId' | translate }}</mat-label>
+            <input matInput type="number" formControlName="toEmployeeId">
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.additionalInfo' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Related Correspondence ID -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.relatedCorrespondenceId' | translate }}</mat-label>
+            <input matInput type="number" formControlName="relatedCorrespondenceId">
+          </mat-form-field>
+
+          <!-- Keywords -->
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'correspondence.keywords' | translate }}</mat-label>
+            <input matInput formControlName="keywords" [placeholder]="'correspondence.keywordsPlaceholder' | translate">
+          </mat-form-field>
+
+          <!-- Tags -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.tags' | translate }}</mat-label>
+            <input matInput formControlName="tags" [placeholder]="'correspondence.tagsPlaceholder' | translate">
+          </mat-form-field>
+
+          <!-- Notes -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'correspondence.notes' | translate }}</mat-label>
+            <textarea matInput formControlName="notes" rows="4" [placeholder]="'correspondence.notesPlaceholder' | translate"></textarea>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>{{ 'correspondence.attachments' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="file-upload-section">
+          <input #fileInput type="file" multiple (change)="onFileSelected($event)" style="display: none">
+          <button mat-raised-button type="button" (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            {{ 'correspondence.selectFiles' | translate }}
+          </button>
+
+          <div class="selected-files" *ngIf="selectedFiles.length > 0">
+            <h4>{{ 'correspondence.selectedFiles' | translate }} ({{ selectedFiles.length }})</h4>
+            <mat-list>
+              <mat-list-item *ngFor="let file of selectedFiles; let i = index">
+                <mat-icon matListItemIcon>description</mat-icon>
+                <div matListItemTitle>{{ file.name }}</div>
+                <div matListItemLine>{{ formatFileSize(file.size) }}</div>
+                <button mat-icon-button matListItemMeta type="button" (click)="removeFile(i)">
+                  <mat-icon color="warn">delete</mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-list>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button mat-raised-button type="button" (click)="cancel()" [disabled]="submitting">
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button mat-raised-button type="button" (click)="saveDraft()" [disabled]="submitting" *ngIf="!isEditMode">
+        <mat-icon>save</mat-icon>
+        {{ 'correspondence.saveDraft' | translate }}
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+        <mat-icon>{{ isEditMode ? 'save' : 'send' }}</mat-icon>
+        {{ (isEditMode ? 'common.save' : 'correspondence.submit') | translate }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <mat-spinner></mat-spinner>
+  <p>{{ 'common.loading' | translate }}</p>
+</div>

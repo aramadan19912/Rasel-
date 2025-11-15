@@ -1,0 +1,89 @@
+<h2 mat-dialog-title>{{ 'correspondence.routeDocument' | translate }}</h2>
+
+<mat-dialog-content>
+  <p class="dialog-description">
+    {{ 'correspondence.routingDialogDescription' | translate }}
+    <strong>{{ data.referenceNumber }}</strong>
+  </p>
+
+  <form [formGroup]="routingForm">
+    <div class="form-fields">
+      <!-- To Employee ID -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.toEmployeeId' | translate }} *</mat-label>
+        <input matInput type="number" formControlName="toEmployeeId" [placeholder]="'correspondence.toEmployeeIdPlaceholder' | translate">
+        <mat-icon matIconPrefix>person</mat-icon>
+        <mat-error *ngIf="routingForm.get('toEmployeeId')?.invalid">
+          {{ getErrorMessage('toEmployeeId') }}
+        </mat-error>
+        <mat-hint>{{ 'correspondence.toEmployeeIdHint' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <!-- To Department ID (Optional) -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.toDepartmentId' | translate }}</mat-label>
+        <input matInput type="number" formControlName="toDepartmentId" [placeholder]="'correspondence.toDepartmentIdPlaceholder' | translate">
+        <mat-icon matIconPrefix>business</mat-icon>
+        <mat-hint>{{ 'correspondence.toDepartmentIdHint' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <!-- Routing Action -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.routingAction.label' | translate }} *</mat-label>
+        <mat-select formControlName="action">
+          <mat-option *ngFor="let action of routingActions" [value]="action">
+            {{ 'correspondence.routingAction.' + action | translate }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matIconPrefix>assignment</mat-icon>
+        <mat-error *ngIf="routingForm.get('action')?.invalid">
+          {{ getErrorMessage('action') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Priority -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.priority.label' | translate }} *</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option *ngFor="let priority of priorities" [value]="priority">
+            {{ 'correspondence.priority.' + priority | translate }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matIconPrefix>flag</mat-icon>
+        <mat-error *ngIf="routingForm.get('priority')?.invalid">
+          {{ getErrorMessage('priority') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Due Date -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.dueDate' | translate }}</mat-label>
+        <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate">
+        <mat-datepicker-toggle matIconSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #dueDatePicker></mat-datepicker>
+        <mat-hint>{{ 'correspondence.dueDateHint' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <!-- Instructions -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'correspondence.instructions' | translate }}</mat-label>
+        <textarea matInput formControlName="instructions" rows="4" [placeholder]="'correspondence.instructionsPlaceholder' | translate"></textarea>
+        <mat-icon matIconPrefix>description</mat-icon>
+        <mat-error *ngIf="routingForm.get('instructions')?.invalid">
+          {{ getErrorMessage('instructions') }}
+        </mat-error>
+        <mat-hint>{{ 'correspondence.instructionsHint' | translate }}</mat-hint>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()" [disabled]="submitting">
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button mat-raised-button color="primary" (click)="submitRouting()" [disabled]="submitting || routingForm.invalid">
+    <mat-icon>forward</mat-icon>
+    {{ 'correspondence.route' | translate }}
+  </button>
+</mat-dialog-actions>

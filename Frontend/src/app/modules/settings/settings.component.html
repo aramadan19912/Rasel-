@@ -1,0 +1,334 @@
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>{{ 'settings.title' | translate }}</h1>
+  </div>
+
+  <mat-tab-group animationDuration="0ms">
+    <!-- General Settings Tab -->
+    <mat-tab label="{{ 'settings.tabs.general' | translate }}">
+      <div class="tab-content">
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'settings.general.title' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="generalForm" (ngSubmit)="saveGeneralSettings()">
+              <div class="form-grid">
+                <!-- Language -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.general.language' | translate }}</mat-label>
+                  <mat-select formControlName="language">
+                    <mat-option *ngFor="let lang of languages" [value]="lang.code">
+                      {{ lang.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>language</mat-icon>
+                </mat-form-field>
+
+                <!-- Timezone -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.general.timezone' | translate }}</mat-label>
+                  <mat-select formControlName="timezone">
+                    <mat-option *ngFor="let tz of timezones" [value]="tz">
+                      {{ tz }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>schedule</mat-icon>
+                </mat-form-field>
+
+                <!-- Date Format -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.general.dateFormat' | translate }}</mat-label>
+                  <mat-select formControlName="dateFormat">
+                    <mat-option *ngFor="let format of dateFormats" [value]="format">
+                      {{ format }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>calendar_today</mat-icon>
+                </mat-form-field>
+
+                <!-- Time Format -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.general.timeFormat' | translate }}</mat-label>
+                  <mat-select formControlName="timeFormat">
+                    <mat-option *ngFor="let format of timeFormats" [value]="format">
+                      {{ 'settings.general.' + format | translate }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>access_time</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+                  <mat-icon>save</mat-icon>
+                  {{ 'settings.saveChanges' | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Notification Settings Tab -->
+    <mat-tab label="{{ 'settings.tabs.notifications' | translate }}">
+      <div class="tab-content">
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'settings.notifications.title' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="notificationForm" (ngSubmit)="saveNotificationSettings()">
+              <mat-list>
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>email</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.emailNotifications' | translate }}</h3>
+                        <p>{{ 'settings.notifications.emailNotificationsDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="emailNotifications"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>notifications</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.pushNotifications' | translate }}</h3>
+                        <p>{{ 'settings.notifications.pushNotificationsDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="pushNotifications"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>desktop_windows</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.desktopNotifications' | translate }}</h3>
+                        <p>{{ 'settings.notifications.desktopNotificationsDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="desktopNotifications"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>mail</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.notifyOnNewMessage' | translate }}</h3>
+                        <p>{{ 'settings.notifications.notifyOnNewMessageDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="notifyOnNewMessage"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>event</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.notifyOnCalendarEvent' | translate }}</h3>
+                        <p>{{ 'settings.notifications.notifyOnCalendarEventDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="notifyOnCalendarEvent"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>forward</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.notifications.notifyOnCorrespondenceRouting' | translate }}</h3>
+                        <p>{{ 'settings.notifications.notifyOnCorrespondenceRoutingDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="notifyOnCorrespondenceRouting"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+              </mat-list>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+                  <mat-icon>save</mat-icon>
+                  {{ 'settings.saveChanges' | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Privacy Settings Tab -->
+    <mat-tab label="{{ 'settings.tabs.privacy' | translate }}">
+      <div class="tab-content">
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'settings.privacy.title' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="privacyForm" (ngSubmit)="savePrivacySettings()">
+              <mat-list>
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>visibility</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.privacy.showOnlineStatus' | translate }}</h3>
+                        <p>{{ 'settings.privacy.showOnlineStatusDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="showOnlineStatus"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>search</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.privacy.allowSearchByEmail' | translate }}</h3>
+                        <p>{{ 'settings.privacy.allowSearchByEmailDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="allowSearchByEmail"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>photo</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.privacy.showProfilePhoto' | translate }}</h3>
+                        <p>{{ 'settings.privacy.showProfilePhotoDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="showProfilePhoto"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+              </mat-list>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+                  <mat-icon>save</mat-icon>
+                  {{ 'settings.saveChanges' | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Correspondence Settings Tab -->
+    <mat-tab label="{{ 'settings.tabs.correspondence' | translate }}">
+      <div class="tab-content">
+        <mat-card class="settings-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'settings.correspondence.title' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="correspondenceForm" (ngSubmit)="saveCorrespondenceSettings()">
+              <mat-list>
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>save</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.correspondence.autoSaveDrafts' | translate }}</h3>
+                        <p>{{ 'settings.correspondence.autoSaveDraftsDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="autoSaveDrafts"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+
+                <mat-divider></mat-divider>
+
+                <mat-list-item>
+                  <div class="setting-item">
+                    <div class="setting-info">
+                      <mat-icon>approval</mat-icon>
+                      <div class="setting-text">
+                        <h3>{{ 'settings.correspondence.requireApproval' | translate }}</h3>
+                        <p>{{ 'settings.correspondence.requireApprovalDesc' | translate }}</p>
+                      </div>
+                    </div>
+                    <mat-slide-toggle formControlName="requireApprovalBeforeSending"></mat-slide-toggle>
+                  </div>
+                </mat-list-item>
+              </mat-list>
+
+              <div class="form-grid">
+                <!-- Default Priority -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.correspondence.defaultPriority' | translate }}</mat-label>
+                  <mat-select formControlName="defaultCorrespondencePriority">
+                    <mat-option *ngFor="let priority of priorities" [value]="priority.value">
+                      {{ priority.label | translate }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>flag</mat-icon>
+                </mat-form-field>
+
+                <!-- Default Confidentiality Level -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'settings.correspondence.defaultConfidentiality' | translate }}</mat-label>
+                  <mat-select formControlName="defaultConfidentialityLevel">
+                    <mat-option *ngFor="let level of confidentialityLevels" [value]="level.value">
+                      {{ level.label | translate }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matIconPrefix>lock</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+                  <mat-icon>save</mat-icon>
+                  {{ 'settings.saveChanges' | translate }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Reset to Defaults -->
+  <div class="reset-section">
+    <button mat-stroked-button color="warn" (click)="resetToDefaults()">
+      <mat-icon>restore</mat-icon>
+      {{ 'settings.resetToDefaults' | translate }}
+    </button>
+  </div>
+</div>

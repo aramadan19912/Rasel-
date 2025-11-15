@@ -1,0 +1,352 @@
+<div class="correspondence-detail-container" *ngIf="!loading && correspondence">
+  <!-- Header -->
+  <div class="correspondence-header">
+    <div class="header-actions">
+      <button mat-icon-button (click)="backToList()" [matTooltip]="'common.back' | translate">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="header-title">{{ correspondence.referenceNumber }}</h1>
+    </div>
+
+    <div class="header-metadata">
+      <mat-chip-set>
+        <mat-chip [ngClass]="'status-' + getStatusColor(correspondence.status)">
+          <mat-icon>info</mat-icon>
+          {{ 'correspondence.status.' + correspondence.status | translate }}
+        </mat-chip>
+        <mat-chip [ngClass]="'priority-' + getPriorityColor(correspondence.priority)">
+          <mat-icon>flag</mat-icon>
+          {{ 'correspondence.priority.' + correspondence.priority | translate }}
+        </mat-chip>
+        <mat-chip [ngClass]="'confidentiality-' + getConfidentialityColor(correspondence.confidentialityLevel)">
+          <mat-icon>lock</mat-icon>
+          {{ 'correspondence.confidentiality.' + correspondence.confidentialityLevel | translate }}
+        </mat-chip>
+        <mat-chip *ngIf="correspondence.isArchived">
+          <mat-icon>archive</mat-icon>
+          {{ 'correspondence.archived' | translate }}
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <div class="header-buttons">
+      <button mat-raised-button color="primary" *ngIf="canEdit()" (click)="editCorrespondence()">
+        <mat-icon>edit</mat-icon>
+        {{ 'common.edit' | translate }}
+      </button>
+      <button mat-raised-button color="accent" *ngIf="canRoute()" (click)="routeCorrespondence()">
+        <mat-icon>forward</mat-icon>
+        {{ 'correspondence.route' | translate }}
+      </button>
+      <button mat-raised-button *ngIf="canArchive()" (click)="archiveCorrespondence()">
+        <mat-icon>archive</mat-icon>
+        {{ 'correspondence.archive' | translate }}
+      </button>
+      <button mat-button (click)="downloadPdf()">
+        <mat-icon>download</mat-icon>
+        {{ 'correspondence.downloadPdf' | translate }}
+      </button>
+      <button mat-button (click)="printCorrespondence()">
+        <mat-icon>print</mat-icon>
+        {{ 'common.print' | translate }}
+      </button>
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item *ngIf="canDelete()" (click)="deleteCorrespondence()">
+          <mat-icon color="warn">delete</mat-icon>
+          <span>{{ 'common.delete' | translate }}</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <mat-tab-group [(selectedIndex)]="activeTab" animationDuration="0ms">
+    <!-- Details Tab -->
+    <mat-tab label="{{ 'correspondence.tabs.details' | translate }}">
+      <div class="tab-content">
+        <!-- Subject Section -->
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.subject' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <h2 class="subject-text">{{ correspondence.subjectAr }}</h2>
+            <h3 class="subject-text-en" *ngIf="correspondence.subjectEn">{{ correspondence.subjectEn }}</h3>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Content Section -->
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.content' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="content-text" [innerHTML]="correspondence.contentAr"></div>
+            <div class="content-text-en" *ngIf="correspondence.contentEn" [innerHTML]="correspondence.contentEn"></div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Metadata Section -->
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.metadata' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metadata-grid">
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.category' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.categoryName }}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.classification' | translate }}:</span>
+                <span class="metadata-value">{{ 'correspondence.classifications.' + correspondence.classification | translate }}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.correspondenceDate' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.correspondenceDate | date: 'medium' }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.dueDate">
+                <span class="metadata-label">{{ 'correspondence.dueDate' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.dueDate | date: 'medium' }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.fromEmployeeName">
+                <span class="metadata-label">{{ 'correspondence.from' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.fromEmployeeName }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.externalSenderName">
+                <span class="metadata-label">{{ 'correspondence.externalSender' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.externalSenderName }}
+                  <span *ngIf="correspondence.externalSenderOrganization">({{ correspondence.externalSenderOrganization }})</span>
+                </span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.toEmployeeName">
+                <span class="metadata-label">{{ 'correspondence.to' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.toEmployeeName }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.toDepartmentName">
+                <span class="metadata-label">{{ 'correspondence.toDepartment' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.toDepartmentName }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.relatedReferenceNumber">
+                <span class="metadata-label">{{ 'correspondence.relatedTo' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.relatedReferenceNumber }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.keywords">
+                <span class="metadata-label">{{ 'correspondence.keywords' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.keywords }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.tags">
+                <span class="metadata-label">{{ 'correspondence.tags' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.tags }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.notes">
+                <span class="metadata-label">{{ 'correspondence.notes' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.notes }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Archive Information (if archived) -->
+        <mat-card class="detail-section" *ngIf="correspondence.isArchived">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.archiveInfo' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metadata-grid">
+              <div class="metadata-item" *ngIf="correspondence.archiveNumber">
+                <span class="metadata-label">{{ 'correspondence.archiveNumber' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.archiveNumber }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.archivedAt">
+                <span class="metadata-label">{{ 'correspondence.archivedAt' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.archivedAt | date: 'medium' }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.archivedBy">
+                <span class="metadata-label">{{ 'correspondence.archivedBy' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.archivedBy }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- System Information -->
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.systemInfo' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metadata-grid">
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.createdAt' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.createdAt | date: 'medium' }}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.createdBy' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.createdBy }}</span>
+              </div>
+              <div class="metadata-item">
+                <span class="metadata-label">{{ 'correspondence.updatedAt' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.updatedAt | date: 'medium' }}</span>
+              </div>
+              <div class="metadata-item" *ngIf="correspondence.updatedBy">
+                <span class="metadata-label">{{ 'correspondence.updatedBy' | translate }}:</span>
+                <span class="metadata-value">{{ correspondence.updatedBy }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Attachments Tab -->
+    <mat-tab label="{{ 'correspondence.tabs.attachments' | translate }} ({{ correspondence.attachments.length }})">
+      <div class="tab-content">
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.attachments' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="correspondence.attachments.length === 0" class="empty-state">
+              <mat-icon>attach_file</mat-icon>
+              <p>{{ 'correspondence.noAttachments' | translate }}</p>
+            </div>
+
+            <mat-list *ngIf="correspondence.attachments.length > 0">
+              <mat-list-item *ngFor="let attachment of correspondence.attachments">
+                <mat-icon matListItemIcon>{{ attachment.isMainDocument ? 'description' : 'attach_file' }}</mat-icon>
+                <div matListItemTitle>
+                  {{ attachment.originalFileName }}
+                  <mat-chip *ngIf="attachment.isMainDocument" class="main-doc-chip">
+                    {{ 'correspondence.mainDocument' | translate }}
+                  </mat-chip>
+                </div>
+                <div matListItemLine>
+                  {{ formatFileSize(attachment.fileSize) }} • {{ attachment.mimeType }}
+                  <span *ngIf="attachment.description"> • {{ attachment.description }}</span>
+                </div>
+                <div matListItemLine class="attachment-meta">
+                  {{ 'correspondence.uploadedAt' | translate }}: {{ attachment.createdAt | date: 'short' }} •
+                  {{ 'correspondence.uploadedBy' | translate }}: {{ attachment.createdBy }}
+                </div>
+                <div matListItemMeta>
+                  <button mat-icon-button (click)="downloadAttachment(attachment)" [matTooltip]="'common.download' | translate">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                  <button mat-icon-button *ngIf="canEdit()" (click)="deleteAttachment(attachment)" [matTooltip]="'common.delete' | translate">
+                    <mat-icon color="warn">delete</mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Routing History Tab -->
+    <mat-tab label="{{ 'correspondence.tabs.routing' | translate }} ({{ correspondence.routings.length }})">
+      <div class="tab-content">
+        <mat-card class="detail-section">
+          <mat-card-header>
+            <mat-card-title>{{ 'correspondence.routingHistory' | translate }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="correspondence.routings.length === 0" class="empty-state">
+              <mat-icon>route</mat-icon>
+              <p>{{ 'correspondence.noRoutings' | translate }}</p>
+            </div>
+
+            <mat-stepper orientation="vertical" *ngIf="correspondence.routings.length > 0" #stepper>
+              <mat-step *ngFor="let routing of correspondence.routings; let i = index">
+                <ng-template matStepLabel>
+                  <div class="routing-step-label">
+                    <strong>{{ routing.toEmployeeName }}</strong>
+                    <span class="routing-action"> - {{ 'correspondence.routingAction.' + routing.action | translate }}</span>
+                    <mat-chip [ngClass]="'routing-status-' + routing.status.toLowerCase()">
+                      {{ 'correspondence.routingStatus.' + routing.status | translate }}
+                    </mat-chip>
+                  </div>
+                </ng-template>
+
+                <div class="routing-details">
+                  <div class="metadata-grid">
+                    <div class="metadata-item">
+                      <span class="metadata-label">{{ 'correspondence.from' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.fromEmployeeName }}</span>
+                      <span *ngIf="routing.fromEmployeePosition" class="position"> ({{ routing.fromEmployeePosition }})</span>
+                    </div>
+                    <div class="metadata-item">
+                      <span class="metadata-label">{{ 'correspondence.to' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.toEmployeeName }}</span>
+                      <span *ngIf="routing.toEmployeePosition" class="position"> ({{ routing.toEmployeePosition }})</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="routing.toDepartmentName">
+                      <span class="metadata-label">{{ 'correspondence.department' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.toDepartmentName }}</span>
+                    </div>
+                    <div class="metadata-item">
+                      <span class="metadata-label">{{ 'correspondence.priority' | translate }}:</span>
+                      <span class="metadata-value">
+                        <mat-chip [ngClass]="'priority-' + getPriorityColor(routing.priority)">
+                          {{ 'correspondence.priority.' + routing.priority | translate }}
+                        </mat-chip>
+                      </span>
+                    </div>
+                    <div class="metadata-item">
+                      <span class="metadata-label">{{ 'correspondence.routedDate' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.routedDate | date: 'medium' }}</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="routing.dueDate">
+                      <span class="metadata-label">{{ 'correspondence.dueDate' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.dueDate | date: 'medium' }}</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="routing.receivedDate">
+                      <span class="metadata-label">{{ 'correspondence.receivedDate' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.receivedDate | date: 'medium' }}</span>
+                    </div>
+                    <div class="metadata-item" *ngIf="routing.completedDate">
+                      <span class="metadata-label">{{ 'correspondence.completedDate' | translate }}:</span>
+                      <span class="metadata-value">{{ routing.completedDate | date: 'medium' }}</span>
+                    </div>
+                    <div class="metadata-item full-width" *ngIf="routing.instructions">
+                      <span class="metadata-label">{{ 'correspondence.instructions' | translate }}:</span>
+                      <div class="metadata-value instructions">{{ routing.instructions }}</div>
+                    </div>
+                    <div class="metadata-item full-width" *ngIf="routing.response">
+                      <span class="metadata-label">{{ 'correspondence.response' | translate }}:</span>
+                      <div class="metadata-value response">
+                        {{ routing.response }}
+                        <span class="response-date" *ngIf="routing.responseDate">
+                          ({{ routing.responseDate | date: 'medium' }})
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </mat-step>
+            </mat-stepper>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <mat-spinner></mat-spinner>
+  <p>{{ 'common.loading' | translate }}</p>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="!loading && !correspondence">
+  <mat-icon>error</mat-icon>
+  <h2>{{ 'correspondence.notFound' | translate }}</h2>
+  <button mat-raised-button color="primary" (click)="backToList()">
+    {{ 'common.backToList' | translate }}
+  </button>
+</div>
