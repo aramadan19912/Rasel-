@@ -609,6 +609,45 @@
       "totalEmployees": "إجمالي الموظفين",
       "totalDepartments": "إجمالي الأقسام",
       "totalRoles": "إجمالي الأدوار",
+      "totalCorrespondences": "إجمالي المراسلات",
+      "pendingCorrespondences": "المراسلات المعلقة",
+      "overdueCorrespondences": "المراسلات المتأخرة",
+      "totalMessages": "إجمالي الرسائل",
+      "thisMonth": "هذا الشهر",
+      "today": "اليوم",
+      "active": "نشط",
+
+      "levels": {
+        "executive": "لوحة التحكم التنفيذية",
+        "department": "لوحة تحكم القسم",
+        "employee": "لوحة تحكم الموظف"
+      },
+
+      "userGrowth": "نمو المستخدمين",
+      "correspondenceGrowth": "نمو المراسلات",
+
+      "selectDepartment": "اختر القسم",
+      "selectEmployee": "اختر الموظف",
+      "manager": "المدير",
+      "incoming": "واردة",
+      "outgoing": "صادرة",
+      "pending": "معلقة",
+      "completedThisMonth": "مكتملة هذا الشهر",
+      "averageResponseTime": "متوسط وقت الاستجابة",
+      "completionRate": "معدل الإنجاز",
+      "hours": "ساعات",
+
+      "assigned": "مُعيّنة",
+      "overdue": "متأخرة",
+      "completedThisWeek": "مكتملة هذا الأسبوع",
+      "upcomingMeetings": "الاجتماعات القادمة",
+      "averageCompletionTime": "متوسط وقت الإنجاز",
+
+      "correspondenceStatistics": "إحصائيات المراسلات",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "totalCount": "العدد الإجمالي",
+
       "quickActions": "إجراءات سريعة",
       "addUser": "إضافة مستخدم",
       "addEmployee": "إضافة موظف",

@@ -609,6 +609,45 @@
       "totalEmployees": "Total Employees",
       "totalDepartments": "Total Departments",
       "totalRoles": "Total Roles",
+      "totalCorrespondences": "Total Correspondences",
+      "pendingCorrespondences": "Pending Correspondences",
+      "overdueCorrespondences": "Overdue Correspondences",
+      "totalMessages": "Total Messages",
+      "thisMonth": "This Month",
+      "today": "Today",
+      "active": "Active",
+
+      "levels": {
+        "executive": "Executive Dashboard",
+        "department": "Department Dashboard",
+        "employee": "Employee Dashboard"
+      },
+
+      "userGrowth": "User Growth",
+      "correspondenceGrowth": "Correspondence Growth",
+
+      "selectDepartment": "Select Department",
+      "selectEmployee": "Select Employee",
+      "manager": "Manager",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing",
+      "pending": "Pending",
+      "completedThisMonth": "Completed This Month",
+      "averageResponseTime": "Average Response Time",
+      "completionRate": "Completion Rate",
+      "hours": "hours",
+
+      "assigned": "Assigned",
+      "overdue": "Overdue",
+      "completedThisWeek": "Completed This Week",
+      "upcomingMeetings": "Upcoming Meetings",
+      "averageCompletionTime": "Average Completion Time",
+
+      "correspondenceStatistics": "Correspondence Statistics",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "totalCount": "Total Count",
+
       "quickActions": "Quick Actions",
       "addUser": "Add User",
       "addEmployee": "Add Employee",
