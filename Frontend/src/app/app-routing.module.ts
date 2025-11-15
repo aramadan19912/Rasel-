@@ -152,6 +152,15 @@ const routes: Routes = [
       {
         path: 'settings',
         loadChildren: () => import('./modules/settings/settings.module').then(m => m.SettingsModule)
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),
+        canActivate: [PermissionGuard],
+        data: {
+          permissions: ['admin.access'],
+          requireAllPermissions: false
+        }
       }
     ]
   },

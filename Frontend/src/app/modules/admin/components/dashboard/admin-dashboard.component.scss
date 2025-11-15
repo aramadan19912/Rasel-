@@ -1,0 +1,131 @@
+.admin-dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .dashboard-header {
+    margin-bottom: 24px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  .dashboard-content {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+
+      .stat-card {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        mat-card-content {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            mat-icon {
+              font-size: 32px;
+              width: 32px;
+              height: 32px;
+              color: white;
+            }
+
+            &.users { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            &.employees { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+            &.departments { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+            &.roles { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+          }
+
+          .stat-info {
+            h3 {
+              margin: 0 0 4px 0;
+              font-size: 32px;
+              font-weight: 600;
+              color: #333;
+            }
+
+            p {
+              margin: 0;
+              font-size: 14px;
+              color: #666;
+            }
+          }
+        }
+      }
+    }
+
+    .quick-actions-card {
+      margin-bottom: 24px;
+
+      .quick-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        button {
+          mat-icon {
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+
+    .recent-activities-card {
+      mat-list-item {
+        mat-icon {
+          &.success {
+            color: #4caf50;
+          }
+
+          &.error {
+            color: #f44336;
+          }
+        }
+      }
+    }
+  }
+}
+
+[dir="rtl"] {
+  .admin-dashboard {
+    .dashboard-content {
+      .quick-actions-card {
+        .quick-actions {
+          button {
+            mat-icon {
+              margin-right: 0;
+              margin-left: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

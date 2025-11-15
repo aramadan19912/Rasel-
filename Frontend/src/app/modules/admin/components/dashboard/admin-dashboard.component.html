@@ -1,0 +1,107 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>{{ 'admin.dashboard.title' | translate }}</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && statistics" class="dashboard-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card" (click)="navigateTo('users')">
+        <mat-card-content>
+          <div class="stat-icon users">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalUsers }}</h3>
+            <p>{{ 'admin.dashboard.totalUsers' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card" (click)="navigateTo('employees')">
+        <mat-card-content>
+          <div class="stat-icon employees">
+            <mat-icon>badge</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalEmployees }}</h3>
+            <p>{{ 'admin.dashboard.totalEmployees' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card" (click)="navigateTo('departments')">
+        <mat-card-content>
+          <div class="stat-icon departments">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalDepartments }}</h3>
+            <p>{{ 'admin.dashboard.totalDepartments' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card" (click)="navigateTo('roles')">
+        <mat-card-content>
+          <div class="stat-icon roles">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalRoles }}</h3>
+            <p>{{ 'admin.dashboard.totalRoles' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Quick Actions -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'admin.dashboard.quickActions' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="quick-actions">
+          <button mat-raised-button color="primary" (click)="navigateTo('users')">
+            <mat-icon>person_add</mat-icon>
+            {{ 'admin.dashboard.addUser' | translate }}
+          </button>
+          <button mat-raised-button color="primary" (click)="navigateTo('employees')">
+            <mat-icon>badge</mat-icon>
+            {{ 'admin.dashboard.addEmployee' | translate }}
+          </button>
+          <button mat-raised-button color="primary" (click)="navigateTo('departments')">
+            <mat-icon>business</mat-icon>
+            {{ 'admin.dashboard.addDepartment' | translate }}
+          </button>
+          <button mat-raised-button (click)="navigateTo('audit-logs')">
+            <mat-icon>history</mat-icon>
+            {{ 'admin.dashboard.viewAuditLogs' | translate }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Recent Activities -->
+    <mat-card class="recent-activities-card" *ngIf="recentActivities.length > 0">
+      <mat-card-header>
+        <mat-card-title>{{ 'admin.dashboard.recentActivities' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let activity of recentActivities">
+            <mat-icon matListItemIcon [class.success]="activity.isSuccessful" [class.error]="!activity.isSuccessful">
+              {{ activity.isSuccessful ? 'check_circle' : 'error' }}
+            </mat-icon>
+            <div matListItemTitle>{{ activity.userName }} - {{ activity.action }}</div>
+            <div matListItemLine>{{ activity.entityType }} | {{ activity.timestamp | date: 'short' }}</div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
