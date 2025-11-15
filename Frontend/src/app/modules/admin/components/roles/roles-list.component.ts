@@ -10,7 +10,8 @@ import { RoleDialogComponent } from './role-dialog.component';
     <div class="admin-container">
       <div class="page-header">
         <h2>{{ 'admin.roles.title' | translate }}</h2>
-        <button mat-raised-button color="primary" (click)="openDialog()">
+        <button mat-raised-button color="primary" (click)="openDialog()"
+                *appHasPermission="'admin.roles.manage'">
           <mat-icon>add</mat-icon>
           {{ 'admin.roles.addRole' | translate }}
         </button>

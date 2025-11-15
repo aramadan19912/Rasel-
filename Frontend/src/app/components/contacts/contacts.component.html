@@ -37,7 +37,8 @@
     </mat-button-toggle-group>
 
     <!-- Actions -->
-    <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button">
+    <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button"
+            *appHasPermission="'contacts.create'">
       <mat-icon>person_add</mat-icon>
       {{ 'contacts.newContact' | translate }}
     </button>

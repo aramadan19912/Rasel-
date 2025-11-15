@@ -11,7 +11,8 @@ import { UserDialogComponent } from './user-dialog.component';
     <div class="admin-container">
       <div class="page-header">
         <h2>{{ 'admin.users.title' | translate }}</h2>
-        <button mat-raised-button color="primary" (click)="openDialog()">
+        <button mat-raised-button color="primary" (click)="openDialog()"
+                *appHasPermission="'admin.users.manage'">
           <mat-icon>add</mat-icon>
           {{ 'admin.users.addUser' | translate }}
         </button>

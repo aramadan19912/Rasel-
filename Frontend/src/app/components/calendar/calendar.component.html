@@ -33,7 +33,8 @@
     </mat-menu>
 
     <!-- Create Event Button -->
-    <button mat-raised-button color="accent" (click)="openEventDialog(null)">
+    <button mat-raised-button color="accent" (click)="openEventDialog(null)"
+            *appHasPermission="'calendar.create'">
       <mat-icon>add</mat-icon>
       New Event
     </button>
@@ -43,7 +44,8 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #moreMenu="matMenu">
-      <button mat-menu-item (click)="createCalendar()">
+      <button mat-menu-item (click)="createCalendar()"
+              *appHasPermission="'calendar.manage'">
         <mat-icon>add</mat-icon>
         <span>Create Calendar</span>
       </button>

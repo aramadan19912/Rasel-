@@ -66,19 +66,23 @@
       </mat-card-header>
       <mat-card-content>
         <div class="quick-actions">
-          <button mat-raised-button color="primary" (click)="navigateTo('users')">
+          <button mat-raised-button color="primary" (click)="navigateTo('users')"
+                  *appHasPermission="'admin.users.manage'">
             <mat-icon>person_add</mat-icon>
             {{ 'admin.dashboard.addUser' | translate }}
           </button>
-          <button mat-raised-button color="primary" (click)="navigateTo('employees')">
+          <button mat-raised-button color="primary" (click)="navigateTo('employees')"
+                  *appHasPermission="'admin.employees.manage'">
             <mat-icon>badge</mat-icon>
             {{ 'admin.dashboard.addEmployee' | translate }}
           </button>
-          <button mat-raised-button color="primary" (click)="navigateTo('departments')">
+          <button mat-raised-button color="primary" (click)="navigateTo('departments')"
+                  *appHasPermission="'admin.departments.manage'">
             <mat-icon>business</mat-icon>
             {{ 'admin.dashboard.addDepartment' | translate }}
           </button>
-          <button mat-raised-button (click)="navigateTo('audit-logs')">
+          <button mat-raised-button (click)="navigateTo('audit-logs')"
+                  *appHasPermission="'admin.audit.view'">
             <mat-icon>history</mat-icon>
             {{ 'admin.dashboard.viewAuditLogs' | translate }}
           </button>

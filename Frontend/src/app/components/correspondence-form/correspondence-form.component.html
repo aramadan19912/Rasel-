@@ -229,11 +229,14 @@
       <button mat-raised-button type="button" (click)="cancel()" [disabled]="submitting">
         {{ 'common.cancel' | translate }}
       </button>
-      <button mat-raised-button type="button" (click)="saveDraft()" [disabled]="submitting" *ngIf="!isEditMode">
+      <button mat-raised-button type="button" (click)="saveDraft()" [disabled]="submitting"
+              *ngIf="!isEditMode"
+              *appHasPermission="'correspondence.create'">
         <mat-icon>save</mat-icon>
         {{ 'correspondence.saveDraft' | translate }}
       </button>
-      <button mat-raised-button color="primary" type="submit" [disabled]="submitting">
+      <button mat-raised-button color="primary" type="submit" [disabled]="submitting"
+              *appHasPermission="isEditMode ? 'correspondence.update' : 'correspondence.create'">
         <mat-icon>{{ isEditMode ? 'save' : 'send' }}</mat-icon>
         {{ (isEditMode ? 'common.save' : 'correspondence.submit') | translate }}
       </button>

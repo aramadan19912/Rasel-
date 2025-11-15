@@ -87,6 +87,10 @@ import { AuthService } from './services/auth.service';
 import { CorrespondenceService } from './services/correspondence.service';
 import { ArchiveCategoryService } from './services/archive-category.service';
 
+// Directives
+import { HasPermissionDirective } from './directives/has-permission.directive';
+import { HasRoleDirective } from './directives/has-role.directive';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -106,7 +110,9 @@ import { ArchiveCategoryService } from './services/archive-category.service';
     CorrespondenceDetailComponent,
     CorrespondenceFormComponent,
     CorrespondenceRoutingDialogComponent,
-    ArchiveManagementComponent
+    ArchiveManagementComponent,
+    HasPermissionDirective,
+    HasRoleDirective
   ],
   imports: [
     BrowserModule,
