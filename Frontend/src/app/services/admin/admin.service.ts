@@ -20,6 +20,35 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/dashboard/statistics`);
   }
 
+  getExecutiveDashboard(): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/dashboard/executive`);
+  }
+
+  getDepartmentDashboard(departmentId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/dashboard/department/${departmentId}`);
+  }
+
+  getEmployeeDashboard(employeeId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/dashboard/employee/${employeeId}`);
+  }
+
+  getRecentActivities(limit: number = 10): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/api/dashboard/activities`, {
+      params: { limit: limit.toString() }
+    });
+  }
+
+  getCorrespondenceStatistics(startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/dashboard/correspondence-statistics`, { params });
+  }
+
   // Users
   searchUsers(params: any): Observable<any> {
     let httpParams = new HttpParams();

@@ -4,8 +4,9 @@ namespace OutlookInboxManagement.Services.Admin;
 
 public interface IDashboardService
 {
-    Task<AdminDashboardDto> GetDashboardDataAsync();
-    Task<SystemStatistics> GetSystemStatisticsAsync();
-    Task<List<RecentActivity>> GetRecentActivitiesAsync(int count = 10);
-    Task<List<SystemAlert>> GetSystemAlertsAsync();
+    Task<ExecutiveDashboardDto> GetExecutiveDashboardAsync();
+    Task<DepartmentDashboardDto> GetDepartmentDashboardAsync(int departmentId);
+    Task<EmployeeDashboardDto> GetEmployeeDashboardAsync(int employeeId);
+    Task<List<ActivityLogDto>> GetRecentActivitiesAsync(int limit = 10);
+    Task<CorrespondenceStatisticsDto> GetCorrespondenceStatisticsAsync(DateTime? startDate = null, DateTime? endDate = null);
 }
