@@ -60,6 +60,10 @@ builder.Services.AddScoped<Application.Interfaces.Archive.IArchiveCategoryServic
 builder.Services.AddScoped<Application.Interfaces.Archive.ICorrespondenceService, Infrastructure.Services.Archive.CorrespondenceService>();
 builder.Services.AddScoped<Application.Interfaces.Archive.IPdfConversionService, Infrastructure.Services.Archive.PdfConversionService>();
 
+// Register Admin Services
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDashboardService, OutlookInboxManagement.Services.Admin.DashboardService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IReportService, OutlookInboxManagement.Services.Admin.ReportService>();
+
 // Add SignalR
 builder.Services.AddSignalR();
 
