@@ -1,0 +1,344 @@
+<div class="dms-browser-container">
+  <!-- Header -->
+  <div class="dms-header">
+    <div class="dms-toolbar">
+      <div class="breadcrumbs">
+        <button mat-icon-button (click)="navigateToFolder(null)">
+          <mat-icon>home</mat-icon>
+        </button>
+        <ng-container *ngFor="let folder of breadcrumbs; let last = last">
+          <mat-icon>chevron_right</mat-icon>
+          <button mat-button (click)="navigateToFolder(folder)" [disabled]="last">
+            {{ folder.name }}
+          </button>
+        </ng-container>
+      </div>
+
+      <div class="toolbar-actions">
+        <button mat-raised-button color="primary" (click)="onUploadDocuments()">
+          <mat-icon>cloud_upload</mat-icon>
+          Upload Documents
+        </button>
+        <button mat-raised-button (click)="onCreateFolder()">
+          <mat-icon>create_new_folder</mat-icon>
+          New Folder
+        </button>
+
+        <!-- Bulk Actions -->
+        <ng-container *ngIf="selectedDocuments.length > 0">
+          <button mat-button (click)="bulkDownload()">
+            <mat-icon>download</mat-icon>
+            Download ({{selectedDocuments.length}})
+          </button>
+          <button mat-button color="warn" (click)="bulkDelete()">
+            <mat-icon>delete</mat-icon>
+            Delete ({{selectedDocuments.length}})
+          </button>
+        </ng-container>
+
+        <!-- View Toggle -->
+        <button mat-icon-button (click)="toggleViewMode()" matTooltip="Toggle view mode">
+          <mat-icon>{{ viewMode === 'grid' ? 'view_list' : 'grid_view' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="search-filter-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search documents</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" placeholder="Search by title, filename, or tags">
+        <button mat-icon-button matSuffix (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button mat-button (click)="showFilterPanel = !showFilterPanel">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+        <mat-icon>{{ showFilterPanel ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </button>
+
+      <div class="sort-controls">
+        <mat-form-field appearance="outline">
+          <mat-label>Sort by</mat-label>
+          <mat-select [(ngModel)]="sortBy" (selectionChange)="loadDocuments()">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="date">Date</mat-option>
+            <mat-option value="size">Size</mat-option>
+            <mat-option value="type">Type</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; loadDocuments()">
+          <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div class="filter-panel" *ngIf="showFilterPanel">
+      <mat-card>
+        <mat-card-content>
+          <div class="filter-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Document Types</mat-label>
+              <mat-select [(ngModel)]="selectedTypes" multiple>
+                <mat-option *ngFor="let type of documentTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Categories</mat-label>
+              <mat-select [(ngModel)]="selectedCategories" multiple>
+                <mat-option *ngFor="let category of documentCategories" [value]="category">
+                  {{ category }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Access Level</mat-label>
+              <mat-select [(ngModel)]="selectedAccessLevel">
+                <mat-option [value]="null">All</mat-option>
+                <mat-option *ngFor="let level of accessLevels" [value]="level">
+                  {{ level }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="onSearch()">
+              Apply Filters
+            </button>
+            <button mat-button (click)="selectedTypes = []; selectedCategories = []; selectedAccessLevel = undefined; onSearch()">
+              Clear Filters
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Loading documents...</p>
+  </div>
+
+  <!-- Content Area -->
+  <div class="dms-content" *ngIf="!loading">
+    <!-- Folders Section -->
+    <div class="folders-section" *ngIf="folders.length > 0">
+      <h3>Folders</h3>
+      <div class="folders-grid">
+        <mat-card *ngFor="let folder of folders" class="folder-card" (click)="openFolder(folder)">
+          <mat-card-content>
+            <mat-icon class="folder-icon">folder</mat-icon>
+            <div class="folder-info">
+              <h4>{{ folder.name }}</h4>
+              <p class="folder-description">{{ folder.description }}</p>
+              <div class="folder-meta">
+                <span class="document-count">{{ folder.documentsCount || 0 }} documents</span>
+                <mat-chip [style.background-color]="getAccessLevelColor(folder.accessLevel)">
+                  {{ folder.accessLevel }}
+                </mat-chip>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Documents Section -->
+    <div class="documents-section">
+      <div class="section-header">
+        <h3>Documents ({{ totalCount }})</h3>
+        <div class="selection-actions" *ngIf="documents.length > 0">
+          <button mat-button (click)="selectAll()">Select All</button>
+          <button mat-button (click)="deselectAll()" *ngIf="selectedDocuments.length > 0">
+            Deselect All
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid View -->
+      <div class="documents-grid" *ngIf="viewMode === 'grid'">
+        <mat-card *ngFor="let doc of documents"
+                  class="document-card"
+                  [class.selected]="isSelected(doc)">
+          <mat-card-header>
+            <mat-checkbox [checked]="isSelected(doc)"
+                         (change)="toggleSelection(doc)"
+                         (click)="$event.stopPropagation()">
+            </mat-checkbox>
+            <mat-icon class="document-lock" *ngIf="doc.isLocked">lock</mat-icon>
+          </mat-card-header>
+
+          <mat-card-content (click)="openDocument(doc)">
+            <mat-icon class="document-icon">{{ getFileIcon(doc) }}</mat-icon>
+            <h4 class="document-title" [matTooltip]="doc.title">{{ doc.title }}</h4>
+            <p class="document-filename">{{ doc.originalFileName }}</p>
+            <div class="document-meta">
+              <span class="file-size">{{ formatFileSize(doc.fileSize) }}</span>
+              <span class="file-type">{{ doc.documentType }}</span>
+            </div>
+            <mat-chip class="access-level-chip"
+                     [style.background-color]="getAccessLevelColor(doc.accessLevel)">
+              {{ doc.accessLevel }}
+            </mat-chip>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-icon-button [matMenuTriggerFor]="docMenu" (click)="$event.stopPropagation()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #docMenu="matMenu">
+              <button mat-menu-item (click)="openDocument(doc)">
+                <mat-icon>visibility</mat-icon>
+                <span>View</span>
+              </button>
+              <button mat-menu-item (click)="downloadDocument(doc)">
+                <mat-icon>download</mat-icon>
+                <span>Download</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="deleteDocument(doc)" class="delete-action">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <!-- List View -->
+      <div class="documents-list" *ngIf="viewMode === 'list'">
+        <table mat-table [dataSource]="documents" class="documents-table">
+          <!-- Selection Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event.checked ? selectAll() : deselectAll()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let doc">
+              <mat-checkbox [checked]="isSelected(doc)" (change)="toggleSelection(doc)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let doc" (click)="openDocument(doc)" class="clickable">
+              <div class="document-name-cell">
+                <mat-icon>{{ getFileIcon(doc) }}</mat-icon>
+                <div>
+                  <div class="title">{{ doc.title }}</div>
+                  <div class="filename">{{ doc.originalFileName }}</div>
+                </div>
+                <mat-icon *ngIf="doc.isLocked" matTooltip="Locked">lock</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let doc">{{ doc.documentType }}</td>
+          </ng-container>
+
+          <!-- Size Column -->
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef>Size</th>
+            <td mat-cell *matCellDef="let doc">{{ formatFileSize(doc.fileSize) }}</td>
+          </ng-container>
+
+          <!-- Access Level Column -->
+          <ng-container matColumnDef="accessLevel">
+            <th mat-header-cell *matHeaderCellDef>Access Level</th>
+            <td mat-cell *matCellDef="let doc">
+              <mat-chip [style.background-color]="getAccessLevelColor(doc.accessLevel)">
+                {{ doc.accessLevel }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Modified Column -->
+          <ng-container matColumnDef="modified">
+            <th mat-header-cell *matHeaderCellDef>Modified</th>
+            <td mat-cell *matCellDef="let doc">{{ doc.updatedAt || doc.createdAt | date:'short' }}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let doc">
+              <button mat-icon-button [matMenuTriggerFor]="listDocMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #listDocMenu="matMenu">
+                <button mat-menu-item (click)="openDocument(doc)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>View</span>
+                </button>
+                <button mat-menu-item (click)="downloadDocument(doc)">
+                  <mat-icon>download</mat-icon>
+                  <span>Download</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deleteDocument(doc)">
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['select', 'name', 'type', 'size', 'accessLevel', 'modified', 'actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['select', 'name', 'type', 'size', 'accessLevel', 'modified', 'actions'];"></tr>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="documents.length === 0 && !loading">
+        <mat-icon>folder_open</mat-icon>
+        <h3>No documents found</h3>
+        <p *ngIf="searchTerm || selectedTypes.length > 0 || selectedCategories.length > 0">
+          Try adjusting your filters or search term
+        </p>
+        <p *ngIf="!searchTerm && selectedTypes.length === 0 && selectedCategories.length === 0">
+          Upload your first document to get started
+        </p>
+        <button mat-raised-button color="primary" (click)="onUploadDocuments()">
+          <mat-icon>cloud_upload</mat-icon>
+          Upload Documents
+        </button>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <mat-paginator *ngIf="totalPages > 1"
+                   [length]="totalCount"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="[10, 20, 50, 100]"
+                   [pageIndex]="currentPage - 1"
+                   (page)="onPageChange($event.pageIndex + 1)">
+    </mat-paginator>
+  </div>
+</div>
+
+<!-- Upload Dialog -->
+<app-document-upload *ngIf="showUploadDialog"
+                     [folderId]="currentFolder?.id"
+                     (uploaded)="onDocumentsUploaded()"
+                     (cancelled)="showUploadDialog = false">
+</app-document-upload>
+
+<!-- Create Folder Dialog -->
+<app-folder-management *ngIf="showCreateFolderDialog"
+                       [parentFolderId]="currentFolder?.id"
+                       (created)="onFolderCreated()"
+                       (cancelled)="showCreateFolderDialog = false">
+</app-folder-management>
