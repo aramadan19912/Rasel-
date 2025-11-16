@@ -699,6 +699,45 @@
       "title": "سجلات التدقيق",
       "viewLogs": "عرض السجلات",
       "exportLogs": "تصدير السجلات"
+    },
+
+    "reports": {
+      "title": "التقارير",
+      "correspondenceReport": "تقرير المراسلات",
+      "employeePerformance": "أداء الموظفين",
+      "departmentReport": "تقرير الأقسام",
+      "archiveReport": "تقرير الأرشيف",
+      "auditReport": "تقرير التدقيق",
+
+      "export": "تصدير",
+      "exportCSV": "تصدير إلى CSV",
+      "exportExcel": "تصدير إلى Excel",
+      "exportPDF": "تصدير إلى PDF",
+
+      "filters": "الفلاتر",
+      "summary": "الملخص",
+
+      "totalCorrespondences": "إجمالي المراسلات",
+      "overdueCount": "المتأخرة",
+      "avgCompletionHours": "متوسط الإنجاز (ساعات)",
+      "statusBreakdown": "تفصيل الحالة",
+      "priorityBreakdown": "تفصيل الأولوية",
+      "departmentBreakdown": "تفصيل الأقسام",
+      "topCorrespondences": "أهم المراسلات",
+
+      "referenceNumber": "الرقم المرجعي",
+      "subject": "الموضوع",
+      "status": "الحالة",
+      "priority": "الأولوية",
+      "createdAt": "تاريخ الإنشاء",
+
+      "totalAssigned": "إجمالي المُعيّنة",
+      "completed": "المكتملة",
+      "pending": "المعلقة",
+      "overdue": "المتأخرة",
+      "completionRate": "معدل الإنجاز",
+      "totalEmployees": "إجمالي الموظفين",
+      "avgResponseTime": "متوسط وقت الاستجابة (ساعات)"
     }
   }
 }

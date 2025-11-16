@@ -2,6 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using OutlookInboxManagement.Data;
 using OutlookInboxManagement.DTOs.Admin;
 using System.Text;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace OutlookInboxManagement.Services.Admin;
 
@@ -518,16 +523,252 @@ public class ReportService : IReportService
 
     private byte[] GenerateExcelReport(CorrespondenceReportDto report)
     {
-        // Placeholder - in a real implementation, you would use a library like EPPlus or ClosedXML
-        // For now, return CSV format
-        return GenerateCsvReport(report);
+        // Set EPPlus license context
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        using var package = new ExcelPackage();
+        var worksheet = package.Workbook.Worksheets.Add("Correspondence Report");
+
+        // Title
+        worksheet.Cells["A1"].Value = "Correspondence Report";
+        worksheet.Cells["A1"].Style.Font.Size = 16;
+        worksheet.Cells["A1"].Style.Font.Bold = true;
+
+        // Summary Section
+        worksheet.Cells["A3"].Value = "Report Period:";
+        worksheet.Cells["B3"].Value = $"{report.StartDate:yyyy-MM-dd} to {report.EndDate:yyyy-MM-dd}";
+
+        worksheet.Cells["A4"].Value = "Total Count:";
+        worksheet.Cells["B4"].Value = report.TotalCount;
+
+        worksheet.Cells["A5"].Value = "Overdue Count:";
+        worksheet.Cells["B5"].Value = report.OverdueCount;
+
+        worksheet.Cells["A6"].Value = "Average Completion Time:";
+        worksheet.Cells["B6"].Value = $"{report.AverageCompletionTime:F2} hours";
+
+        // Status Breakdown
+        int row = 8;
+        worksheet.Cells[$"A{row}"].Value = "Status Breakdown";
+        worksheet.Cells[$"A{row}"].Style.Font.Bold = true;
+        row++;
+
+        worksheet.Cells[$"A{row}"].Value = "Status";
+        worksheet.Cells[$"B{row}"].Value = "Count";
+        worksheet.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
+        worksheet.Cells[$"A{row}:B{row}"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[$"A{row}:B{row}"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+        row++;
+
+        foreach (var item in report.ByStatus)
+        {
+            worksheet.Cells[$"A{row}"].Value = item.Key;
+            worksheet.Cells[$"B{row}"].Value = item.Value;
+            row++;
+        }
+
+        // Priority Breakdown
+        row += 2;
+        worksheet.Cells[$"A{row}"].Value = "Priority Breakdown";
+        worksheet.Cells[$"A{row}"].Style.Font.Bold = true;
+        row++;
+
+        worksheet.Cells[$"A{row}"].Value = "Priority";
+        worksheet.Cells[$"B{row}"].Value = "Count";
+        worksheet.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
+        worksheet.Cells[$"A{row}:B{row}"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[$"A{row}:B{row}"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+        row++;
+
+        foreach (var item in report.ByPriority)
+        {
+            worksheet.Cells[$"A{row}"].Value = item.Key;
+            worksheet.Cells[$"B{row}"].Value = item.Value;
+            row++;
+        }
+
+        // Top Correspondences
+        row += 2;
+        worksheet.Cells[$"A{row}"].Value = "Top Correspondences";
+        worksheet.Cells[$"A{row}"].Style.Font.Bold = true;
+        row++;
+
+        worksheet.Cells[$"A{row}"].Value = "Reference Number";
+        worksheet.Cells[$"B{row}"].Value = "Subject";
+        worksheet.Cells[$"C{row}"].Value = "Status";
+        worksheet.Cells[$"D{row}"].Value = "Priority";
+        worksheet.Cells[$"E{row}"].Value = "Created At";
+        worksheet.Cells[$"A{row}:E{row}"].Style.Font.Bold = true;
+        worksheet.Cells[$"A{row}:E{row}"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+        worksheet.Cells[$"A{row}:E{row}"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+        row++;
+
+        foreach (var item in report.TopCorrespondences)
+        {
+            worksheet.Cells[$"A{row}"].Value = item.ReferenceNumber;
+            worksheet.Cells[$"B{row}"].Value = item.Subject;
+            worksheet.Cells[$"C{row}"].Value = item.Status;
+            worksheet.Cells[$"D{row}"].Value = item.Priority;
+            worksheet.Cells[$"E{row}"].Value = item.CreatedAt.ToString("yyyy-MM-dd");
+            row++;
+        }
+
+        // Auto-fit columns
+        worksheet.Cells.AutoFitColumns();
+
+        // Add borders to all cells with content
+        var lastRow = row - 1;
+        worksheet.Cells[$"A1:E{lastRow}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+        worksheet.Cells[$"A1:E{lastRow}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+        worksheet.Cells[$"A1:E{lastRow}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+        worksheet.Cells[$"A1:E{lastRow}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+        return package.GetAsByteArray();
     }
 
     private byte[] GeneratePdfReport(CorrespondenceReportDto report)
     {
-        // Placeholder - in a real implementation, you would use a library like iTextSharp or QuestPDF
-        // For now, return CSV format as plain text
-        return GenerateCsvReport(report);
+        // Configure QuestPDF license
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        var document = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(2, Unit.Centimetre);
+                page.PageColor(Colors.White);
+                page.DefaultTextStyle(x => x.FontSize(12));
+
+                page.Header()
+                    .Text("Correspondence Report")
+                    .SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+
+                page.Content()
+                    .PaddingVertical(1, Unit.Centimetre)
+                    .Column(x =>
+                    {
+                        x.Spacing(10);
+
+                        // Summary Section
+                        x.Item().Text(text =>
+                        {
+                            text.Span("Report Period: ").SemiBold();
+                            text.Span($"{report.StartDate:yyyy-MM-dd} to {report.EndDate:yyyy-MM-dd}");
+                        });
+
+                        x.Item().Text(text =>
+                        {
+                            text.Span("Total Count: ").SemiBold();
+                            text.Span(report.TotalCount.ToString());
+                        });
+
+                        x.Item().Text(text =>
+                        {
+                            text.Span("Overdue Count: ").SemiBold();
+                            text.Span(report.OverdueCount.ToString());
+                        });
+
+                        x.Item().Text(text =>
+                        {
+                            text.Span("Average Completion Time: ").SemiBold();
+                            text.Span($"{report.AverageCompletionTime:F2} hours");
+                        });
+
+                        // Status Breakdown
+                        x.Item().PaddingTop(20).Text("Status Breakdown").SemiBold().FontSize(14);
+                        x.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(1);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Status").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Count").SemiBold();
+                            });
+
+                            foreach (var item in report.ByStatus)
+                            {
+                                table.Cell().Border(1).Padding(5).Text(item.Key);
+                                table.Cell().Border(1).Padding(5).Text(item.Value.ToString());
+                            }
+                        });
+
+                        // Priority Breakdown
+                        x.Item().PaddingTop(20).Text("Priority Breakdown").SemiBold().FontSize(14);
+                        x.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(1);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Priority").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Count").SemiBold();
+                            });
+
+                            foreach (var item in report.ByPriority)
+                            {
+                                table.Cell().Border(1).Padding(5).Text(item.Key);
+                                table.Cell().Border(1).Padding(5).Text(item.Value.ToString());
+                            }
+                        });
+
+                        // Top Correspondences
+                        x.Item().PaddingTop(20).Text("Top Correspondences").SemiBold().FontSize(14);
+                        x.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(3);
+                                columns.RelativeColumn(1);
+                                columns.RelativeColumn(1);
+                                columns.RelativeColumn(2);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Ref Number").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Subject").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Status").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Priority").SemiBold();
+                                header.Cell().Background(Colors.Grey.Lighten2).Padding(5).Text("Created").SemiBold();
+                            });
+
+                            foreach (var item in report.TopCorrespondences)
+                            {
+                                table.Cell().Border(1).Padding(5).Text(item.ReferenceNumber).FontSize(10);
+                                table.Cell().Border(1).Padding(5).Text(item.Subject).FontSize(10);
+                                table.Cell().Border(1).Padding(5).Text(item.Status).FontSize(10);
+                                table.Cell().Border(1).Padding(5).Text(item.Priority).FontSize(10);
+                                table.Cell().Border(1).Padding(5).Text(item.CreatedAt.ToString("yyyy-MM-dd")).FontSize(10);
+                            }
+                        });
+                    });
+
+                page.Footer()
+                    .AlignCenter()
+                    .Text(x =>
+                    {
+                        x.Span("Page ");
+                        x.CurrentPageNumber();
+                        x.Span(" of ");
+                        x.TotalPages();
+                    });
+            });
+        });
+
+        using var stream = new MemoryStream();
+        document.GeneratePdf(stream);
+        return stream.ToArray();
     }
 
     #endregion

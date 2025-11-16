@@ -200,4 +200,74 @@ export class AdminService {
   getAuditLogStatistics(): Observable<any> {
     return this.http.get(`${this.apiUrl}/audit-logs/statistics`);
   }
+
+  // Report Methods
+  getCorrespondenceReport(filter: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/report/correspondence`, filter);
+  }
+
+  exportCorrespondenceReport(filter: any, format: string): Observable<Blob> {
+    return this.http.post(`${environment.apiUrl}/api/report/correspondence/export?format=${format}`, filter, {
+      responseType: 'blob'
+    });
+  }
+
+  getEmployeePerformanceReport(employeeId: number, startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/report/employee/${employeeId}`, { params });
+  }
+
+  getAllEmployeesPerformanceReport(startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/report/employee/all`, { params });
+  }
+
+  getDepartmentReport(departmentId: number, startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/report/department/${departmentId}`, { params });
+  }
+
+  getAllDepartmentsReport(startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/report/department/all`, { params });
+  }
+
+  getArchiveReport(startDate?: Date, endDate?: Date): Observable<any> {
+    let params = new HttpParams();
+    if (startDate) {
+      params = params.set('startDate', startDate.toISOString());
+    }
+    if (endDate) {
+      params = params.set('endDate', endDate.toISOString());
+    }
+    return this.http.get(`${environment.apiUrl}/api/report/archive`, { params });
+  }
+
+  getAuditLogReport(filter: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/api/report/audit-log`, filter);
+  }
 }

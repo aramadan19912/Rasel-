@@ -1,0 +1,244 @@
+.reports-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+
+  .reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    gap: 16px;
+  }
+
+  .report-content {
+    padding: 24px 0;
+
+    .filters-card {
+      margin-bottom: 24px;
+
+      .filters-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+
+        mat-form-field {
+          flex: 1;
+          min-width: 200px;
+        }
+      }
+    }
+
+    .summary-card {
+      margin-bottom: 24px;
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+
+        .stat-item {
+          text-align: center;
+          padding: 16px;
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+          border-radius: 8px;
+
+          h3 {
+            margin: 0 0 8px 0;
+            font-size: 32px;
+            font-weight: 600;
+            color: #667eea;
+          }
+
+          p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+          }
+        }
+      }
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+
+      @media (max-width: 1200px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      margin-bottom: 24px;
+
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+
+      mat-card-content {
+        display: flex;
+        justify-content: center;
+        padding: 24px;
+      }
+    }
+
+    .table-card {
+      margin-bottom: 24px;
+
+      table {
+        width: 100%;
+
+        .status-badge,
+        .priority-badge {
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 12px;
+          font-weight: 500;
+          text-transform: uppercase;
+
+          &.Completed,
+          &.completed {
+            background: #c3e6cb;
+            color: #155724;
+          }
+
+          &.Pending,
+          &.pending {
+            background: #fff3cd;
+            color: #856404;
+          }
+
+          &.InProgress,
+          &.in-progress {
+            background: #d1ecf1;
+            color: #0c5460;
+          }
+
+          &.High,
+          &.Urgent,
+          &.Critical {
+            background: #f8d7da;
+            color: #721c24;
+          }
+
+          &.Normal {
+            background: #d1ecf1;
+            color: #0c5460;
+          }
+
+          &.Low {
+            background: #d4edda;
+            color: #155724;
+          }
+        }
+      }
+    }
+
+    .performance-card {
+      margin-bottom: 24px;
+
+      .performance-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+
+        .stat-item {
+          text-align: center;
+          padding: 16px;
+          background: #f5f7fa;
+          border-radius: 8px;
+
+          h4 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+          }
+
+          p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+
+    .department-report-card {
+      margin-bottom: 24px;
+
+      .department-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+
+        .stat-item {
+          text-align: center;
+          padding: 16px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border-radius: 8px;
+
+          h4 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 600;
+          }
+
+          p {
+            margin: 0;
+            font-size: 12px;
+            text-transform: uppercase;
+            opacity: 0.9;
+          }
+        }
+      }
+    }
+  }
+}
+
+[dir="rtl"] {
+  .reports-container {
+    .reports-header {
+      .header-actions {
+        button {
+          mat-icon {
+            margin-right: 0;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+}

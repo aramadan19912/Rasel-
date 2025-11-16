@@ -699,6 +699,45 @@
       "title": "Audit Logs",
       "viewLogs": "View Logs",
       "exportLogs": "Export Logs"
+    },
+
+    "reports": {
+      "title": "Reports",
+      "correspondenceReport": "Correspondence Report",
+      "employeePerformance": "Employee Performance",
+      "departmentReport": "Department Report",
+      "archiveReport": "Archive Report",
+      "auditReport": "Audit Report",
+
+      "export": "Export",
+      "exportCSV": "Export to CSV",
+      "exportExcel": "Export to Excel",
+      "exportPDF": "Export to PDF",
+
+      "filters": "Filters",
+      "summary": "Summary",
+
+      "totalCorrespondences": "Total Correspondences",
+      "overdueCount": "Overdue",
+      "avgCompletionHours": "Average Completion (hours)",
+      "statusBreakdown": "Status Breakdown",
+      "priorityBreakdown": "Priority Breakdown",
+      "departmentBreakdown": "Department Breakdown",
+      "topCorrespondences": "Top Correspondences",
+
+      "referenceNumber": "Reference Number",
+      "subject": "Subject",
+      "status": "Status",
+      "priority": "Priority",
+      "createdAt": "Created At",
+
+      "totalAssigned": "Total Assigned",
+      "completed": "Completed",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "completionRate": "Completion Rate",
+      "totalEmployees": "Total Employees",
+      "avgResponseTime": "Avg Response Time (hours)"
     }
   }
 }
