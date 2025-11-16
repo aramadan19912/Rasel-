@@ -10,6 +10,7 @@ using Domain.Entities.Organization;
 using Domain.Entities.Archive;
 using Domain.Entities.Communication;
 using Domain.Entities.Settings;
+using OutlookInboxManagement.Domain.Entities.DMS;
 
 namespace Backend.Infrastructure.Data;
 
@@ -101,6 +102,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
     public DbSet<PrintTemplate> PrintTemplates { get; set; }
     public DbSet<FolderPermission> FolderPermissions { get; set; }
     public DbSet<ClassificationPermission> ClassificationPermissions { get; set; }
+
+    // DMS (Document Management System)
+    public DbSet<Document> Documents { get; set; }
+    public DbSet<DocumentVersion> DocumentVersions { get; set; }
+    public DbSet<DocumentMetadata> DocumentMetadata { get; set; }
+    public DbSet<DocumentAnnotation> DocumentAnnotations { get; set; }
+    public DbSet<DocumentActivity> DocumentActivities { get; set; }
+    public DbSet<DocumentFolder> DocumentFolders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -1200,6 +1209,161 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Role, str
                 .WithMany()
                 .HasForeignKey(p => p.DepartmentId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ===== DMS Configuration =====
+        builder.Entity<Document>(entity =>
+        {
+            entity.ToTable("Documents");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.FileName);
+            entity.HasIndex(e => e.OwnerId);
+            entity.HasIndex(e => new { e.FolderId, e.IsDeleted });
+            entity.HasIndex(e => new { e.CorrespondenceId, e.IsDeleted });
+            entity.HasIndex(e => new { e.DocumentType, e.IsDeleted });
+            entity.HasIndex(e => new { e.CreatedAt, e.IsDeleted });
+
+            entity.Property(e => e.FileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.OriginalFileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.FileExtension).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.MimeType).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.FilePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.Category).HasMaxLength(100);
+            entity.Property(e => e.Tags).HasMaxLength(1000);
+            entity.Property(e => e.OwnerId).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.LockedBy).HasMaxLength(450);
+            entity.Property(e => e.AllowedUsers).HasMaxLength(2000);
+            entity.Property(e => e.AllowedRoles).HasMaxLength(2000);
+
+            // Relationships
+            entity.HasOne(d => d.Correspondence)
+                .WithMany()
+                .HasForeignKey(d => d.CorrespondenceId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(d => d.Folder)
+                .WithMany(f => f.Documents)
+                .HasForeignKey(d => d.FolderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasMany(d => d.Versions)
+                .WithOne(v => v.Document)
+                .HasForeignKey(v => v.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(d => d.Metadata)
+                .WithOne(m => m.Document)
+                .HasForeignKey(m => m.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(d => d.Annotations)
+                .WithOne(a => a.Document)
+                .HasForeignKey(a => a.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(d => d.Activities)
+                .WithOne(a => a.Document)
+                .HasForeignKey(a => a.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DocumentVersion>(entity =>
+        {
+            entity.ToTable("DocumentVersions");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.DocumentId, e.VersionNumber }).IsUnique();
+            entity.HasIndex(e => new { e.DocumentId, e.IsActive });
+            entity.HasIndex(e => e.CreatedAt);
+
+            entity.Property(e => e.FileName).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.FilePath).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.FileHash).HasMaxLength(128).IsRequired();
+            entity.Property(e => e.VersionComment).HasMaxLength(1000);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+        });
+
+        builder.Entity<DocumentMetadata>(entity =>
+        {
+            entity.ToTable("DocumentMetadata");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.DocumentId, e.Key }).IsUnique();
+            entity.HasIndex(e => e.Key);
+
+            entity.Property(e => e.Key).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Value).IsRequired();
+        });
+
+        builder.Entity<DocumentAnnotation>(entity =>
+        {
+            entity.ToTable("DocumentAnnotations");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DocumentId);
+            entity.HasIndex(e => new { e.DocumentId, e.VersionId });
+            entity.HasIndex(e => e.ParentAnnotationId);
+            entity.HasIndex(e => new { e.DocumentId, e.PageNumber });
+
+            entity.Property(e => e.Content).HasMaxLength(4000);
+            entity.Property(e => e.Color).HasMaxLength(50);
+            entity.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.CreatedByName).HasMaxLength(200);
+
+            // Self-referencing relationship for threaded comments
+            entity.HasOne(a => a.ParentAnnotation)
+                .WithMany(a => a.Replies)
+                .HasForeignKey(a => a.ParentAnnotationId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(a => a.Version)
+                .WithMany()
+                .HasForeignKey(a => a.VersionId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<DocumentActivity>(entity =>
+        {
+            entity.ToTable("DocumentActivities");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.DocumentId);
+            entity.HasIndex(e => new { e.DocumentId, e.CreatedAt });
+            entity.HasIndex(e => e.ActivityType);
+            entity.HasIndex(e => e.UserId);
+
+            entity.Property(e => e.Description).HasMaxLength(1000).IsRequired();
+            entity.Property(e => e.UserId).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.UserName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.IpAddress).HasMaxLength(50);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.Property(e => e.AdditionalData).HasMaxLength(4000);
+
+            entity.HasOne(a => a.Version)
+                .WithMany()
+                .HasForeignKey(a => a.VersionId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        builder.Entity<DocumentFolder>(entity =>
+        {
+            entity.ToTable("DocumentFolders");
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ParentFolderId);
+            entity.HasIndex(e => e.Path).IsUnique();
+            entity.HasIndex(e => e.OwnerId);
+            entity.HasIndex(e => new { e.ParentFolderId, e.Name });
+
+            entity.Property(e => e.Name).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Path).HasMaxLength(2000).IsRequired();
+            entity.Property(e => e.OwnerId).HasMaxLength(450).IsRequired();
+            entity.Property(e => e.AllowedUsers).HasMaxLength(2000);
+            entity.Property(e => e.AllowedRoles).HasMaxLength(2000);
+
+            // Self-referencing relationship
+            entity.HasOne(f => f.ParentFolder)
+                .WithMany(f => f.SubFolders)
+                .HasForeignKey(f => f.ParentFolderId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

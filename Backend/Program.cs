@@ -64,6 +64,9 @@ builder.Services.AddScoped<Application.Interfaces.Archive.IPdfConversionService,
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDashboardService, OutlookInboxManagement.Services.Admin.DashboardService>();
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IReportService, OutlookInboxManagement.Services.Admin.ReportService>();
 
+// Register DMS Services
+builder.Services.AddScoped<Application.Interfaces.DMS.IDocumentService, Infrastructure.Services.DMS.DocumentService>();
+
 // Add SignalR
 builder.Services.AddSignalR();
 
