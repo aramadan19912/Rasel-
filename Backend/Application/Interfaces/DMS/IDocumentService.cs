@@ -9,6 +9,7 @@ public interface IDocumentService
     Task<DocumentDto> GetDocumentByIdAsync(int id);
     Task<DocumentSearchResultDto> SearchDocumentsAsync(DocumentSearchDto searchDto);
     Task<DocumentDto> CreateDocumentAsync(CreateDocumentDto createDto, IFormFile file, string userId);
+    Task<DocumentDto> CreateDocumentFromStreamAsync(CreateDocumentDto createDto, Stream fileStream, string fileName, string contentType, string userId);
     Task<DocumentDto> UpdateDocumentAsync(int id, UpdateDocumentDto updateDto, string userId);
     Task DeleteDocumentAsync(int id, string userId);
     Task<byte[]> DownloadDocumentAsync(int id, string userId, int? versionId = null);

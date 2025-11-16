@@ -201,6 +201,97 @@ public class DocumentService : IDocumentService
         return await GetDocumentByIdAsync(document.Id);
     }
 
+    public async Task<DocumentDto> CreateDocumentFromStreamAsync(CreateDocumentDto createDto, Stream fileStream, string fileName, string contentType, string userId)
+    {
+        if (fileStream == null || fileStream.Length == 0)
+            throw new ArgumentException("File stream is required");
+
+        // Generate unique file name
+        var fileExtension = Path.GetExtension(fileName);
+        var uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+        var filePath = Path.Combine(_uploadPath, uniqueFileName);
+
+        // Save file to disk
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await fileStream.CopyToAsync(stream);
+        }
+
+        // Calculate file hash
+        var fileHash = await CalculateFileHashAsync(filePath);
+
+        // Determine document type
+        var documentType = DetermineDocumentType(fileExtension);
+
+        // Get file size
+        var fileInfo = new FileInfo(filePath);
+
+        // Create document entity
+        var document = new Document
+        {
+            FileName = uniqueFileName,
+            OriginalFileName = fileName,
+            FileExtension = fileExtension,
+            MimeType = contentType,
+            FileSize = fileInfo.Length,
+            FilePath = filePath,
+            Title = createDto.Title,
+            Description = createDto.Description,
+            DocumentType = documentType,
+            Category = createDto.Category,
+            Tags = string.Join(",", createDto.Tags ?? new List<string>()),
+            CurrentVersion = 1,
+            AccessLevel = createDto.AccessLevel,
+            CorrespondenceId = createDto.CorrespondenceId,
+            FolderId = createDto.FolderId,
+            OwnerId = userId,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Set<Document>().Add(document);
+
+        // Create initial version
+        var version = new DocumentVersion
+        {
+            Document = document,
+            VersionNumber = 1,
+            FileName = uniqueFileName,
+            FilePath = filePath,
+            FileSize = fileInfo.Length,
+            FileHash = fileHash,
+            VersionComment = "Initial version",
+            ChangeType = VersionChangeType.Created,
+            CreatedBy = userId,
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
+        };
+
+        _context.Set<DocumentVersion>().Add(version);
+
+        // Add metadata if provided
+        if (createDto.Metadata?.Any() == true)
+        {
+            foreach (var meta in createDto.Metadata)
+            {
+                var metadata = new DocumentMetadata
+                {
+                    Document = document,
+                    Key = meta.Key,
+                    Value = meta.Value,
+                    Type = MetadataType.String
+                };
+                _context.Set<DocumentMetadata>().Add(metadata);
+            }
+        }
+
+        // Log activity
+        await LogActivityInternalAsync(document, DocumentActivityType.Created, "Document created from correspondence attachment", userId);
+
+        await _context.SaveChangesAsync();
+
+        return await GetDocumentByIdAsync(document.Id);
+    }
+
     public async Task<DocumentDto> UpdateDocumentAsync(int id, UpdateDocumentDto updateDto, string userId)
     {
         var document = await _context.Set<Document>()
