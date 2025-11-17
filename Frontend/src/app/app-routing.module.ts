@@ -161,6 +161,15 @@ const routes: Routes = [
           permissions: ['admin.access'],
           requireAllPermissions: false
         }
+      },
+      {
+        path: 'dms',
+        loadChildren: () => import('./modules/dms/dms.module').then(m => m.DmsModule),
+        canActivate: [PermissionGuard],
+        data: {
+          permissions: ['documents.read'],
+          requireAllPermissions: false
+        }
       }
     ]
   },

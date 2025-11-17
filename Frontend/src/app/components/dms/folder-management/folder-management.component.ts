@@ -7,6 +7,7 @@ import {
 } from '../../../models/dms.models';
 
 @Component({
+  standalone: false,
   selector: 'app-folder-management',
   templateUrl: './folder-management.component.html',
   styleUrls: ['./folder-management.component.scss']

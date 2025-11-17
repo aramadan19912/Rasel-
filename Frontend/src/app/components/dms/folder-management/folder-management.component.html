@@ -32,12 +32,14 @@
         <div class="permissions-section" *ngIf="accessLevel === 'Private' || accessLevel === 'Restricted'">
           <h4>Allowed Users</h4>
           <div class="chips-container">
-            <mat-chip-list>
-              <mat-chip *ngFor="let user of allowedUsers" [removable]="!saving" (removed)="removeUser(user)">
+            <mat-chip-grid>
+              <mat-chip-row *ngFor="let user of allowedUsers" [removable]="!saving" (removed)="removeUser(user)">
                 {{ user }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
-            </mat-chip-list>
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            </mat-chip-grid>
           </div>
           <div class="add-permission">
             <mat-form-field appearance="outline">
@@ -55,12 +57,14 @@
 
           <h4>Allowed Roles</h4>
           <div class="chips-container">
-            <mat-chip-list>
-              <mat-chip *ngFor="let role of allowedRoles" [removable]="!saving" (removed)="removeRole(role)">
+            <mat-chip-grid>
+              <mat-chip-row *ngFor="let role of allowedRoles" [removable]="!saving" (removed)="removeRole(role)">
                 {{ role }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
-            </mat-chip-list>
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            </mat-chip-grid>
           </div>
           <div class="add-permission">
             <mat-form-field appearance="outline">

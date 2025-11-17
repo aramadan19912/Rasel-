@@ -13,6 +13,7 @@ import {
 } from '../../../models/dms.models';
 
 @Component({
+  standalone: false,
   selector: 'app-document-browser',
   templateUrl: './document-browser.component.html',
   styleUrls: ['./document-browser.component.scss']
@@ -236,14 +237,14 @@ export class DocumentBrowserComponent implements OnInit, OnDestroy {
     this.selectedDocuments = [];
   }
 
-  downloadDocument(document: Document): void {
-    this.dmsService.downloadDocument(document.id)
+  downloadDocument(doc: Document): void {
+    this.dmsService.downloadDocument(doc.id)
       .subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
+          const link = window.document.createElement('a');
           link.href = url;
-          link.download = document.originalFileName;
+          link.download = doc.originalFileName;
           link.click();
           window.URL.revokeObjectURL(url);
         },

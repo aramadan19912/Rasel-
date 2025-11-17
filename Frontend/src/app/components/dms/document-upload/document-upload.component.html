@@ -83,12 +83,14 @@
         </div>
 
         <div class="tags-input">
-          <mat-chip-list>
-            <mat-chip *ngFor="let tag of tags" [removable]="!uploading" (removed)="removeTag(tag)">
+          <mat-chip-grid>
+            <mat-chip-row *ngFor="let tag of tags" [removable]="!uploading" (removed)="removeTag(tag)">
               {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-          </mat-chip-list>
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          </mat-chip-grid>
           <mat-form-field appearance="outline" class="tag-input-field">
             <mat-label>Add Tags</mat-label>
             <input matInput
