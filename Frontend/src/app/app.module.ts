@@ -61,6 +61,9 @@ import { EventDialogComponent } from './components/calendar/event-dialog/event-d
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
 import { VideoConferenceComponent } from './components/video-conference/video-conference.component';
+import { VideoTileComponent } from './components/video-conference/video-tile/video-tile.component';
+import { ParticipantsPanelComponent } from './components/video-conference/participants-panel/participants-panel.component';
+import { ChatPanelComponent } from './components/video-conference/chat-panel/chat-panel.component';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
 import { CorrespondenceDashboardComponent } from './components/correspondence-dashboard/correspondence-dashboard.component';
 import { CorrespondenceListComponent } from './components/correspondence-list/correspondence-list.component';
@@ -100,6 +103,9 @@ import { HasRoleDirective } from './directives/has-role.directive';
     ContactsComponent,
     ContactDialogComponent,
     VideoConferenceComponent,
+    VideoTileComponent,
+    ParticipantsPanelComponent,
+    ChatPanelComponent,
     LanguageSwitcherComponent,
     LoginComponent,
     RegisterComponent,

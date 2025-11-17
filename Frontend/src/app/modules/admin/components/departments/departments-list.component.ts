@@ -4,6 +4,7 @@ import { AdminService } from '../../../../services/admin/admin.service';
 import { DepartmentDialogComponent } from './department-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-departments-list',
   template: `<div class="admin-container"><div class="page-header"><h2>{{ 'admin.departments.title' | translate }}</h2><button mat-raised-button color="primary" (click)="openDialog()" *appHasPermission="'admin.departments.manage'"><mat-icon>add</mat-icon>{{ 'admin.departments.addDepartment' | translate }}</button></div><mat-card><mat-card-content><p class="coming-soon">{{ 'admin.departments.comingSoon' | translate }}</p></mat-card-content></mat-card></div>`,
   styles: [`.admin-container{padding:24px}.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.coming-soon{text-align:center;padding:48px;color:#666}`]

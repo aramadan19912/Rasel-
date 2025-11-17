@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Participant } from '../../../models/video-conference.model';
 
 @Component({
+  standalone: false,
   selector: 'app-participants-panel',
   templateUrl: './participants-panel.component.html',
   styleUrls: ['./participants-panel.component.scss']

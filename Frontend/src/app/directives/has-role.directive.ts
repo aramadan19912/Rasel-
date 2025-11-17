@@ -3,7 +3,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Directive({
-  selector: '[appHasRole]'
+  selector: '[appHasRole]',
+  standalone: false
 })
 export class HasRoleDirective implements OnInit, OnDestroy {
   private roles: string[] = [];

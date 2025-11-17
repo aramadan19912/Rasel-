@@ -25,6 +25,7 @@ export interface EventDialogData {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-event-dialog',
   templateUrl: './event-dialog.component.html',
   styleUrls: ['./event-dialog.component.scss']

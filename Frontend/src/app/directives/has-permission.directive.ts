@@ -3,7 +3,8 @@ import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 @Directive({
-  selector: '[appHasPermission]'
+  selector: '[appHasPermission]',
+  standalone: false
 })
 export class HasPermissionDirective implements OnInit, OnDestroy {
   private permissions: string[] = [];

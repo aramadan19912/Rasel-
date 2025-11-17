@@ -288,17 +288,19 @@
             <h3>Categories</h3>
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Categories</mat-label>
-              <mat-chip-list #categoryList formControlName="categories">
-                <mat-chip *ngFor="let category of eventForm.get('categories')?.value"
+              <mat-chip-grid #categoryList formControlName="categories">
+                <mat-chip-row *ngFor="let category of eventForm.get('categories')?.value"
                          [removable]="true"
                          (removed)="removeCategory(category)">
                   {{ category }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
                 <input placeholder="Add category..."
                        [matChipInputFor]="categoryList"
                        (matChipInputTokenEnd)="addCategory($event)">
-              </mat-chip-list>
+              </mat-chip-grid>
             </mat-form-field>
           </div>
 

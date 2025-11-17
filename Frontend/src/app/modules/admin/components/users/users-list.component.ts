@@ -6,6 +6,7 @@ import { AdminService } from '../../../../services/admin/admin.service';
 import { UserDialogComponent } from './user-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-users-list',
   template: `
     <div class="admin-container">

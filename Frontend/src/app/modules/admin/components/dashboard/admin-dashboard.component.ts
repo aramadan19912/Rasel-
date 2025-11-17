@@ -4,6 +4,7 @@ import { AdminService } from '../../../../services/admin/admin.service';
 import { AuthService } from '../../../../services/auth.service';
 
 @Component({
+  standalone: false,
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']

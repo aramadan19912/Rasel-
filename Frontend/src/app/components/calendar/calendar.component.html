@@ -14,19 +14,19 @@
       <mat-icon>view_module</mat-icon>
     </button>
     <mat-menu #viewMenu="matMenu">
-      <button mat-menu-item (click)="changeView('day')">
+      <button mat-menu-item (click)="changeView(CalendarView.Day)">
         <mat-icon>view_day</mat-icon>
         <span>Day</span>
       </button>
-      <button mat-menu-item (click)="changeView('week')">
+      <button mat-menu-item (click)="changeView(CalendarView.Week)">
         <mat-icon>view_week</mat-icon>
         <span>Week</span>
       </button>
-      <button mat-menu-item (click)="changeView('month')">
+      <button mat-menu-item (click)="changeView(CalendarView.Month)">
         <mat-icon>view_module</mat-icon>
         <span>Month</span>
       </button>
-      <button mat-menu-item (click)="changeView('agenda')">
+      <button mat-menu-item (click)="changeView(CalendarView.Agenda)">
         <mat-icon>list</mat-icon>
         <span>Agenda</span>
       </button>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslationService, Language } from '../../services/translation.service';
 
 @Component({
+  standalone: false,
   selector: 'app-language-switcher',
   template: `
     <button mat-icon-button

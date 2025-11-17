@@ -3,6 +3,7 @@ import { VideoConferenceService } from '../../../services/video-conference.servi
 import { ConnectionQuality } from '../../../models/video-conference.model';
 
 @Component({
+  standalone: false,
   selector: 'app-video-tile',
   templateUrl: './video-tile.component.html',
   styleUrls: ['./video-tile.component.scss']

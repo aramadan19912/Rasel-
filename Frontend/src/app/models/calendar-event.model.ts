@@ -1,3 +1,53 @@
+export interface Calendar {
+  id: number;
+  name: string;
+  description?: string;
+  color: string;
+  timeZone: string;
+  isDefault: boolean;
+  isVisible: boolean;
+  ownerId: string;
+  ownerName: string;
+  canEdit: boolean;
+  canShare: boolean;
+  canDelete: boolean;
+  createdAt: Date;
+  lastModified?: Date;
+}
+
+export interface CreateCalendarDto {
+  name: string;
+  description?: string;
+  color: string;
+  timeZone: string;
+  isVisible?: boolean;
+}
+
+export interface UpdateCalendarDto {
+  name?: string;
+  description?: string;
+  color?: string;
+  timeZone?: string;
+  isVisible?: boolean;
+}
+
+export interface CalendarShare {
+  id: number;
+  calendarId: number;
+  sharedWithUserId: string;
+  sharedWithUserName: string;
+  sharedWithUserEmail: string;
+  canEdit: boolean;
+  canShare: boolean;
+  sharedAt: Date;
+}
+
+export interface ShareCalendarDto {
+  sharedWithUserId: string;
+  canEdit: boolean;
+  canShare: boolean;
+}
+
 export interface CalendarEvent {
   id: number;
   eventId: string;

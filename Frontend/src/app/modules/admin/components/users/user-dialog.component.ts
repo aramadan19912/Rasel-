@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
+  standalone: false,
   selector: 'app-user-dialog',
   template: `
     <h2 mat-dialog-title>{{ 'admin.users.addUser' | translate }}</h2>

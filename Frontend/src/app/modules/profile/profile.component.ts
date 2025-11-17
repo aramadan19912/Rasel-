@@ -19,6 +19,7 @@ interface UserProfile {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
@@ -71,40 +72,40 @@ export class ProfileComponent implements OnInit {
     this.loading = true;
 
     // Get user info from AuthService
-    const currentUser = this.authService.getCurrentUser();
+    this.authService.getCurrentUser().subscribe((currentUser: any) => {
+      if (currentUser) {
+        // Mock user profile - in real app, this would come from an API
+        this.userProfile = {
+          id: 1,
+          email: currentUser.email || 'user@example.com',
+          firstName: currentUser.firstName || '',
+          lastName: currentUser.lastName || '',
+          phoneNumber: '',
+          position: '',
+          department: '',
+          bio: '',
+          avatarUrl: '',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
 
-    if (currentUser) {
-      // Mock user profile - in real app, this would come from an API
-      this.userProfile = {
-        id: 1,
-        email: currentUser.email || 'user@example.com',
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        phoneNumber: '',
-        position: '',
-        department: '',
-        bio: '',
-        avatarUrl: '',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+        this.profileForm.patchValue({
+          firstName: this.userProfile.firstName,
+          lastName: this.userProfile.lastName,
+          email: this.userProfile.email,
+          phoneNumber: this.userProfile.phoneNumber,
+          position: this.userProfile.position,
+          department: this.userProfile.department,
+          bio: this.userProfile.bio
+        });
 
-      this.profileForm.patchValue({
-        firstName: this.userProfile.firstName,
-        lastName: this.userProfile.lastName,
-        email: this.userProfile.email,
-        phoneNumber: this.userProfile.phoneNumber,
-        position: this.userProfile.position,
-        department: this.userProfile.department,
-        bio: this.userProfile.bio
-      });
-
-      if (this.userProfile.avatarUrl) {
-        this.avatarPreview = this.userProfile.avatarUrl;
+        if (this.userProfile.avatarUrl) {
+          this.avatarPreview = this.userProfile.avatarUrl;
+        }
       }
-    }
 
-    this.loading = false;
+      this.loading = false;
+    });
   }
 
   onAvatarSelected(event: any): void {

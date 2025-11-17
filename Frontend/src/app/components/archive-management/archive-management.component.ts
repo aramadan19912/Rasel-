@@ -22,6 +22,7 @@ interface TreeNode {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-archive-management',
   templateUrl: './archive-management.component.html',
   styleUrls: ['./archive-management.component.scss']
@@ -51,12 +52,12 @@ export class ArchiveManagementComponent implements OnInit {
 
   loadCategories(): void {
     this.loading = true;
-    this.archiveCategoryService.getAllCategories().subscribe({
-      next: (categories) => {
+    this.archiveCategoryService.getAll().subscribe({
+      next: (categories: ArchiveCategoryDto[]) => {
         this.categories = categories;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading categories:', error);
         this.snackBar.open(
           this.translate.instant('archive.errors.loadCategoriesFailed'),
@@ -69,22 +70,23 @@ export class ArchiveManagementComponent implements OnInit {
   }
 
   loadCategoryHierarchy(): void {
-    this.archiveCategoryService.getCategoryHierarchy().subscribe({
-      next: (hierarchy) => {
-        this.categoryHierarchy = this.buildTreeNodes(hierarchy, 0);
+    this.archiveCategoryService.getCategoryTree().subscribe({
+      next: (hierarchy: ArchiveCategoryHierarchyDto) => {
+        // getCategoryTree returns a single root object, not an array
+        this.categoryHierarchy = hierarchy.subCategories ? this.buildTreeNodes(hierarchy.subCategories, 0) : [];
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading category hierarchy:', error);
       }
     });
   }
 
   loadCategoryStats(): void {
-    this.archiveCategoryService.getCategoryStatistics().subscribe({
-      next: (stats) => {
+    this.archiveCategoryService.getAllCategoriesStats().subscribe({
+      next: (stats: ArchiveCategoryStatsDto[]) => {
         this.categoryStats = stats;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading category stats:', error);
       }
     });
@@ -123,7 +125,7 @@ export class ArchiveManagementComponent implements OnInit {
 
   deleteCategory(category: ArchiveCategoryDto): void {
     if (confirm(this.translate.instant('archive.confirmDelete'))) {
-      this.archiveCategoryService.deleteCategory(category.id).subscribe({
+      this.archiveCategoryService.delete(category.id!).subscribe({
         next: () => {
           this.snackBar.open(
             this.translate.instant('archive.deleteSuccess'),
@@ -133,7 +135,7 @@ export class ArchiveManagementComponent implements OnInit {
           this.loadCategories();
           this.loadCategoryHierarchy();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error deleting category:', error);
           this.snackBar.open(
             this.translate.instant('archive.errors.deleteFailed'),

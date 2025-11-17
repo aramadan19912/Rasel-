@@ -5,6 +5,7 @@ import { AdminService } from '../../../../services/admin/admin.service';
 import { RoleDialogComponent } from './role-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-roles-list',
   template: `
     <div class="admin-container">

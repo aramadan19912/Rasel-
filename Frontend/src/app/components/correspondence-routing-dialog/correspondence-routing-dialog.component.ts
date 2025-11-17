@@ -7,7 +7,8 @@ import { CorrespondenceService } from '../../services/correspondence.service';
 import {
   RouteCorrespondenceRequest,
   RoutingAction,
-  CorrespondencePriority
+  CorrespondencePriority,
+  CorrespondenceRoutingDto
 } from '../../models/correspondence.model';
 
 export interface RoutingDialogData {
@@ -16,6 +17,7 @@ export interface RoutingDialogData {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-correspondence-routing-dialog',
   templateUrl: './correspondence-routing-dialog.component.html',
   styleUrls: ['./correspondence-routing-dialog.component.scss']
@@ -65,8 +67,8 @@ export class CorrespondenceRoutingDialogComponent implements OnInit {
       ...this.routingForm.value
     };
 
-    this.correspondenceService.routeCorrespondence(request).subscribe({
-      next: (routing) => {
+    this.correspondenceService.routeCorrespondence(this.data.correspondenceId, request).subscribe({
+      next: (routing: CorrespondenceRoutingDto) => {
         this.snackBar.open(
           this.translate.instant('correspondence.routingSuccess'),
           this.translate.instant('common.close'),
@@ -74,7 +76,7 @@ export class CorrespondenceRoutingDialogComponent implements OnInit {
         );
         this.dialogRef.close(routing);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error routing correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.routingFailed'),

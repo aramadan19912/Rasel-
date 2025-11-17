@@ -14,6 +14,7 @@ import {
 import { ContactDialogComponent } from './contact-dialog/contact-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-contacts',
   templateUrl: './contacts.component.html',
   styleUrls: ['./contacts.component.scss']
@@ -51,6 +52,9 @@ export class ContactsComponent implements OnInit, OnDestroy {
 
   // View enum for template
   ContactView = ContactView;
+
+  // Math for template
+  Math = Math;
 
   constructor(
     private contactsService: ContactsService,

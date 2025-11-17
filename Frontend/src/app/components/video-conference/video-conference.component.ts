@@ -14,6 +14,7 @@ import {
 } from '../../models/video-conference.model';
 
 @Component({
+  standalone: false,
   selector: 'app-video-conference',
   templateUrl: './video-conference.component.html',
   styleUrls: ['./video-conference.component.scss']
@@ -466,6 +467,41 @@ export class VideoConferenceComponent implements OnInit, OnDestroy {
       this.showSuccess('Recording stopped');
     } catch (error) {
       this.showError('Failed to stop recording');
+    }
+  }
+
+  async onMuteParticipant(participantId: string): Promise<void> {
+    if (!this.isHost && !this.isCoHost) return;
+
+    try {
+      await this.videoConferenceService.muteParticipant(this.conferenceId, participantId).toPromise();
+      this.showSuccess('Participant muted');
+    } catch (error) {
+      this.showError('Failed to mute participant');
+    }
+  }
+
+  async onRemoveParticipant(participantId: string): Promise<void> {
+    if (!this.isHost && !this.isCoHost) return;
+
+    if (confirm('Are you sure you want to remove this participant?')) {
+      try {
+        await this.videoConferenceService.removeParticipant(this.conferenceId, participantId).toPromise();
+        this.showSuccess('Participant removed');
+      } catch (error) {
+        this.showError('Failed to remove participant');
+      }
+    }
+  }
+
+  async onMakeCoHost(participantId: string): Promise<void> {
+    if (!this.isHost) return;
+
+    try {
+      await this.videoConferenceService.makeCoHost(this.conferenceId, participantId).toPromise();
+      this.showSuccess('Participant promoted to co-host');
+    } catch (error) {
+      this.showError('Failed to make participant co-host');
     }
   }
 

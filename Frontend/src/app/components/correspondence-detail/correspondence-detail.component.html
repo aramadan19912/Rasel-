@@ -30,27 +30,30 @@
     </div>
 
     <div class="header-buttons">
-      <button mat-raised-button color="primary"
-              *appHasPermission="'correspondence.update'"
-              *ngIf="canEdit()"
-              (click)="editCorrespondence()">
-        <mat-icon>edit</mat-icon>
-        {{ 'common.edit' | translate }}
-      </button>
-      <button mat-raised-button color="accent"
-              *appHasPermission="'correspondence.route'"
-              *ngIf="canRoute()"
-              (click)="routeCorrespondence()">
-        <mat-icon>forward</mat-icon>
-        {{ 'correspondence.route' | translate }}
-      </button>
-      <button mat-raised-button
-              *appHasPermission="'archive.manage'"
-              *ngIf="canArchive()"
-              (click)="archiveCorrespondence()">
-        <mat-icon>archive</mat-icon>
-        {{ 'correspondence.archive' | translate }}
-      </button>
+      <ng-container *appHasPermission="'correspondence.update'">
+        <button mat-raised-button color="primary"
+                *ngIf="canEdit()"
+                (click)="editCorrespondence()">
+          <mat-icon>edit</mat-icon>
+          {{ 'common.edit' | translate }}
+        </button>
+      </ng-container>
+      <ng-container *appHasPermission="'correspondence.route'">
+        <button mat-raised-button color="accent"
+                *ngIf="canRoute()"
+                (click)="routeCorrespondence()">
+          <mat-icon>forward</mat-icon>
+          {{ 'correspondence.route' | translate }}
+        </button>
+      </ng-container>
+      <ng-container *appHasPermission="'archive.manage'">
+        <button mat-raised-button
+                *ngIf="canArchive()"
+                (click)="archiveCorrespondence()">
+          <mat-icon>archive</mat-icon>
+          {{ 'correspondence.archive' | translate }}
+        </button>
+      </ng-container>
       <button mat-button *appHasPermission="'correspondence.read'" (click)="downloadPdf()">
         <mat-icon>download</mat-icon>
         {{ 'correspondence.downloadPdf' | translate }}
@@ -63,13 +66,14 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item
-                *appHasPermission="'correspondence.delete'"
-                *ngIf="canDelete()"
-                (click)="deleteCorrespondence()">
-          <mat-icon color="warn">delete</mat-icon>
-          <span>{{ 'common.delete' | translate }}</span>
-        </button>
+        <ng-container *appHasPermission="'correspondence.delete'">
+          <button mat-menu-item
+                  *ngIf="canDelete()"
+                  (click)="deleteCorrespondence()">
+            <mat-icon color="warn">delete</mat-icon>
+            <span>{{ 'common.delete' | translate }}</span>
+          </button>
+        </ng-container>
       </mat-menu>
     </div>
   </div>

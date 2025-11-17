@@ -147,7 +147,7 @@
                 {{message.bodyPreview}}
               </div>
 
-              <div class="message-meta" *ngIf="message.categories?.length > 0">
+              <div class="message-meta" *ngIf="message.categories && message.categories.length > 0">
                 <mat-chip-set>
                   <mat-chip *ngFor="let category of message.categories"
                            [style.background-color]="category.color">
@@ -207,7 +207,7 @@
         <hr>
         <div [innerHTML]="selectedMessage.body"></div>
 
-        <div *ngIf="selectedMessage.attachments?.length > 0">
+        <div *ngIf="selectedMessage.attachments && selectedMessage.attachments.length > 0">
           <h3>Attachments ({{selectedMessage.attachments.length}})</h3>
           <div *ngFor="let attachment of selectedMessage.attachments">
             <mat-icon>attach_file</mat-icon>

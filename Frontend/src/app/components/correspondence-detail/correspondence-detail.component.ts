@@ -13,6 +13,7 @@ import {
 } from '../../models/correspondence.model';
 
 @Component({
+  standalone: false,
   selector: 'app-correspondence-detail',
   templateUrl: './correspondence-detail.component.html',
   styleUrls: ['./correspondence-detail.component.scss']
@@ -47,12 +48,12 @@ export class CorrespondenceDetailComponent implements OnInit {
 
   loadCorrespondence(): void {
     this.loading = true;
-    this.correspondenceService.getCorrespondenceById(this.correspondenceId).subscribe({
-      next: (data) => {
+    this.correspondenceService.getById(this.correspondenceId).subscribe({
+      next: (data: CorrespondenceDto) => {
         this.correspondence = data;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.loadFailed'),
@@ -74,7 +75,7 @@ export class CorrespondenceDetailComponent implements OnInit {
     if (!this.correspondence) return;
 
     if (confirm(this.translate.instant('correspondence.confirmDelete'))) {
-      this.correspondenceService.deleteCorrespondence(this.correspondenceId).subscribe({
+      this.correspondenceService.delete(this.correspondenceId).subscribe({
         next: () => {
           this.snackBar.open(
             this.translate.instant('correspondence.deleteSuccess'),
@@ -83,7 +84,7 @@ export class CorrespondenceDetailComponent implements OnInit {
           );
           this.router.navigate(['/correspondence']);
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error deleting correspondence:', error);
           this.snackBar.open(
             this.translate.instant('correspondence.errors.deleteFailed'),
@@ -107,7 +108,7 @@ export class CorrespondenceDetailComponent implements OnInit {
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.afterClosed().subscribe((result: any) => {
         if (result) {
           // Reload correspondence to show new routing
           this.loadCorrespondence();
@@ -127,7 +128,7 @@ export class CorrespondenceDetailComponent implements OnInit {
       applyDigitalSignature: true
     };
 
-    this.correspondenceService.archiveCorrespondence(request).subscribe({
+    this.correspondenceService.archiveCorrespondence(this.correspondenceId, request).subscribe({
       next: () => {
         this.snackBar.open(
           this.translate.instant('correspondence.archiveSuccess'),
@@ -136,7 +137,7 @@ export class CorrespondenceDetailComponent implements OnInit {
         );
         this.loadCorrespondence();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error archiving correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.archiveFailed'),
@@ -148,8 +149,8 @@ export class CorrespondenceDetailComponent implements OnInit {
   }
 
   downloadAttachment(attachment: CorrespondenceAttachmentDto): void {
-    this.correspondenceService.downloadAttachment(attachment.correspondenceId, attachment.id).subscribe({
-      next: (blob) => {
+    this.correspondenceService.downloadAttachment(attachment.id).subscribe({
+      next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -157,7 +158,7 @@ export class CorrespondenceDetailComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error downloading attachment:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.downloadFailed'),
@@ -170,7 +171,7 @@ export class CorrespondenceDetailComponent implements OnInit {
 
   deleteAttachment(attachment: CorrespondenceAttachmentDto): void {
     if (confirm(this.translate.instant('correspondence.confirmDeleteAttachment'))) {
-      this.correspondenceService.deleteAttachment(attachment.correspondenceId, attachment.id).subscribe({
+      this.correspondenceService.deleteAttachment(attachment.id).subscribe({
         next: () => {
           this.snackBar.open(
             this.translate.instant('correspondence.attachmentDeleteSuccess'),
@@ -179,7 +180,7 @@ export class CorrespondenceDetailComponent implements OnInit {
           );
           this.loadCorrespondence();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error deleting attachment:', error);
           this.snackBar.open(
             this.translate.instant('correspondence.errors.attachmentDeleteFailed'),
@@ -195,7 +196,7 @@ export class CorrespondenceDetailComponent implements OnInit {
     if (!this.correspondence) return;
 
     this.correspondenceService.downloadCorrespondencePdf(this.correspondenceId).subscribe({
-      next: (blob) => {
+      next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -203,7 +204,7 @@ export class CorrespondenceDetailComponent implements OnInit {
         link.click();
         window.URL.revokeObjectURL(url);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error downloading PDF:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.pdfDownloadFailed'),

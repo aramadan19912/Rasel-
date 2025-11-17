@@ -13,10 +13,13 @@ import {
   CorrespondenceStatus,
   CorrespondencePriority,
   ConfidentialityLevel,
-  ArchiveClassification
+  ArchiveClassification,
+  UploadAttachmentRequest,
+  CorrespondenceAttachmentDto
 } from '../../models/correspondence.model';
 
 @Component({
+  standalone: false,
   selector: 'app-correspondence-form',
   templateUrl: './correspondence-form.component.html',
   styleUrls: ['./correspondence-form.component.scss']
@@ -89,11 +92,11 @@ export class CorrespondenceFormComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.archiveCategoryService.getAllCategories().subscribe({
-      next: (categories) => {
+    this.archiveCategoryService.getAll().subscribe({
+      next: (categories: ArchiveCategoryDto[]) => {
         this.categories = categories.filter(c => c.isActive);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading categories:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.categoriesLoadFailed'),
@@ -105,12 +108,12 @@ export class CorrespondenceFormComponent implements OnInit {
   }
 
   loadCorrespondence(id: number): void {
-    this.correspondenceService.getCorrespondenceById(id).subscribe({
-      next: (correspondence) => {
+    this.correspondenceService.getById(id).subscribe({
+      next: (correspondence: CorrespondenceDto) => {
         this.patchFormValues(correspondence);
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.loadFailed'),
@@ -148,8 +151,9 @@ export class CorrespondenceFormComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: any): void {
-    const files = event.target.files;
+  onFileSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const files = target.files;
     if (files) {
       this.selectedFiles = Array.from(files);
     }
@@ -182,8 +186,8 @@ export class CorrespondenceFormComponent implements OnInit {
   createCorrespondence(): void {
     const request: CreateCorrespondenceRequest = this.correspondenceForm.value;
 
-    this.correspondenceService.createCorrespondence(request).subscribe({
-      next: (correspondence) => {
+    this.correspondenceService.create(request).subscribe({
+      next: (correspondence: CorrespondenceDto) => {
         if (this.selectedFiles.length > 0) {
           this.uploadAttachments(correspondence.id);
         } else {
@@ -196,7 +200,7 @@ export class CorrespondenceFormComponent implements OnInit {
           this.router.navigate(['/correspondence', correspondence.id]);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error creating correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.createFailed'),
@@ -211,8 +215,8 @@ export class CorrespondenceFormComponent implements OnInit {
   updateCorrespondence(): void {
     const request: UpdateCorrespondenceRequest = this.correspondenceForm.value;
 
-    this.correspondenceService.updateCorrespondence(this.correspondenceId!, request).subscribe({
-      next: () => {
+    this.correspondenceService.update(this.correspondenceId!, request).subscribe({
+      next: (correspondence: CorrespondenceDto) => {
         if (this.selectedFiles.length > 0) {
           this.uploadAttachments(this.correspondenceId!);
         } else {
@@ -225,7 +229,7 @@ export class CorrespondenceFormComponent implements OnInit {
           this.router.navigate(['/correspondence', this.correspondenceId]);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error updating correspondence:', error);
         this.snackBar.open(
           this.translate.instant('correspondence.errors.updateFailed'),
@@ -238,34 +242,48 @@ export class CorrespondenceFormComponent implements OnInit {
   }
 
   uploadAttachments(correspondenceId: number): void {
-    const formData = new FormData();
-    this.selectedFiles.forEach((file, index) => {
-      formData.append('files', file, file.name);
-    });
+    // Note: The service has uploadAttachment (singular), so we need to upload files one by one
+    // or add an uploadAttachments method to the service
+    let uploadCount = 0;
+    let hasError = false;
 
-    this.correspondenceService.uploadAttachments(correspondenceId, this.selectedFiles).subscribe({
-      next: () => {
-        this.submitting = false;
-        this.snackBar.open(
-          this.isEditMode
-            ? this.translate.instant('correspondence.updateSuccess')
-            : this.translate.instant('correspondence.createSuccess'),
-          this.translate.instant('common.close'),
-          { duration: 3000 }
-        );
-        this.router.navigate(['/correspondence', correspondenceId]);
-      },
-      error: (error) => {
-        console.error('Error uploading attachments:', error);
-        this.snackBar.open(
-          this.translate.instant('correspondence.errors.uploadFailed'),
-          this.translate.instant('common.close'),
-          { duration: 3000 }
-        );
-        this.submitting = false;
-        // Still navigate to the correspondence even if attachments failed
-        this.router.navigate(['/correspondence', correspondenceId]);
-      }
+    this.selectedFiles.forEach((file: File, index: number) => {
+      const request: UploadAttachmentRequest = {
+        correspondenceId: correspondenceId,
+        isMainDocument: index === 0,
+        description: ''
+      };
+
+      this.correspondenceService.uploadAttachment(correspondenceId, file, request).subscribe({
+        next: (attachment: CorrespondenceAttachmentDto) => {
+          uploadCount++;
+          if (uploadCount === this.selectedFiles.length) {
+            this.submitting = false;
+            this.snackBar.open(
+              this.isEditMode
+                ? this.translate.instant('correspondence.updateSuccess')
+                : this.translate.instant('correspondence.createSuccess'),
+              this.translate.instant('common.close'),
+              { duration: 3000 }
+            );
+            this.router.navigate(['/correspondence', correspondenceId]);
+          }
+        },
+        error: (error: any) => {
+          if (!hasError) {
+            hasError = true;
+            console.error('Error uploading attachments:', error);
+            this.snackBar.open(
+              this.translate.instant('correspondence.errors.uploadFailed'),
+              this.translate.instant('common.close'),
+              { duration: 3000 }
+            );
+            this.submitting = false;
+            // Still navigate to the correspondence even if attachments failed
+            this.router.navigate(['/correspondence', correspondenceId]);
+          }
+        }
+      });
     });
   }
 

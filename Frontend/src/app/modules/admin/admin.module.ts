@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 // Angular Material Modules
@@ -25,6 +25,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatListModule } from '@angular/material/list';
 
 // Components
 import { AdminDashboardComponent } from './components/dashboard/admin-dashboard.component';
@@ -81,6 +82,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     TranslateModule,
     RouterModule.forChild(routes),
     MatCardModule,
@@ -102,7 +104,8 @@ const routes: Routes = [
     MatDatepickerModule,
     MatNativeDateModule,
     MatMenuModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatListModule
   ]
 })
 export class AdminModule { }
