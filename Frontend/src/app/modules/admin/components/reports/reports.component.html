@@ -28,7 +28,7 @@
   </div>
 
   <!-- Report Type Selection -->
-  <mat-tab-group [(selectedIndex)]="selectedReportType" (selectedIndexChange)="onReportTypeChange($event)">
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="onReportTypeChange($event)">
     <mat-tab label="{{ 'admin.reports.correspondenceReport' | translate }}">
       <!-- Correspondence Report -->
       <div *ngIf="!loading && correspondenceReport" class="report-content">

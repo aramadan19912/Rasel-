@@ -27,6 +27,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatListModule } from '@angular/material/list';
 
+// NgxCharts for visualizations
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 // Components
 import { AdminDashboardComponent } from './components/dashboard/admin-dashboard.component';
 import { UsersListComponent } from './components/users/users-list.component';
@@ -38,6 +41,7 @@ import { DepartmentDialogComponent } from './components/departments/department-d
 import { EmployeesListComponent } from './components/employees/employees-list.component';
 import { EmployeeDialogComponent } from './components/employees/employee-dialog.component';
 import { AuditLogsComponent } from './components/audit-logs/audit-logs.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -63,6 +67,10 @@ const routes: Routes = [
   {
     path: 'audit-logs',
     component: AuditLogsComponent
+  },
+  {
+    path: 'reports',
+    component: ReportsComponent
   }
 ];
 
@@ -77,7 +85,8 @@ const routes: Routes = [
     DepartmentDialogComponent,
     EmployeesListComponent,
     EmployeeDialogComponent,
-    AuditLogsComponent
+    AuditLogsComponent,
+    ReportsComponent
   ],
   imports: [
     CommonModule,
@@ -85,6 +94,7 @@ const routes: Routes = [
     FormsModule,
     TranslateModule,
     RouterModule.forChild(routes),
+    NgxChartsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
