@@ -37,7 +37,8 @@
     </mat-button-toggle-group>
 
     <!-- Actions -->
-    <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button">
+    <button mat-raised-button color="accent" (click)="openContactDialog()" class="create-button"
+            *appHasPermission="'contacts.create'">
       <mat-icon>person_add</mat-icon>
       {{ 'contacts.newContact' | translate }}
     </button>
@@ -45,7 +46,7 @@
     <!-- Language Switcher -->
     <app-language-switcher></app-language-switcher>
 
-    <button mat-icon-button [matMenuTrigger]="toolbarMenu" [matTooltip]="'common.moreOptions' | translate">
+    <button mat-icon-button [matMenuTriggerFor]="toolbarMenu" [matTooltip]="'common.moreOptions' | translate">
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #toolbarMenu="matMenu">
@@ -174,7 +175,7 @@
                 </div>
 
                 <!-- Tags/Categories -->
-                <div *ngIf="contact.categories.length > 0" class="contact-categories">
+                <div *ngIf="contact.categories && contact.categories.length > 0" class="contact-categories">
                   <mat-chip-set>
                     <mat-chip *ngFor="let category of contact.categories.slice(0, 3)">
                       {{ category }}
@@ -187,7 +188,7 @@
               </div>
 
               <div class="contact-actions">
-                <button mat-icon-button [matMenuTrigger]="contactMenu" (click)="$event.stopPropagation()">
+                <button mat-icon-button [matMenuTriggerFor]="contactMenu" (click)="$event.stopPropagation()">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #contactMenu="matMenu">
@@ -264,7 +265,7 @@
                 </div>
               </div>
 
-              <div *ngIf="contact.categories.length > 0" class="grid-categories">
+              <div *ngIf="contact.categories && contact.categories.length > 0" class="grid-categories">
                 <mat-chip-set>
                   <mat-chip *ngFor="let category of contact.categories.slice(0, 2)">
                     {{ category }}
@@ -278,7 +279,7 @@
                 <mat-icon>edit</mat-icon>
                 Edit
               </button>
-              <button mat-icon-button [matMenuTrigger]="gridMenu" (click)="$event.stopPropagation()">
+              <button mat-icon-button [matMenuTriggerFor]="gridMenu" (click)="$event.stopPropagation()">
                 <mat-icon>more_vert</mat-icon>
               </button>
               <mat-menu #gridMenu="matMenu">
@@ -364,7 +365,7 @@
                 <button mat-icon-button (click)="openContactDialog(selectedContact)" matTooltip="Edit Contact">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button [matMenuTrigger]="detailsMenu" matTooltip="More Actions">
+                <button mat-icon-button [matMenuTriggerFor]="detailsMenu" matTooltip="More Actions">
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #detailsMenu="matMenu">

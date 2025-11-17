@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslationService } from './services/translation.service';
 
 @Component({
+  standalone: false,
   selector: 'app-root',
   template: `<router-outlet></router-outlet>`,
   styles: []

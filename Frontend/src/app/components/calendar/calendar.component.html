@@ -14,26 +14,27 @@
       <mat-icon>view_module</mat-icon>
     </button>
     <mat-menu #viewMenu="matMenu">
-      <button mat-menu-item (click)="changeView('day')">
+      <button mat-menu-item (click)="changeView(CalendarView.Day)">
         <mat-icon>view_day</mat-icon>
         <span>Day</span>
       </button>
-      <button mat-menu-item (click)="changeView('week')">
+      <button mat-menu-item (click)="changeView(CalendarView.Week)">
         <mat-icon>view_week</mat-icon>
         <span>Week</span>
       </button>
-      <button mat-menu-item (click)="changeView('month')">
+      <button mat-menu-item (click)="changeView(CalendarView.Month)">
         <mat-icon>view_module</mat-icon>
         <span>Month</span>
       </button>
-      <button mat-menu-item (click)="changeView('agenda')">
+      <button mat-menu-item (click)="changeView(CalendarView.Agenda)">
         <mat-icon>list</mat-icon>
         <span>Agenda</span>
       </button>
     </mat-menu>
 
     <!-- Create Event Button -->
-    <button mat-raised-button color="accent" (click)="openEventDialog(null)">
+    <button mat-raised-button color="accent" (click)="openEventDialog(null)"
+            *appHasPermission="'calendar.create'">
       <mat-icon>add</mat-icon>
       New Event
     </button>
@@ -43,7 +44,8 @@
       <mat-icon>more_vert</mat-icon>
     </button>
     <mat-menu #moreMenu="matMenu">
-      <button mat-menu-item (click)="createCalendar()">
+      <button mat-menu-item (click)="createCalendar()"
+              *appHasPermission="'calendar.manage'">
         <mat-icon>add</mat-icon>
         <span>Create Calendar</span>
       </button>

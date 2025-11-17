@@ -1,0 +1,81 @@
+.folder-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.folder-dialog {
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .close-button {
+      margin-left: auto;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .permissions-section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #e0e0e0;
+
+    h4 {
+      margin: 16px 0 8px 0;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .chips-container {
+      min-height: 40px;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      background: #fafafa;
+
+      mat-chip-list {
+        mat-chip {
+          margin: 4px;
+        }
+      }
+    }
+
+    .add-permission {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+
+      mat-form-field {
+        flex: 1;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .folder-dialog {
+    max-width: 100%;
+    margin: 0;
+  }
+}

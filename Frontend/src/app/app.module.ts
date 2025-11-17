@@ -45,6 +45,9 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 // FullCalendar
@@ -58,7 +61,16 @@ import { EventDialogComponent } from './components/calendar/event-dialog/event-d
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
 import { VideoConferenceComponent } from './components/video-conference/video-conference.component';
+import { VideoTileComponent } from './components/video-conference/video-tile/video-tile.component';
+import { ParticipantsPanelComponent } from './components/video-conference/participants-panel/participants-panel.component';
+import { ChatPanelComponent } from './components/video-conference/chat-panel/chat-panel.component';
 import { LanguageSwitcherComponent } from './components/language-switcher/language-switcher.component';
+import { CorrespondenceDashboardComponent } from './components/correspondence-dashboard/correspondence-dashboard.component';
+import { CorrespondenceListComponent } from './components/correspondence-list/correspondence-list.component';
+import { CorrespondenceDetailComponent } from './components/correspondence-detail/correspondence-detail.component';
+import { CorrespondenceFormComponent } from './components/correspondence-form/correspondence-form.component';
+import { CorrespondenceRoutingDialogComponent } from './components/correspondence-routing-dialog/correspondence-routing-dialog.component';
+import { ArchiveManagementComponent } from './components/archive-management/archive-management.component';
 
 // Auth Components
 import { LoginComponent } from './components/auth/login/login.component';
@@ -75,6 +87,12 @@ import { ContactsService } from './services/contacts.service';
 import { VideoConferenceService } from './services/video-conference.service';
 import { TranslationService } from './services/translation.service';
 import { AuthService } from './services/auth.service';
+import { CorrespondenceService } from './services/correspondence.service';
+import { ArchiveCategoryService } from './services/archive-category.service';
+
+// Directives
+import { HasPermissionDirective } from './directives/has-permission.directive';
+import { HasRoleDirective } from './directives/has-role.directive';
 
 @NgModule({
   declarations: [
@@ -85,11 +103,22 @@ import { AuthService } from './services/auth.service';
     ContactsComponent,
     ContactDialogComponent,
     VideoConferenceComponent,
+    VideoTileComponent,
+    ParticipantsPanelComponent,
+    ChatPanelComponent,
     LanguageSwitcherComponent,
     LoginComponent,
     RegisterComponent,
     UnauthorizedComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    CorrespondenceDashboardComponent,
+    CorrespondenceListComponent,
+    CorrespondenceDetailComponent,
+    CorrespondenceFormComponent,
+    CorrespondenceRoutingDialogComponent,
+    ArchiveManagementComponent,
+    HasPermissionDirective,
+    HasRoleDirective
   ],
   imports: [
     BrowserModule,
@@ -124,6 +153,9 @@ import { AuthService } from './services/auth.service';
     MatTabsModule,
     MatButtonToggleModule,
     MatDividerModule,
+    MatStepperModule,
+    MatSlideToggleModule,
+    MatTableModule,
     ScrollingModule,
 
     // FullCalendar
@@ -147,6 +179,8 @@ import { AuthService } from './services/auth.service';
     VideoConferenceService,
     TranslationService,
     AuthService,
+    CorrespondenceService,
+    ArchiveCategoryService,
 
     // HTTP Interceptors
     {

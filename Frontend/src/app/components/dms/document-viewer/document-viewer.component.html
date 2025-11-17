@@ -1,0 +1,325 @@
+<div class="document-viewer" *ngIf="document">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="viewer-toolbar">
+    <button mat-icon-button (click)="close()" matTooltip="Close">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <span class="document-title">{{ document.title }}</span>
+
+    <span class="spacer"></span>
+
+    <!-- View Controls -->
+    <button mat-icon-button (click)="zoomOut()" [disabled]="zoom <= 25" matTooltip="Zoom Out">
+      <mat-icon>zoom_out</mat-icon>
+    </button>
+    <span class="zoom-level">{{ zoom }}%</span>
+    <button mat-icon-button (click)="zoomIn()" [disabled]="zoom >= 200" matTooltip="Zoom In">
+      <mat-icon>zoom_in</mat-icon>
+    </button>
+    <button mat-icon-button (click)="resetZoom()" matTooltip="Reset Zoom">
+      <mat-icon>center_focus_strong</mat-icon>
+    </button>
+
+    <mat-divider [vertical]="true" class="toolbar-divider"></mat-divider>
+
+    <button mat-icon-button (click)="rotateLeft()" matTooltip="Rotate Left">
+      <mat-icon>rotate_left</mat-icon>
+    </button>
+    <button mat-icon-button (click)="rotateRight()" matTooltip="Rotate Right">
+      <mat-icon>rotate_right</mat-icon>
+    </button>
+
+    <mat-divider [vertical]="true" class="toolbar-divider"></mat-divider>
+
+    <!-- Page Navigation -->
+    <button mat-icon-button (click)="previousPage()" [disabled]="currentPage <= 1" matTooltip="Previous Page">
+      <mat-icon>navigate_before</mat-icon>
+    </button>
+    <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+    <button mat-icon-button (click)="nextPage()" [disabled]="currentPage >= totalPages" matTooltip="Next Page">
+      <mat-icon>navigate_next</mat-icon>
+    </button>
+
+    <mat-divider [vertical]="true" class="toolbar-divider"></mat-divider>
+
+    <!-- Annotation Toggle -->
+    <button mat-icon-button
+            [color]="annotationMode ? 'accent' : ''"
+            (click)="toggleAnnotationMode()"
+            [disabled]="!canAnnotate"
+            matTooltip="Toggle Annotations">
+      <mat-icon>create</mat-icon>
+    </button>
+
+    <mat-divider [vertical]="true" class="toolbar-divider"></mat-divider>
+
+    <!-- Actions -->
+    <button mat-icon-button [matMenuTriggerFor]="actionsMenu" matTooltip="More Actions">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <!-- Actions Menu -->
+  <mat-menu #actionsMenu="matMenu">
+    <button mat-menu-item (click)="downloadDocument()" [disabled]="!canDownload">
+      <mat-icon>download</mat-icon>
+      <span>Download</span>
+    </button>
+    <button mat-menu-item (click)="printDocument()">
+      <mat-icon>print</mat-icon>
+      <span>Print</span>
+    </button>
+    <button mat-menu-item (click)="shareDocument()">
+      <mat-icon>share</mat-icon>
+      <span>Share</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="editDocument()" [disabled]="!canEdit">
+      <mat-icon>edit</mat-icon>
+      <span>Edit Properties</span>
+    </button>
+    <button mat-menu-item (click)="deleteDocument()" [disabled]="!canEdit">
+      <mat-icon color="warn">delete</mat-icon>
+      <span>Delete</span>
+    </button>
+  </mat-menu>
+
+  <!-- Main Content -->
+  <div class="viewer-content">
+    <!-- Sidebar -->
+    <mat-drawer-container class="viewer-container">
+      <mat-drawer mode="side" opened position="end" class="viewer-sidebar">
+        <mat-tab-group [(selectedIndex)]="activeTab" animationDuration="0ms">
+          <!-- Info Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">info</mat-icon>
+              Info
+            </ng-template>
+            <div class="sidebar-content">
+              <h3>Document Information</h3>
+
+              <div class="info-section">
+                <div class="info-item">
+                  <span class="info-label">File Name:</span>
+                  <span class="info-value">{{ document.originalFileName }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Type:</span>
+                  <span class="info-value">{{ document.fileExtension }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Size:</span>
+                  <span class="info-value">{{ formatFileSize(document.fileSize) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Category:</span>
+                  <span class="info-value">{{ document.category }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Created:</span>
+                  <span class="info-value">{{ formatDate(document.createdAt) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Modified:</span>
+                  <span class="info-value">{{ formatDate(document.updatedAt!) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Version:</span>
+                  <span class="info-value">{{ document.currentVersion }}</span>
+                </div>
+              </div>
+
+              <div class="info-section" *ngIf="document.description">
+                <h4>Description</h4>
+                <p>{{ document.description }}</p>
+              </div>
+
+              <div class="info-section" *ngIf="document.tags && document.tags.length > 0">
+                <h4>Tags</h4>
+                <mat-chip-grid>
+                  <mat-chip-row *ngFor="let tag of document.tags">{{ tag }}</mat-chip-row>
+                </mat-chip-grid>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Versions Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">history</mat-icon>
+              Versions ({{ versions.length }})
+            </ng-template>
+            <div class="sidebar-content">
+              <h3>Version History</h3>
+
+              <mat-list *ngIf="versions.length > 0">
+                <mat-list-item *ngFor="let version of versions" class="version-item">
+                  <mat-icon matListItemIcon>schedule</mat-icon>
+                  <div matListItemTitle>
+                    <strong>Version {{ version.versionNumber }}</strong>
+                    <span *ngIf="version.id === document.currentVersion" class="current-badge">Current</span>
+                  </div>
+                  <div matListItemLine>
+                    {{ formatDate(version.createdAt) }}
+                  </div>
+                  <div matListItemLine *ngIf="version.versionComment">
+                    {{ version.versionComment }}
+                  </div>
+                  <div matListItemLine>
+                    <small>{{ formatFileSize(version.fileSize) }}</small>
+                  </div>
+                  <div matListItemMeta>
+                    <button mat-icon-button [matMenuTriggerFor]="versionMenu">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #versionMenu="matMenu">
+                      <button mat-menu-item (click)="viewVersion(version)">
+                        <mat-icon>visibility</mat-icon>
+                        <span>View</span>
+                      </button>
+                      <button mat-menu-item (click)="restoreVersion(version)" [disabled]="!canEdit">
+                        <mat-icon>restore</mat-icon>
+                        <span>Restore</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                </mat-list-item>
+              </mat-list>
+
+              <div *ngIf="versions.length === 0" class="empty-state">
+                <mat-icon>history</mat-icon>
+                <p>No version history available</p>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Annotations Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">comment</mat-icon>
+              Annotations ({{ annotations.length }})
+            </ng-template>
+            <div class="sidebar-content">
+              <h3>Annotations</h3>
+
+              <!-- Annotation Tools -->
+              <div class="annotation-tools" *ngIf="annotationMode">
+                <h4>Annotation Type</h4>
+                <mat-button-toggle-group [(value)]="selectedAnnotationType" vertical>
+                  <mat-button-toggle [value]="annotationTypes.Highlight">
+                    <mat-icon>highlight</mat-icon> Highlight
+                  </mat-button-toggle>
+                  <mat-button-toggle [value]="annotationTypes.Text">
+                    <mat-icon>text_fields</mat-icon> Text
+                  </mat-button-toggle>
+                  <mat-button-toggle [value]="annotationTypes.Comment">
+                    <mat-icon>comment</mat-icon> Comment
+                  </mat-button-toggle>
+                  <mat-button-toggle [value]="annotationTypes.Rectangle">
+                    <mat-icon>crop_square</mat-icon> Rectangle
+                  </mat-button-toggle>
+                  <mat-button-toggle [value]="annotationTypes.Arrow">
+                    <mat-icon>arrow_forward</mat-icon> Arrow
+                  </mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+
+              <!-- Annotation List -->
+              <mat-list *ngIf="annotations.length > 0">
+                <mat-list-item *ngFor="let annotation of annotations" class="annotation-item">
+                  <mat-icon matListItemIcon [style.color]="annotation.color">{{ getFileTypeIcon() }}</mat-icon>
+                  <div matListItemTitle>
+                    {{ getAnnotationTypeLabel(annotation.type) }}
+                  </div>
+                  <div matListItemLine>
+                    Page {{ annotation.pageNumber }}
+                  </div>
+                  <div matListItemLine *ngIf="annotation.content">
+                    {{ annotation.content }}
+                  </div>
+                  <div matListItemMeta>
+                    <button mat-icon-button (click)="deleteAnnotation(annotation)" [disabled]="!canAnnotate">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </mat-list-item>
+              </mat-list>
+
+              <div *ngIf="annotations.length === 0" class="empty-state">
+                <mat-icon>comment</mat-icon>
+                <p>No annotations yet</p>
+                <button mat-raised-button color="primary" (click)="toggleAnnotationMode()" [disabled]="!canAnnotate">
+                  Add Annotation
+                </button>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Activity Tab -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <mat-icon class="tab-icon">timeline</mat-icon>
+              Activity
+            </ng-template>
+            <div class="sidebar-content">
+              <h3>Activity Log</h3>
+              <app-document-activity *ngIf="document" [documentId]="document.id"></app-document-activity>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-drawer>
+
+      <!-- Document Display Area -->
+      <mat-drawer-content class="document-display">
+        <div class="viewer-area" *ngIf="documentUrl && !loading">
+          <!-- PDF Viewer or other document viewer would go here -->
+          <iframe
+            *ngIf="document.fileExtension === '.pdf'"
+            [src]="documentUrl | safe: 'resourceUrl'"
+            class="pdf-viewer"
+            [style.transform]="'scale(' + (zoom / 100) + ') rotate(' + rotation + 'deg)'"
+            frameborder="0">
+          </iframe>
+
+          <!-- Image Viewer -->
+          <div *ngIf="['.jpg', '.jpeg', '.png', '.gif'].includes(document.fileExtension)" class="image-viewer">
+            <img
+              [src]="documentUrl"
+              [alt]="document.title"
+              [style.transform]="'scale(' + (zoom / 100) + ') rotate(' + rotation + 'deg)'"
+              class="document-image"
+            />
+          </div>
+
+          <!-- Other file types -->
+          <div *ngIf="!['.pdf', '.jpg', '.jpeg', '.png', '.gif'].includes(document.fileExtension)" class="unsupported-viewer">
+            <mat-icon>{{ getFileTypeIcon() }}</mat-icon>
+            <h3>{{ document.originalFileName }}</h3>
+            <p>This file type cannot be previewed in the browser.</p>
+            <button mat-raised-button color="primary" (click)="downloadDocument()">
+              <mat-icon>download</mat-icon>
+              Download to View
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" *ngIf="loading">
+          <mat-spinner></mat-spinner>
+          <p>Loading document...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-state" *ngIf="error">
+          <mat-icon color="warn">error</mat-icon>
+          <h3>{{ error }}</h3>
+          <button mat-raised-button color="primary" (click)="close()">
+            Back to Documents
+          </button>
+        </div>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </div>
+</div>

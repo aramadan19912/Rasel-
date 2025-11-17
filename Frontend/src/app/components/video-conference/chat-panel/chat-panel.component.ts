@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterVie
 import { ChatMessage } from '../../../models/video-conference.model';
 
 @Component({
+  standalone: false,
   selector: 'app-chat-panel',
   templateUrl: './chat-panel.component.html',
   styleUrls: ['./chat-panel.component.scss']

@@ -19,6 +19,7 @@ export interface ContactDialogData {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-contact-dialog',
   templateUrl: './contact-dialog.component.html',
   styleUrls: ['./contact-dialog.component.scss']

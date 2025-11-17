@@ -1,0 +1,192 @@
+<div class="dms-dashboard">
+  <div class="dashboard-header">
+    <h1>Document Management Dashboard</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="goToUpload()">
+        <mat-icon>upload</mat-icon>
+        Upload Document
+      </button>
+      <button mat-raised-button (click)="goToDocuments()">
+        <mat-icon>folder</mat-icon>
+        Browse Documents
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading && statistics" class="dashboard-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background-color: #2196f3;">
+            <mat-icon>description</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalDocuments }}</h3>
+            <p>Total Documents</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background-color: #4caf50;">
+            <mat-icon>folder</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalFolders }}</h3>
+            <p>Total Folders</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background-color: #ff9800;">
+            <mat-icon>storage</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ formatFileSize(statistics.totalStorage) }}</h3>
+            <p>Total Storage</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-icon" style="background-color: #9c27b0;">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ statistics.recentDocuments.length }}</h3>
+            <p>Recent Uploads</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-row">
+      <!-- Documents by Type -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Documents by Type</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <div *ngFor="let item of typeChartData" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="(item.value / statistics!.totalDocuments) * 100"></div>
+              </div>
+              <div class="bar-value">{{ item.value }}</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Documents by Category -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Documents by Category</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <div *ngFor="let item of categoryChartData" class="chart-bar">
+              <div class="bar-label">{{ item.name }}</div>
+              <div class="bar-container">
+                <div class="bar-fill" [style.width.%]="(item.value / statistics!.totalDocuments) * 100"></div>
+              </div>
+              <div class="bar-value">{{ item.value }}</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Recent Documents -->
+    <mat-card class="documents-card">
+      <mat-card-header>
+        <mat-card-title>Recent Documents</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-table [dataSource]="statistics.recentDocuments" *ngIf="statistics.recentDocuments.length > 0">
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+            <mat-cell *matCellDef="let doc">
+              <div class="doc-name">
+                <mat-icon>{{ getFileIcon(doc) }}</mat-icon>
+                <span>{{ doc.title }}</span>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+            <mat-cell *matCellDef="let doc">{{ doc.documentType }}</mat-cell>
+          </ng-container>
+
+          <!-- Size Column -->
+          <ng-container matColumnDef="size">
+            <mat-header-cell *matHeaderCellDef>Size</mat-header-cell>
+            <mat-cell *matCellDef="let doc">{{ formatFileSize(doc.fileSize) }}</mat-cell>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef>Created</mat-header-cell>
+            <mat-cell *matCellDef="let doc">{{ formatDate(doc.createdAt) }}</mat-cell>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let doc">
+              <button mat-icon-button (click)="viewDocument(doc)" matTooltip="View Document">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="['name', 'type', 'size', 'date', 'actions']"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: ['name', 'type', 'size', 'date', 'actions']"></mat-row>
+        </mat-table>
+
+        <div *ngIf="statistics.recentDocuments.length === 0" class="empty-state">
+          <mat-icon>description</mat-icon>
+          <p>No recent documents</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Storage by Category -->
+    <mat-card class="storage-card">
+      <mat-card-header>
+        <mat-card-title>Storage by Category</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="storage-list">
+          <div *ngFor="let item of storageChartData" class="storage-item">
+            <div class="storage-label">
+              <mat-icon>folder</mat-icon>
+              <span>{{ item.name }}</span>
+            </div>
+            <div class="storage-bar">
+              <div class="storage-fill" [style.width.%]="(item.value / statistics!.totalStorage) * 100"></div>
+            </div>
+            <div class="storage-value">{{ formatFileSize(item.value) }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

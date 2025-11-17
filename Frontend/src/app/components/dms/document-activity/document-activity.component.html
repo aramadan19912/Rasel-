@@ -1,0 +1,37 @@
+<div class="activity-log">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading activities...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Activity Timeline -->
+  <div *ngIf="!loading && !error && activities.length > 0" class="activity-timeline">
+    <div *ngFor="let activity of activities; let last = last" class="activity-item">
+      <div class="activity-icon" [style.background-color]="getActivityColor(activity.activityType)">
+        <mat-icon>{{ getActivityIcon(activity.activityType) }}</mat-icon>
+      </div>
+      <div class="activity-content">
+        <div class="activity-header">
+          <span class="activity-type">{{ getActivityLabel(activity.activityType) }}</span>
+          <span class="activity-time">{{ formatDate(activity.createdAt) }}</span>
+        </div>
+        <div class="activity-user">{{ activity.userName }}</div>
+        <div *ngIf="activity.description" class="activity-details">{{ activity.description }}</div>
+      </div>
+      <div *ngIf="!last" class="activity-line"></div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && activities.length === 0" class="empty-state">
+    <mat-icon>timeline</mat-icon>
+    <p>No activity recorded yet</p>
+  </div>
+</div>

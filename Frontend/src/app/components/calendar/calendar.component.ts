@@ -21,6 +21,7 @@ import {
 import { EventDialogComponent } from './event-dialog/event-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
@@ -87,6 +88,9 @@ export class CalendarComponent implements OnInit, OnDestroy {
   isLoading = false;
   showCalendarList = true;
   showMiniCalendar = true;
+
+  // Expose enum for template
+  CalendarView = CalendarView;
 
   constructor(
     private calendarService: CalendarService,

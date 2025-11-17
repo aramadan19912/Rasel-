@@ -210,6 +210,24 @@ export class CorrespondenceService {
     return this.http.delete<void>(`${this.apiUrl}/attachments/${attachmentId}`);
   }
 
+  /**
+   * Download attachment file
+   */
+  downloadAttachment(attachmentId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/attachments/${attachmentId}/download`, {
+      responseType: 'blob'
+    });
+  }
+
+  /**
+   * Download correspondence as PDF
+   */
+  downloadCorrespondencePdf(correspondenceId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${correspondenceId}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+
   // ==================== Routing Operations ====================
 
   /**

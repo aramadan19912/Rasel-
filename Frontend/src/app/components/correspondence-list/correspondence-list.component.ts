@@ -11,6 +11,7 @@ import {
 } from '../../models/correspondence.model';
 
 @Component({
+  standalone: false,
   selector: 'app-correspondence-list',
   templateUrl: './correspondence-list.component.html',
   styleUrls: ['./correspondence-list.component.css']

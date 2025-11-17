@@ -1,0 +1,19 @@
+<div class="correspondence-list-container">
+  <h2>{{ getViewModeTitle() }}</h2>
+
+  <div class="loading" *ngIf="loading">Loading...</div>
+
+  <div class="list" *ngIf="!loading">
+    <div class="correspondence-item" *ngFor="let correspondence of correspondences" (click)="viewCorrespondence(correspondence.id)">
+      <div class="subject">{{ correspondence.subjectAr }}</div>
+      <div class="status">{{ getStatusLabel(correspondence.status) }}</div>
+      <div class="priority">{{ getPriorityLabel(correspondence.priority) }}</div>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

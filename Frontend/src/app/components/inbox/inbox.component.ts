@@ -16,6 +16,7 @@ import {
 } from '../../models/query-parameters.model';
 
 @Component({
+  standalone: false,
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']

@@ -19,6 +19,7 @@ interface ClassificationStat {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-correspondence-dashboard',
   templateUrl: './correspondence-dashboard.component.html',
   styleUrls: ['./correspondence-dashboard.component.css']

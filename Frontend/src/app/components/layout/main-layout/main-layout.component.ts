@@ -11,6 +11,7 @@ interface NavItem {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-main-layout',
   templateUrl: './main-layout.component.html',
   styleUrls: ['./main-layout.component.css']
@@ -23,7 +24,11 @@ export class MainLayoutComponent implements OnInit {
     { label: 'Inbox', icon: 'inbox', route: '/inbox', permission: 'messages.read' },
     { label: 'Calendar', icon: 'event', route: '/calendar', permission: 'calendar.read' },
     { label: 'Contacts', icon: 'contacts', route: '/contacts', permission: 'contacts.read' },
-    { label: 'Video Conference', icon: 'video_call', route: '/video-conference', permission: 'videoconference.read' }
+    { label: 'Video Conference', icon: 'video_call', route: '/video-conference', permission: 'videoconference.read' },
+    { label: 'Correspondence', icon: 'mail_outline', route: '/correspondence', permission: 'correspondence.read' },
+    { label: 'Documents', icon: 'folder', route: '/dms', permission: 'documents.read' },
+    { label: 'Archive', icon: 'archive', route: '/archive', permission: 'archive.manage' },
+    { label: 'Admin', icon: 'admin_panel_settings', route: '/admin', permission: 'admin.access' }
   ];
 
   constructor(

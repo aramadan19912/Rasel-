@@ -1,18 +1,23 @@
 using Application.DTOs.Archive;
 using Application.Interfaces.Archive;
+using Application.Interfaces.DMS;
 using Backend.Infrastructure.Data;
 using Domain.Entities.Archive;
 using Microsoft.EntityFrameworkCore;
+using OutlookInboxManagement.DTOs.DMS;
+using OutlookInboxManagement.Domain.Entities.DMS;
 
 namespace Infrastructure.Services.Archive;
 
 public class CorrespondenceService : ICorrespondenceService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IDocumentService _documentService;
 
-    public CorrespondenceService(ApplicationDbContext context)
+    public CorrespondenceService(ApplicationDbContext context, IDocumentService documentService)
     {
         _context = context;
+        _documentService = documentService;
     }
 
     // ==================== CRUD Operations ====================
@@ -365,7 +370,9 @@ public class CorrespondenceService : ICorrespondenceService
         // Create directory if it doesn't exist
         Directory.CreateDirectory(uploadPath);
 
-        // Save file
+        // Save file - reset stream position for DMS
+        var fileStreamPosition = fileStream.Position;
+
         using (var fileStream2 = new FileStream(fullPath, FileMode.Create))
         {
             await fileStream.CopyToAsync(fileStream2);
@@ -398,7 +405,58 @@ public class CorrespondenceService : ICorrespondenceService
         _context.CorrespondenceAttachments.Add(attachment);
         await _context.SaveChangesAsync();
 
+        // Create DMS document for this attachment
+        try
+        {
+            // Reset stream to beginning for DMS
+            fileStream.Position = fileStreamPosition;
+
+            var createDocumentDto = new CreateDocumentDto
+            {
+                Title = request.Description ?? fileName,
+                Description = $"Attachment for correspondence {correspondence.ReferenceNumber}",
+                Category = DocumentCategory.Correspondence,
+                AccessLevel = MapConfidentialityToAccessLevel(correspondence.ConfidentialityLevel),
+                CorrespondenceId = correspondenceId,
+                Tags = new List<string> { "correspondence-attachment", correspondence.ReferenceNumber }
+            };
+
+            // Open a new stream from the saved file
+            using (var dmsFileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+            {
+                var document = await _documentService.CreateDocumentFromStreamAsync(
+                    createDocumentDto,
+                    dmsFileStream,
+                    fileName,
+                    contentType,
+                    userId
+                );
+
+                // Store DMS document ID in attachment metadata (if needed later)
+                // attachment.DocumentId = document.Id;  // Would need to add this field to CorrespondenceAttachment
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log but don't fail the attachment creation if DMS fails
+            // The attachment is still saved in the correspondence system
+            Console.WriteLine($"Warning: Failed to create DMS document for attachment: {ex.Message}");
+        }
+
         return MapAttachmentToDto(attachment);
+    }
+
+    private DocumentAccessLevel MapConfidentialityToAccessLevel(string confidentialityLevel)
+    {
+        return confidentialityLevel?.ToLower() switch
+        {
+            "public" => DocumentAccessLevel.Public,
+            "internal" => DocumentAccessLevel.Internal,
+            "restricted" => DocumentAccessLevel.Restricted,
+            "confidential" => DocumentAccessLevel.Confidential,
+            "secret" => DocumentAccessLevel.Secret,
+            _ => DocumentAccessLevel.Internal
+        };
     }
 
     public async Task<List<CorrespondenceAttachmentDto>> GetAttachmentsAsync(int correspondenceId, string userId)

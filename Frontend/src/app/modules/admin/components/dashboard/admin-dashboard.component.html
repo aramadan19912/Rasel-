@@ -1,0 +1,501 @@
+<div class="admin-dashboard">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1>{{ 'admin.dashboard.title' | translate }}</h1>
+    <button mat-icon-button (click)="refreshDashboard()" [matTooltip]="'common.refresh' | translate">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- Dashboard Level Tabs -->
+  <mat-tab-group [(selectedIndex)]="selectedDashboardLevel" (selectedIndexChange)="onDashboardLevelChange($event === 0 ? 'executive' : $event === 1 ? 'department' : 'employee')" class="dashboard-tabs">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">dashboard</mat-icon>
+        {{ 'admin.dashboard.levels.executive' | translate }}
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">business</mat-icon>
+        {{ 'admin.dashboard.levels.department' | translate }}
+      </ng-template>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">person</mat-icon>
+        {{ 'admin.dashboard.levels.employee' | translate }}
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>{{ 'common.loading' | translate }}</p>
+  </div>
+
+  <!-- Executive Dashboard -->
+  <div *ngIf="!loading && selectedDashboardLevel === 'executive' && executiveDashboard" class="dashboard-content">
+    <div class="stats-grid">
+      <!-- User Statistics -->
+      <mat-card class="stat-card users" (click)="navigateTo('users')">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalUsers }}</h3>
+            <p>{{ 'admin.dashboard.totalUsers' | translate }}</p>
+            <span class="stat-subtitle">{{ executiveDashboard.activeUsers }} {{ 'admin.dashboard.active' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card employees" (click)="navigateTo('employees')">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>badge</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalEmployees }}</h3>
+            <p>{{ 'admin.dashboard.totalEmployees' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card departments" (click)="navigateTo('departments')">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalDepartments }}</h3>
+            <p>{{ 'admin.dashboard.totalDepartments' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card roles" (click)="navigateTo('roles')">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalRoles }}</h3>
+            <p>{{ 'admin.dashboard.totalRoles' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Correspondence Statistics -->
+      <mat-card class="stat-card correspondences">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>mail</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.totalCorrespondences' | translate }}</p>
+            <span class="stat-subtitle">{{ executiveDashboard.correspondencesThisMonth }} {{ 'admin.dashboard.thisMonth' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card pending">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.pendingCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.pendingCorrespondences' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card overdue" *ngIf="executiveDashboard.overdueCorrespondences > 0">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.overdueCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.overdueCorrespondences' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card messages">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>message</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ executiveDashboard.totalMessages }}</h3>
+            <p>{{ 'admin.dashboard.totalMessages' | translate }}</p>
+            <span class="stat-subtitle">{{ executiveDashboard.messagesToday }} {{ 'admin.dashboard.today' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Growth Metrics -->
+    <div class="metrics-row">
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.userGrowth' | translate }}</h4>
+          <div class="metric-value" [class.positive]="executiveDashboard.userGrowthRate >= 0" [class.negative]="executiveDashboard.userGrowthRate < 0">
+            <mat-icon>{{ executiveDashboard.userGrowthRate >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+            <span>{{ executiveDashboard.userGrowthRate | number: '1.1-1' }}%</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.correspondenceGrowth' | translate }}</h4>
+          <div class="metric-value" [class.positive]="executiveDashboard.correspondenceGrowthRate >= 0" [class.negative]="executiveDashboard.correspondenceGrowthRate < 0">
+            <mat-icon>{{ executiveDashboard.correspondenceGrowthRate >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+            <span>{{ executiveDashboard.correspondenceGrowthRate | number: '1.1-1' }}%</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Department Dashboard -->
+  <div *ngIf="!loading && selectedDashboardLevel === 'department' && departmentDashboard" class="dashboard-content">
+    <!-- Department Selector -->
+    <mat-card class="selector-card">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'admin.dashboard.selectDepartment' | translate }}</mat-label>
+          <mat-select [(ngModel)]="selectedDepartmentId" (selectionChange)="onDepartmentChange($event.value)">
+            <mat-option *ngFor="let dept of departments" [value]="dept.id">
+              {{ dept.nameAr || dept.nameEn }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Department Info -->
+    <div class="department-info">
+      <h2>{{ departmentDashboard.departmentName }}</h2>
+      <p *ngIf="departmentDashboard.managerName">{{ 'admin.dashboard.manager' | translate }}: {{ departmentDashboard.managerName }}</p>
+    </div>
+
+    <div class="stats-grid">
+      <mat-card class="stat-card employees">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.totalEmployees }}</h3>
+            <p>{{ 'admin.dashboard.totalEmployees' | translate }}</p>
+            <span class="stat-subtitle">{{ departmentDashboard.activeEmployees }} {{ 'admin.dashboard.active' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card incoming">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>inbox</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.incomingCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.incoming' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card outgoing">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>send</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.outgoingCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.outgoing' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card pending">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>pending</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.pendingCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.pending' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card completed">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.completedThisMonth }}</h3>
+            <p>{{ 'admin.dashboard.completedThisMonth' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card messages">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>message</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ departmentDashboard.unreadMessages }}</h3>
+            <p>{{ 'admin.dashboard.unreadMessages' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Department Performance -->
+    <div class="metrics-row">
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.averageResponseTime' | translate }}</h4>
+          <div class="metric-value">
+            <span>{{ departmentDashboard.averageResponseTime | number: '1.1-1' }}</span>
+            <small>{{ 'admin.dashboard.hours' | translate }}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.completionRate' | translate }}</h4>
+          <div class="metric-value">
+            <span>{{ departmentDashboard.completionRate | number: '1.1-1' }}%</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Employee Dashboard -->
+  <div *ngIf="!loading && selectedDashboardLevel === 'employee' && employeeDashboard" class="dashboard-content">
+    <!-- Employee Selector -->
+    <mat-card class="selector-card">
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'admin.dashboard.selectEmployee' | translate }}</mat-label>
+          <mat-select [(ngModel)]="selectedEmployeeId" (selectionChange)="onEmployeeChange($event.value)">
+            <mat-option *ngFor="let emp of employees" [value]="emp.id">
+              {{ emp.fullNameAr || emp.fullNameEn }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Employee Info -->
+    <div class="employee-info">
+      <h2>{{ employeeDashboard.employeeName }}</h2>
+      <p>{{ employeeDashboard.positionTitle }} - {{ employeeDashboard.departmentName }}</p>
+    </div>
+
+    <div class="stats-grid">
+      <mat-card class="stat-card assigned">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>assignment</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.assignedCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.assigned' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card pending">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.pendingCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.pending' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card overdue" *ngIf="employeeDashboard.overdueCorrespondences > 0">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.overdueCorrespondences }}</h3>
+            <p>{{ 'admin.dashboard.overdue' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card completed-week">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>done</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.completedThisWeek }}</h3>
+            <p>{{ 'admin.dashboard.completedThisWeek' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card meetings">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.upcomingMeetings }}</h3>
+            <p>{{ 'admin.dashboard.upcomingMeetings' | translate }}</p>
+            <span class="stat-subtitle">{{ employeeDashboard.meetingsToday }} {{ 'admin.dashboard.today' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card messages">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>mail</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h3>{{ employeeDashboard.unreadMessages }}</h3>
+            <p>{{ 'admin.dashboard.unreadMessages' | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Employee Performance -->
+    <div class="metrics-row">
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.averageCompletionTime' | translate }}</h4>
+          <div class="metric-value">
+            <span>{{ employeeDashboard.averageCompletionTime | number: '1.1-1' }}</span>
+            <small>{{ 'admin.dashboard.hours' | translate }}</small>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <h4>{{ 'admin.dashboard.completionRate' | translate }}</h4>
+          <div class="metric-value">
+            <span>{{ employeeDashboard.completionRate | number: '1.1-1' }}%</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Correspondence Statistics (Common to all levels) -->
+  <div *ngIf="!loading && correspondenceStats" class="correspondence-stats">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'admin.dashboard.correspondenceStatistics' | translate }}</mat-card-title>
+        <div class="header-actions">
+          <mat-form-field appearance="outline" class="date-picker">
+            <mat-label>{{ 'admin.dashboard.startDate' | translate }}</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="onDateRangeChange()">
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-picker">
+            <mat-label>{{ 'admin.dashboard.endDate' | translate }}</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" (dateChange)="onDateRangeChange()">
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-summary">
+          <div class="stat-item">
+            <h4>{{ 'admin.dashboard.totalCount' | translate }}</h4>
+            <p>{{ correspondenceStats.totalCount }}</p>
+          </div>
+          <div class="stat-item">
+            <h4>{{ 'admin.dashboard.averageResponseTime' | translate }}</h4>
+            <p>{{ correspondenceStats.averageResponseTime | number: '1.1-1' }} {{ 'admin.dashboard.hours' | translate }}</p>
+          </div>
+          <div class="stat-item">
+            <h4>{{ 'admin.dashboard.completionRate' | translate }}</h4>
+            <p>{{ correspondenceStats.completionRate | number: '1.1-1' }}%</p>
+          </div>
+          <div class="stat-item">
+            <h4>{{ 'admin.dashboard.overdue' | translate }}</h4>
+            <p>{{ correspondenceStats.overdueCount }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Recent Activities (Common to all levels) -->
+  <div *ngIf="!loading && recentActivities.length > 0" class="recent-activities">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'admin.dashboard.recentActivities' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item *ngFor="let activity of recentActivities">
+            <mat-icon matListItemIcon>history</mat-icon>
+            <div matListItemTitle>{{ activity.userName }} - {{ activity.action }}</div>
+            <div matListItemLine>{{ activity.entityType }} | {{ activity.timestamp | date: 'short' }}</div>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Quick Actions (Common to all levels) -->
+  <div *ngIf="!loading" class="quick-actions-section">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'admin.dashboard.quickActions' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="quick-actions">
+          <button mat-raised-button color="primary" (click)="navigateTo('users')"
+                  *appHasPermission="'admin.users.manage'">
+            <mat-icon>person_add</mat-icon>
+            {{ 'admin.dashboard.addUser' | translate }}
+          </button>
+          <button mat-raised-button color="primary" (click)="navigateTo('employees')"
+                  *appHasPermission="'admin.employees.manage'">
+            <mat-icon>badge</mat-icon>
+            {{ 'admin.dashboard.addEmployee' | translate }}
+          </button>
+          <button mat-raised-button color="primary" (click)="navigateTo('departments')"
+                  *appHasPermission="'admin.departments.manage'">
+            <mat-icon>business</mat-icon>
+            {{ 'admin.dashboard.addDepartment' | translate }}
+          </button>
+          <button mat-raised-button (click)="navigateTo('audit-logs')"
+                  *appHasPermission="'admin.audit.view'">
+            <mat-icon>history</mat-icon>
+            {{ 'admin.dashboard.viewAuditLogs' | translate }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

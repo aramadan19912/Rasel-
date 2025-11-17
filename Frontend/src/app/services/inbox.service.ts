@@ -338,7 +338,7 @@ export class InboxService {
 
   // Real-time notification handlers
   onNewMessage(): Observable<Message> {
-    return this.newMessage$.asObservable();
+    return this.newMessage$;
   }
 
   notifyNewMessage(message: Message): void {

@@ -6,7 +6,8 @@
         <mat-icon>menu</mat-icon>
       </button>
 
-      <button mat-raised-button color="accent" (click)="openCompose()">
+      <button mat-raised-button color="accent" (click)="openCompose()"
+              *appHasPermission="'messages.create'">
         <mat-icon>edit</mat-icon>
         New Message
       </button>
@@ -82,11 +83,13 @@
             {{selectedMessages.size}} selected
           </span>
 
-          <button mat-icon-button matTooltip="Delete" (click)="deleteSelected()">
+          <button mat-icon-button matTooltip="Delete" (click)="deleteSelected()"
+                  *appHasPermission="'messages.delete'">
             <mat-icon>delete</mat-icon>
           </button>
 
-          <button mat-icon-button matTooltip="Archive">
+          <button mat-icon-button matTooltip="Archive"
+                  *appHasPermission="'messages.archive'">
             <mat-icon>archive</mat-icon>
           </button>
         </div>
@@ -144,7 +147,7 @@
                 {{message.bodyPreview}}
               </div>
 
-              <div class="message-meta" *ngIf="message.categories?.length > 0">
+              <div class="message-meta" *ngIf="message.categories && message.categories.length > 0">
                 <mat-chip-set>
                   <mat-chip *ngFor="let category of message.categories"
                            [style.background-color]="category.color">
@@ -161,20 +164,24 @@
               </button>
 
               <mat-menu #messageMenu="matMenu">
-                <button mat-menu-item (click)="reply(message)">
+                <button mat-menu-item (click)="reply(message)"
+                        *appHasPermission="'messages.send'">
                   <mat-icon>reply</mat-icon>
                   Reply
                 </button>
-                <button mat-menu-item (click)="replyAll(message)">
+                <button mat-menu-item (click)="replyAll(message)"
+                        *appHasPermission="'messages.send'">
                   <mat-icon>reply_all</mat-icon>
                   Reply All
                 </button>
-                <button mat-menu-item (click)="forward(message)">
+                <button mat-menu-item (click)="forward(message)"
+                        *appHasPermission="'messages.send'">
                   <mat-icon>forward</mat-icon>
                   Forward
                 </button>
                 <mat-divider></mat-divider>
-                <button mat-menu-item (click)="exportToPdf(message)">
+                <button mat-menu-item (click)="exportToPdf(message)"
+                        *appHasPermission="'messages.export'">
                   <mat-icon>picture_as_pdf</mat-icon>
                   Export PDF
                 </button>
@@ -200,7 +207,7 @@
         <hr>
         <div [innerHTML]="selectedMessage.body"></div>
 
-        <div *ngIf="selectedMessage.attachments?.length > 0">
+        <div *ngIf="selectedMessage.attachments && selectedMessage.attachments.length > 0">
           <h3>Attachments ({{selectedMessage.attachments.length}})</h3>
           <div *ngFor="let attachment of selectedMessage.attachments">
             <mat-icon>attach_file</mat-icon>

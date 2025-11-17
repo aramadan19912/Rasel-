@@ -31,7 +31,10 @@
     "previous": "Previous",
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
-    "invalidFormat": "Invalid format"
+    "invalidFormat": "Invalid format",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status"
   },
 
   "language": {
@@ -475,5 +478,266 @@
     "year": "year",
     "years": "years",
     "ago": "ago"
+  },
+
+  "correspondence": {
+    "title": "Correspondence",
+    "createCorrespondence": "Create Correspondence",
+    "editCorrespondence": "Edit Correspondence",
+    "viewCorrespondence": "View Correspondence",
+    "deleteCorrespondence": "Delete Correspondence",
+    "routeCorrespondence": "Route Correspondence",
+    "archiveCorrespondence": "Archive Correspondence",
+
+    "basicInfo": "Basic Information",
+    "classification": "Classification",
+    "dates": "Dates",
+    "senderReceiver": "Sender & Receiver",
+    "additionalInfo": "Additional Information",
+    "attachments": "Attachments",
+
+    "subjectAr": "Subject (Arabic)",
+    "subjectEn": "Subject (English)",
+    "subjectArPlaceholder": "Enter subject in Arabic",
+    "subjectEnPlaceholder": "Enter subject in English",
+    "contentAr": "Content (Arabic)",
+    "contentEn": "Content (English)",
+    "contentArPlaceholder": "Enter content in Arabic",
+    "contentEnPlaceholder": "Enter content in English",
+
+    "category": "Category",
+    "status": {
+      "label": "Status",
+      "Draft": "Draft",
+      "Pending": "Pending",
+      "UnderReview": "Under Review",
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "InProgress": "In Progress",
+      "Completed": "Completed",
+      "Archived": "Archived",
+      "Cancelled": "Cancelled"
+    },
+
+    "priority": {
+      "label": "Priority",
+      "Low": "Low",
+      "Normal": "Normal",
+      "High": "High",
+      "Urgent": "Urgent",
+      "Critical": "Critical"
+    },
+
+    "confidentiality": {
+      "label": "Confidentiality Level",
+      "Public": "Public",
+      "Internal": "Internal",
+      "Confidential": "Confidential",
+      "Secret": "Secret",
+      "TopSecret": "Top Secret"
+    },
+
+    "correspondenceDate": "Correspondence Date",
+    "dueDate": "Due Date",
+    "fromEmployeeId": "From Employee",
+    "externalSenderName": "External Sender Name",
+    "externalSenderOrganization": "External Sender Organization",
+    "toDepartmentId": "To Department",
+    "toEmployeeId": "To Employee",
+    "relatedCorrespondenceId": "Related Correspondence",
+
+    "keywords": "Keywords",
+    "keywordsPlaceholder": "Enter keywords separated by commas",
+    "tags": "Tags",
+    "tagsPlaceholder": "Enter tags separated by commas",
+    "notes": "Notes",
+    "notesPlaceholder": "Enter any additional notes",
+
+    "selectFiles": "Select Files",
+    "selectedFiles": "Selected Files",
+    "saveDraft": "Save Draft",
+    "submit": "Submit",
+
+    "classifications": {
+      "Incoming": "Incoming",
+      "Outgoing": "Outgoing",
+      "Internal": "Internal"
+    },
+
+    "actions": {
+      "route": "Route",
+      "approve": "Approve",
+      "reject": "Reject",
+      "archive": "Archive",
+      "print": "Print",
+      "export": "Export"
+    }
+  },
+
+  "archive": {
+    "title": "Archive Management",
+    "addCategory": "Add Category",
+    "noCategories": "No archive categories available",
+    "categoryCode": "Category Code",
+    "name": "Name",
+    "classification": "Classification",
+    "retentionPeriod": "Retention Period",
+    "status": "Status",
+
+    "views": {
+      "tree": "Tree View",
+      "list": "List View",
+      "statistics": "Statistics"
+    },
+
+    "retentionPeriods": {
+      "OneYear": "1 Year",
+      "TwoYears": "2 Years",
+      "ThreeYears": "3 Years",
+      "FiveYears": "5 Years",
+      "TenYears": "10 Years",
+      "Permanent": "Permanent"
+    }
+  },
+
+  "admin": {
+    "title": "Administration",
+
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalUsers": "Total Users",
+      "totalEmployees": "Total Employees",
+      "totalDepartments": "Total Departments",
+      "totalRoles": "Total Roles",
+      "totalCorrespondences": "Total Correspondences",
+      "pendingCorrespondences": "Pending Correspondences",
+      "overdueCorrespondences": "Overdue Correspondences",
+      "totalMessages": "Total Messages",
+      "thisMonth": "This Month",
+      "today": "Today",
+      "active": "Active",
+
+      "levels": {
+        "executive": "Executive Dashboard",
+        "department": "Department Dashboard",
+        "employee": "Employee Dashboard"
+      },
+
+      "userGrowth": "User Growth",
+      "correspondenceGrowth": "Correspondence Growth",
+
+      "selectDepartment": "Select Department",
+      "selectEmployee": "Select Employee",
+      "manager": "Manager",
+      "incoming": "Incoming",
+      "outgoing": "Outgoing",
+      "pending": "Pending",
+      "completedThisMonth": "Completed This Month",
+      "averageResponseTime": "Average Response Time",
+      "completionRate": "Completion Rate",
+      "hours": "hours",
+
+      "assigned": "Assigned",
+      "overdue": "Overdue",
+      "completedThisWeek": "Completed This Week",
+      "upcomingMeetings": "Upcoming Meetings",
+      "averageCompletionTime": "Average Completion Time",
+
+      "correspondenceStatistics": "Correspondence Statistics",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "totalCount": "Total Count",
+
+      "quickActions": "Quick Actions",
+      "addUser": "Add User",
+      "addEmployee": "Add Employee",
+      "addDepartment": "Add Department",
+      "viewAuditLogs": "View Audit Logs",
+      "recentActivities": "Recent Activities"
+    },
+
+    "users": {
+      "title": "User Management",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "comingSoon": "User management features coming soon..."
+    },
+
+    "roles": {
+      "title": "Role Management",
+      "addRole": "Add Role",
+      "editRole": "Edit Role",
+      "deleteRole": "Delete Role",
+      "comingSoon": "Role management features coming soon..."
+    },
+
+    "departments": {
+      "title": "Department Management",
+      "addDepartment": "Add Department",
+      "editDepartment": "Edit Department",
+      "deleteDepartment": "Delete Department",
+      "comingSoon": "Department management features coming soon..."
+    },
+
+    "employees": {
+      "title": "Employee Management",
+      "addEmployee": "Add Employee",
+      "editEmployee": "Edit Employee",
+      "deleteEmployee": "Delete Employee",
+      "comingSoon": "Employee management features coming soon..."
+    },
+
+    "permissions": {
+      "title": "Permission Management",
+      "addPermission": "Add Permission",
+      "editPermission": "Edit Permission",
+      "deletePermission": "Delete Permission"
+    },
+
+    "audit": {
+      "title": "Audit Logs",
+      "viewLogs": "View Logs",
+      "exportLogs": "Export Logs"
+    },
+
+    "reports": {
+      "title": "Reports",
+      "correspondenceReport": "Correspondence Report",
+      "employeePerformance": "Employee Performance",
+      "departmentReport": "Department Report",
+      "archiveReport": "Archive Report",
+      "auditReport": "Audit Report",
+
+      "export": "Export",
+      "exportCSV": "Export to CSV",
+      "exportExcel": "Export to Excel",
+      "exportPDF": "Export to PDF",
+
+      "filters": "Filters",
+      "summary": "Summary",
+
+      "totalCorrespondences": "Total Correspondences",
+      "overdueCount": "Overdue",
+      "avgCompletionHours": "Average Completion (hours)",
+      "statusBreakdown": "Status Breakdown",
+      "priorityBreakdown": "Priority Breakdown",
+      "departmentBreakdown": "Department Breakdown",
+      "topCorrespondences": "Top Correspondences",
+
+      "referenceNumber": "Reference Number",
+      "subject": "Subject",
+      "status": "Status",
+      "priority": "Priority",
+      "createdAt": "Created At",
+
+      "totalAssigned": "Total Assigned",
+      "completed": "Completed",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "completionRate": "Completion Rate",
+      "totalEmployees": "Total Employees",
+      "avgResponseTime": "Avg Response Time (hours)"
+    }
   }
 }
