@@ -10,6 +10,7 @@ import { AdminService } from '../../../../services/admin/admin.service';
 export class ReportsComponent implements OnInit {
   loading = false;
   selectedReportType = 'correspondence';
+  selectedTabIndex = 0; // Track tab index separately
 
   // Correspondence Report Data
   correspondenceReport: any = null;
@@ -63,9 +64,7 @@ export class ReportsComponent implements OnInit {
   showYAxisLabel = true;
   xAxisLabel = 'Category';
   yAxisLabel = 'Count';
-  colorScheme = {
-    domain: ['#667eea', '#764ba2', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140']
-  };
+  colorScheme: any = 'vivid'; // Use predefined ngx-charts color scheme
 
   constructor(private adminService: AdminService) {}
 
@@ -252,8 +251,11 @@ export class ReportsComponent implements OnInit {
     }));
   }
 
-  onReportTypeChange(type: string): void {
-    this.selectedReportType = type;
+  onReportTypeChange(tabIndex: number): void {
+    // Map tab index to report type
+    const reportTypes = ['correspondence', 'employee', 'department'];
+    this.selectedReportType = reportTypes[tabIndex] || 'correspondence';
+    this.selectedTabIndex = tabIndex;
     this.loadReport();
   }
 

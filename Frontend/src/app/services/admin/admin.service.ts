@@ -131,6 +131,10 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/departments`);
   }
 
+  getDepartments(): Observable<any> {
+    return this.getAllDepartments();
+  }
+
   getDepartmentHierarchy(): Observable<any> {
     return this.http.get(`${this.apiUrl}/departments/hierarchy`);
   }
@@ -180,6 +184,10 @@ export class AdminService {
 
   getEmployeesByDepartment(departmentId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/employees/by-department/${departmentId}`);
+  }
+
+  getEmployees(): Observable<any> {
+    return this.searchEmployees({ pageNumber: 1, pageSize: 1000 });
   }
 
   // Audit Logs
