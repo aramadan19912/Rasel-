@@ -1,0 +1,277 @@
+.dms-dashboard {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  .loading-container {
+    text-align: center;
+    padding: 64px;
+
+    mat-spinner {
+      margin: 0 auto 24px auto;
+    }
+
+    p {
+      color: rgba(0, 0, 0, 0.54);
+    }
+  }
+
+  .dashboard-content {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+
+      .stat-card {
+        ::ng-deep .mat-mdc-card-content {
+          display: flex;
+          align-items: center;
+          padding: 24px;
+
+          .stat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+
+            mat-icon {
+              font-size: 32px;
+              width: 32px;
+              height: 32px;
+              color: white;
+            }
+          }
+
+          .stat-info {
+            h3 {
+              margin: 0 0 4px 0;
+              font-size: 32px;
+              font-weight: 600;
+              color: rgba(0, 0, 0, 0.87);
+            }
+
+            p {
+              margin: 0;
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.54);
+            }
+          }
+        }
+      }
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+
+      .chart-card {
+        ::ng-deep .mat-mdc-card-content {
+          padding: 24px;
+
+          .chart-container {
+            .chart-bar {
+              display: flex;
+              align-items: center;
+              margin-bottom: 16px;
+
+              .bar-label {
+                width: 120px;
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.87);
+              }
+
+              .bar-container {
+                flex: 1;
+                height: 32px;
+                background-color: rgba(0, 0, 0, 0.06);
+                border-radius: 4px;
+                overflow: hidden;
+                margin: 0 12px;
+
+                .bar-fill {
+                  height: 100%;
+                  background: linear-gradient(90deg, #2196f3, #21cbf3);
+                  transition: width 0.3s ease;
+                }
+              }
+
+              .bar-value {
+                width: 40px;
+                text-align: right;
+                font-weight: 500;
+                color: rgba(0, 0, 0, 0.87);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .documents-card,
+    .storage-card {
+      margin-bottom: 32px;
+
+      ::ng-deep .mat-mdc-card-content {
+        padding: 0;
+
+        .mat-mdc-table {
+          width: 100%;
+
+          .doc-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            mat-icon {
+              color: rgba(0, 0, 0, 0.54);
+            }
+          }
+        }
+
+        .storage-list {
+          padding: 24px;
+
+          .storage-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            .storage-label {
+              display: flex;
+              align-items: center;
+              width: 150px;
+              gap: 8px;
+
+              mat-icon {
+                color: rgba(0, 0, 0, 0.54);
+                font-size: 20px;
+              }
+
+              span {
+                font-size: 14px;
+                color: rgba(0, 0, 0, 0.87);
+              }
+            }
+
+            .storage-bar {
+              flex: 1;
+              height: 24px;
+              background-color: rgba(0, 0, 0, 0.06);
+              border-radius: 12px;
+              overflow: hidden;
+              margin: 0 16px;
+
+              .storage-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #4caf50, #8bc34a);
+                transition: width 0.3s ease;
+              }
+            }
+
+            .storage-value {
+              width: 100px;
+              text-align: right;
+              font-weight: 500;
+              color: rgba(0, 0, 0, 0.87);
+            }
+          }
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 64px 24px;
+          color: rgba(0, 0, 0, 0.38);
+
+          mat-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            color: rgba(0, 0, 0, 0.26);
+          }
+
+          p {
+            margin: 0;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .dms-dashboard {
+    padding: 16px;
+
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+
+      .header-actions {
+        width: 100%;
+        flex-direction: column;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+
+    .dashboard-content {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+
+      .storage-list {
+        .storage-item {
+          flex-direction: column;
+          align-items: flex-start;
+
+          .storage-label,
+          .storage-bar,
+          .storage-value {
+            width: 100%;
+            margin: 4px 0;
+          }
+        }
+      }
+    }
+  }
+}

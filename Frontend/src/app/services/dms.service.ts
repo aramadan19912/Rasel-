@@ -179,6 +179,10 @@ export class DmsService {
 
   // ==================== Activity Log ====================
 
+  getActivity(documentId: number): Observable<DocumentActivity[]> {
+    return this.getDocumentActivities(documentId);
+  }
+
   getDocumentActivities(documentId: number, limit: number = 50): Observable<DocumentActivity[]> {
     const params = new HttpParams().set('limit', limit.toString());
     return this.http.get<DocumentActivity[]>(`${this.apiUrl}/${documentId}/activities`, { params });
@@ -233,6 +237,12 @@ export class DmsService {
       documentIds,
       targetFolderId
     });
+  }
+
+  // ==================== Statistics ====================
+
+  getStatistics(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/statistics`);
   }
 
   // ==================== Helper Methods ====================

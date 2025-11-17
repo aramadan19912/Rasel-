@@ -1,0 +1,286 @@
+.document-viewer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  .viewer-toolbar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+
+    .document-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin-left: 16px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .toolbar-divider {
+      height: 32px;
+      margin: 0 8px;
+    }
+
+    .zoom-level,
+    .page-info {
+      font-size: 14px;
+      padding: 0 8px;
+      min-width: 60px;
+      text-align: center;
+    }
+  }
+
+  .viewer-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+
+    .viewer-container {
+      height: 100%;
+
+      .viewer-sidebar {
+        width: 350px;
+        border-left: 1px solid rgba(0, 0, 0, 0.12);
+
+        ::ng-deep .mat-mdc-tab-group {
+          height: 100%;
+
+          .mat-mdc-tab-body-wrapper {
+            flex: 1;
+            overflow: hidden;
+          }
+        }
+
+        .tab-icon {
+          margin-right: 8px;
+        }
+
+        .sidebar-content {
+          padding: 16px;
+          height: calc(100vh - 180px);
+          overflow-y: auto;
+
+          h3 {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 500;
+          }
+
+          h4 {
+            margin: 16px 0 8px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.54);
+          }
+
+          .info-section {
+            margin-bottom: 24px;
+
+            .info-item {
+              display: flex;
+              justify-content: space-between;
+              padding: 8px 0;
+              border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+              .info-label {
+                font-weight: 500;
+                color: rgba(0, 0, 0, 0.54);
+              }
+
+              .info-value {
+                text-align: right;
+                max-width: 60%;
+                word-break: break-word;
+              }
+            }
+          }
+
+          .version-item,
+          .annotation-item {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            margin-bottom: 8px;
+
+            .current-badge {
+              display: inline-block;
+              background-color: #4caf50;
+              color: white;
+              font-size: 10px;
+              padding: 2px 8px;
+              border-radius: 12px;
+              margin-left: 8px;
+            }
+          }
+
+          .annotation-tools {
+            margin-bottom: 24px;
+
+            ::ng-deep .mat-button-toggle-group {
+              width: 100%;
+              border: 1px solid rgba(0, 0, 0, 0.12);
+
+              .mat-button-toggle {
+                width: 100%;
+                border: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+                &:last-child {
+                  border-bottom: none;
+                }
+
+                .mat-button-toggle-label-content {
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-start;
+                  padding: 12px 16px;
+
+                  mat-icon {
+                    margin-right: 12px;
+                  }
+                }
+              }
+            }
+          }
+
+          .empty-state {
+            text-align: center;
+            padding: 48px 16px;
+            color: rgba(0, 0, 0, 0.38);
+
+            mat-icon {
+              font-size: 64px;
+              width: 64px;
+              height: 64px;
+              margin-bottom: 16px;
+              color: rgba(0, 0, 0, 0.26);
+            }
+
+            p {
+              margin: 0 0 16px 0;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      .document-display {
+        flex: 1;
+        background-color: #525659;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+
+        .viewer-area {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+
+          .pdf-viewer {
+            width: 100%;
+            height: 100%;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+          }
+
+          .image-viewer {
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .document-image {
+              max-width: 100%;
+              max-height: 100%;
+              object-fit: contain;
+              background: white;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+              transform-origin: center center;
+              transition: transform 0.3s ease;
+            }
+          }
+
+          .unsupported-viewer {
+            background: white;
+            padding: 48px;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 400px;
+
+            mat-icon {
+              font-size: 96px;
+              width: 96px;
+              height: 96px;
+              margin-bottom: 24px;
+              color: rgba(0, 0, 0, 0.38);
+            }
+
+            h3 {
+              margin: 0 0 8px 0;
+              font-size: 20px;
+              font-weight: 500;
+            }
+
+            p {
+              margin: 0 0 24px 0;
+              color: rgba(0, 0, 0, 0.54);
+            }
+          }
+        }
+
+        .loading-state,
+        .error-state {
+          text-align: center;
+          padding: 48px;
+          color: white;
+
+          mat-icon {
+            font-size: 64px;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 24px;
+          }
+
+          p,
+          h3 {
+            color: white;
+            margin: 0 0 24px 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .document-viewer {
+    .viewer-toolbar {
+      .document-title {
+        display: none;
+      }
+
+      .toolbar-divider {
+        display: none;
+      }
+    }
+
+    .viewer-content {
+      .viewer-container {
+        .viewer-sidebar {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

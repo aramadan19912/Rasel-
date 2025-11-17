@@ -33,10 +33,20 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatTreeModule } from '@angular/material/tree';
 
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 // DMS Components
 import { DocumentBrowserComponent } from '../../components/dms/document-browser/document-browser.component';
 import { DocumentUploadComponent } from '../../components/dms/document-upload/document-upload.component';
 import { FolderManagementComponent } from '../../components/dms/folder-management/folder-management.component';
+import { DocumentViewerComponent } from '../../components/dms/document-viewer/document-viewer.component';
+import { DocumentActivityComponent } from '../../components/dms/document-activity/document-activity.component';
+import { DmsDashboardComponent } from '../../components/dms/dms-dashboard/dms-dashboard.component';
+
+// Pipes
+import { SafePipe } from '../../pipes/safe.pipe';
 
 const routes: Routes = [
   {
@@ -53,6 +63,16 @@ const routes: Routes = [
     path: 'upload',
     component: DocumentUploadComponent,
     data: { title: 'Upload Document' }
+  },
+  {
+    path: 'viewer/:id',
+    component: DocumentViewerComponent,
+    data: { title: 'Document Viewer' }
+  },
+  {
+    path: 'dashboard',
+    component: DmsDashboardComponent,
+    data: { title: 'DMS Dashboard' }
   }
 ];
 
@@ -60,7 +80,11 @@ const routes: Routes = [
   declarations: [
     DocumentBrowserComponent,
     DocumentUploadComponent,
-    FolderManagementComponent
+    FolderManagementComponent,
+    DocumentViewerComponent,
+    DocumentActivityComponent,
+    DmsDashboardComponent,
+    SafePipe
   ],
   imports: [
     CommonModule,
@@ -94,7 +118,10 @@ const routes: Routes = [
     MatProgressBarModule,
     MatDividerModule,
     MatExpansionModule,
-    MatTreeModule
+    MatTreeModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatButtonToggleModule
   ]
 })
 export class DmsModule { }
