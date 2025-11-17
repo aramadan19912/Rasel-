@@ -1,0 +1,89 @@
+<div class="contact-picker-dialog">
+  <h2 mat-dialog-title>{{ title }}</h2>
+
+  <mat-dialog-content>
+    <!-- Search -->
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search contacts</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Search by name, email, or company">
+      <mat-icon matPrefix>search</mat-icon>
+      <button mat-icon-button matSuffix *ngIf="searchControl.value" (click)="searchControl.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Selected Contacts -->
+    <div class="selected-section" *ngIf="selectedContacts.length > 0">
+      <h3>Selected ({{ selectedContacts.length }})</h3>
+      <div class="selected-chips">
+        <mat-chip-set>
+          <mat-chip *ngFor="let contact of selectedContacts" (removed)="toggleContact(contact)">
+            <div class="chip-avatar" [style.background-color]="contact.photoUrl ? 'transparent' : getContactColor(contact)">
+              <img *ngIf="contact.photoUrl" [src]="contact.photoUrl" [alt]="contact.displayName">
+              <span *ngIf="!contact.photoUrl">{{ getInitials(contact) }}</span>
+            </div>
+            {{ contact.displayName }}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <!-- Contacts List -->
+    <div *ngIf="!isLoading" class="contacts-list">
+      <mat-selection-list [multiple]="multiSelect">
+        <mat-list-option
+          *ngFor="let contact of filteredContacts"
+          [value]="contact"
+          [selected]="isContactSelected(contact)"
+          (click)="toggleContact(contact)"
+          class="contact-option">
+
+          <div class="contact-item">
+            <div class="contact-avatar" [style.background-color]="contact.photoUrl ? 'transparent' : getContactColor(contact)">
+              <img *ngIf="contact.photoUrl" [src]="contact.photoUrl" [alt]="contact.displayName" class="avatar-image">
+              <span *ngIf="!contact.photoUrl" class="avatar-initials">{{ getInitials(contact) }}</span>
+            </div>
+
+            <div class="contact-info">
+              <div class="contact-name">{{ contact.displayName }}</div>
+              <div class="contact-details">
+                <span *ngIf="getPrimaryEmail(contact)" class="email">
+                  <mat-icon>email</mat-icon>
+                  {{ getPrimaryEmail(contact) }}
+                </span>
+                <span *ngIf="contact.company" class="company">
+                  <mat-icon>business</mat-icon>
+                  {{ contact.company }}
+                </span>
+              </div>
+            </div>
+
+            <mat-icon *ngIf="contact.isFavorite" class="favorite-icon" color="warn">star</mat-icon>
+          </div>
+        </mat-list-option>
+      </mat-selection-list>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredContacts.length === 0" class="empty-state">
+        <mat-icon>person_off</mat-icon>
+        <p>No contacts found</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onConfirm()" [disabled]="selectedContacts.length === 0">
+      <mat-icon>check</mat-icon>
+      Select ({{ selectedContacts.length }})
+    </button>
+  </mat-dialog-actions>
+</div>

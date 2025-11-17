@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import {
   Calendar,
   CalendarEvent,
@@ -15,6 +15,8 @@ import {
   CreateReminderDto
 } from '../../../models/calendar-event.model';
 import { CalendarService } from '../../../services/calendar.service';
+import { ContactPickerComponent, ContactPickerData, ContactPickerResult } from '../../shared/contact-picker/contact-picker.component';
+import { Contact } from '../../../models/contact.model';
 
 export interface EventDialogData {
   event: CalendarEvent | null;
@@ -86,7 +88,8 @@ export class EventDialogComponent implements OnInit {
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<EventDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: EventDialogData,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private dialog: MatDialog
   ) {
     this.calendars = data.calendars;
     this.isEditMode = !!data.event;
@@ -186,6 +189,42 @@ export class EventDialogComponent implements OnInit {
 
   removeAttendee(index: number): void {
     this.attendees.removeAt(index);
+  }
+
+  openContactPicker(): void {
+    const dialogData: ContactPickerData = {
+      title: 'Select Attendees',
+      multiSelect: true,
+      selectedContacts: []
+    };
+
+    const dialogRef = this.dialog.open(ContactPickerComponent, {
+      width: '700px',
+      maxHeight: '80vh',
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe((result: ContactPickerResult) => {
+      if (result && result.contacts) {
+        result.contacts.forEach(contact => {
+          const email = this.getPrimaryEmailFromContact(contact);
+          if (email) {
+            // Check if attendee already exists
+            const exists = this.attendees.controls.some(
+              control => control.get('email')?.value === email
+            );
+            if (!exists) {
+              this.addAttendee(email, contact.displayName, AttendeeType.Required);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  private getPrimaryEmailFromContact(contact: Contact): string {
+    const primaryEmail = contact.emailAddresses.find(e => e.isPrimary);
+    return primaryEmail?.email || contact.emailAddresses[0]?.email || '';
   }
 
   // ========== Reminder Management ==========
