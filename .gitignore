@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# Allow production settings template
+!Backend/appsettings.Production.json
+
 # Logs
 *.log
 logs/
