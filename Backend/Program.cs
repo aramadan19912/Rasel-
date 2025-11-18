@@ -5,9 +5,14 @@ using OutlookInboxManagement.Helpers;
 using OutlookInboxManagement.Hubs;
 using OutlookInboxManagement.Models;
 using OutlookInboxManagement.Services;
-using Application.Interfaces;
-using Infrastructure.Services;
-using Infrastructure.Data;
+using Backend.Application.Interfaces;
+using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Data;
+using Backend.Application.Interfaces.Archive;
+using Backend.Infrastructure.Services.Archive;
+using Backend.Application.Interfaces.DMS;
+using Backend.Infrastructure.Services.DMS;
+using OutlookInboxManagement.Services.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +24,20 @@ builder.Services.AddControllers()
         options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
     });
 
-// Configure Database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Configure Database - Register both DbContexts for compatibility
+builder.Services.AddDbContext<OutlookInboxManagement.Data.ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("OutlookInboxManagement")));
+
+builder.Services.AddDbContext<Backend.Infrastructure.Data.ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("OutlookInboxManagement")));
+
+// Alias for default ApplicationDbContext
+builder.Services.AddScoped<ApplicationDbContext>(provider =>
+    provider.GetRequiredService<OutlookInboxManagement.Data.ApplicationDbContext>());
 
 // Configure Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -35,7 +49,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddEntityFrameworkStores<OutlookInboxManagement.Data.ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
 // Configure AutoMapper
@@ -45,27 +59,28 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddScoped<IInboxService, InboxService>();
 builder.Services.AddScoped<IMessageRuleEngine, MessageRuleEngine>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ICalendarService, CalendarService>();
-builder.Services.AddScoped<IContactsService, ContactsService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.ICalendarService, CalendarService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IContactsService, Backend.Infrastructure.Services.ContactsService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IUserService, Backend.Infrastructure.Services.UserService>();
 builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
 
 // Register Organization Services
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IPositionService, PositionService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IOrgChartService, OrgChartService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDepartmentService, OutlookInboxManagement.Services.Admin.DepartmentService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IPositionService, OutlookInboxManagement.Services.Admin.PositionService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IEmployeeService, OutlookInboxManagement.Services.Admin.EmployeeService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IOrgChartService, OutlookInboxManagement.Services.Admin.OrgChartService>();
 
 // Register Archive Services
-builder.Services.AddScoped<Application.Interfaces.Archive.IArchiveCategoryService, Infrastructure.Services.Archive.ArchiveCategoryService>();
-builder.Services.AddScoped<Application.Interfaces.Archive.ICorrespondenceService, Infrastructure.Services.Archive.CorrespondenceService>();
-builder.Services.AddScoped<Application.Interfaces.Archive.IPdfConversionService, Infrastructure.Services.Archive.PdfConversionService>();
+builder.Services.AddScoped<IArchiveCategoryService, ArchiveCategoryService>();
+builder.Services.AddScoped<ICorrespondenceService, CorrespondenceService>();
+builder.Services.AddScoped<IPdfConversionService, PdfConversionService>();
 
 // Register Admin Services
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDashboardService, OutlookInboxManagement.Services.Admin.DashboardService>();
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IReportService, OutlookInboxManagement.Services.Admin.ReportService>();
 
 // Register DMS Services
-builder.Services.AddScoped<Application.Interfaces.DMS.IDocumentService, Infrastructure.Services.DMS.DocumentService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 // Add SignalR
 builder.Services.AddSignalR();
