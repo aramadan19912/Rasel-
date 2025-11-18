@@ -60,6 +60,7 @@ import { CalendarComponent } from './components/calendar/calendar.component';
 import { EventDialogComponent } from './components/calendar/event-dialog/event-dialog.component';
 import { ContactsComponent } from './components/contacts/contacts.component';
 import { ContactDialogComponent } from './components/contacts/contact-dialog/contact-dialog.component';
+import { ContactPickerComponent } from './components/shared/contact-picker/contact-picker.component';
 import { VideoConferenceComponent } from './components/video-conference/video-conference.component';
 import { VideoTileComponent } from './components/video-conference/video-tile/video-tile.component';
 import { ParticipantsPanelComponent } from './components/video-conference/participants-panel/participants-panel.component';
@@ -102,6 +103,7 @@ import { HasRoleDirective } from './directives/has-role.directive';
     EventDialogComponent,
     ContactsComponent,
     ContactDialogComponent,
+    ContactPickerComponent,
     VideoConferenceComponent,
     VideoTileComponent,
     ParticipantsPanelComponent,

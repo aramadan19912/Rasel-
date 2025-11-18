@@ -1,0 +1,191 @@
+name: CI/CD Pipeline - Hostinger VPS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  BACKEND_PORT: 9090
+  FRONTEND_PORT: 4000
+  NODE_VERSION: '22.x'
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  # ============================================
+  # BUILD FRONTEND
+  # ============================================
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: Frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: ./Frontend
+        run: npm run build
+
+      - name: Upload Frontend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: Frontend/dist/outlook-inbox-frontend/browser
+          retention-days: 1
+
+  # ============================================
+  # BUILD BACKEND
+  # ============================================
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        working-directory: ./Backend
+        run: dotnet restore
+
+      - name: Build Backend
+        working-directory: ./Backend
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish Backend
+        working-directory: ./Backend
+        run: dotnet publish --configuration Release --no-build --output ./publish
+
+      - name: Upload Backend artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-publish
+          path: Backend/publish
+          retention-days: 1
+
+  # ============================================
+  # DEPLOY TO HOSTINGER VPS
+  # ============================================
+  deploy:
+    name: Deploy to Hostinger VPS
+    needs: [build-frontend, build-backend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Frontend artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: ./deploy/frontend
+
+      - name: Download Backend artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-publish
+          path: ./deploy/backend
+
+      - name: Copy deployment files
+        run: |
+          cp -r .github/deploy-scripts ./deploy/
+          cp docker-compose.yml ./deploy/ || true
+          cp nginx.conf ./deploy/ || true
+
+      - name: Deploy to Hostinger VPS via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            # Create deployment directory
+            mkdir -p /var/www/rasel-inbox
+            cd /var/www/rasel-inbox
+
+            # Backup current deployment
+            if [ -d "current" ]; then
+              timestamp=$(date +%Y%m%d_%H%M%S)
+              mv current backup_$timestamp
+              # Keep only last 3 backups
+              ls -t | grep backup_ | tail -n +4 | xargs -r rm -rf
+            fi
+
+            # Create new deployment directory
+            mkdir -p current
+
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          source: "./deploy/*"
+          target: "/var/www/rasel-inbox/current"
+          strip_components: 1
+
+      - name: Setup and Start Services
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /var/www/rasel-inbox/current
+
+            # Make scripts executable
+            chmod +x deploy-scripts/*.sh
+
+            # Stop existing services
+            ./deploy-scripts/stop-services.sh || true
+
+            # Start services with Docker Compose
+            docker-compose up -d --build
+
+            # Wait for services to be healthy
+            sleep 10
+
+            # Check service health
+            ./deploy-scripts/health-check.sh
+
+      - name: Deployment Status
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Frontend: http://${{ secrets.VPS_HOST }}:4000"
+          echo "Backend: http://${{ secrets.VPS_HOST }}:9090"
+          echo "Backend API: http://${{ secrets.VPS_HOST }}:9090/api"
+          echo "Swagger: http://${{ secrets.VPS_HOST }}:9090/swagger"
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Check logs above for details."

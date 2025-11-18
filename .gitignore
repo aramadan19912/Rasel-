@@ -1,0 +1,47 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+publish/
+obj/
+bin/
+
+# Node modules
+node_modules/
+
+# Database
+*.db
+*.sqlite
+
+# Uploads
+uploads/
+
+# Backups
+backup*/
+*.bak
+
+# SSL Certificates
+*.pem
+*.key
+*.crt
+
+# Docker volumes
+volumes/

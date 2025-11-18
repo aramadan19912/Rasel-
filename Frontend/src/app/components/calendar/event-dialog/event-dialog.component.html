@@ -138,7 +138,19 @@
 
             <!-- Attendees -->
             <div class="attendees-section">
-              <h3>Attendees</h3>
+              <div class="section-header">
+                <h3>Attendees</h3>
+                <div class="header-actions">
+                  <button mat-raised-button type="button" color="primary" (click)="openContactPicker()">
+                    <mat-icon>contacts</mat-icon>
+                    Add from Contacts
+                  </button>
+                  <button mat-raised-button type="button" (click)="addAttendee()">
+                    <mat-icon>add</mat-icon>
+                    Add Manually
+                  </button>
+                </div>
+              </div>
 
               <div formArrayName="attendees">
                 <div *ngFor="let attendee of attendees.controls; let i = index" [formGroupName]="i" class="attendee-item">
@@ -167,10 +179,9 @@
                 </div>
               </div>
 
-              <button mat-raised-button type="button" (click)="addAttendee()">
-                <mat-icon>add</mat-icon>
-                Add Attendee
-              </button>
+              <p *ngIf="attendees.length === 0" class="empty-message">
+                No attendees added yet. Add attendees from your contacts or manually.
+              </p>
             </div>
           </div>
         </div>
