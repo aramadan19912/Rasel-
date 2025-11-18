@@ -1,13 +1,22 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OutlookInboxManagement.Data;
 using OutlookInboxManagement.Helpers;
 using OutlookInboxManagement.Hubs;
 using OutlookInboxManagement.Models;
 using OutlookInboxManagement.Services;
-using Application.Interfaces;
-using Infrastructure.Services;
-using Infrastructure.Data;
+using Backend.Application.Interfaces;
+using Backend.Infrastructure.Services;
+using Backend.Infrastructure.Data;
+using Backend.Infrastructure.Configuration;
+using Backend.Application.Interfaces.Archive;
+using Backend.Infrastructure.Services.Archive;
+using Backend.Application.Interfaces.DMS;
+using Backend.Infrastructure.Services.DMS;
+using OutlookInboxManagement.Services.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +28,20 @@ builder.Services.AddControllers()
         options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
     });
 
-// Configure Database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+// Configure Database - Register both DbContexts for compatibility
+builder.Services.AddDbContext<OutlookInboxManagement.Data.ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("OutlookInboxManagement")));
+
+builder.Services.AddDbContext<Backend.Infrastructure.Data.ApplicationDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("OutlookInboxManagement")));
+
+// Alias for default ApplicationDbContext
+builder.Services.AddScoped<ApplicationDbContext>(provider =>
+    provider.GetRequiredService<OutlookInboxManagement.Data.ApplicationDbContext>());
 
 // Configure Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -35,7 +53,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddEntityFrameworkStores<OutlookInboxManagement.Data.ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
 // Configure AutoMapper
@@ -45,27 +63,29 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddScoped<IInboxService, InboxService>();
 builder.Services.AddScoped<IMessageRuleEngine, MessageRuleEngine>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ICalendarService, CalendarService>();
-builder.Services.AddScoped<IContactsService, ContactsService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.ICalendarService, CalendarService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IContactsService, Backend.Infrastructure.Services.ContactsService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IUserService, Backend.Infrastructure.Services.UserService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IJwtService, Backend.Infrastructure.Services.JwtService>();
 builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
 
 // Register Organization Services
-builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-builder.Services.AddScoped<IPositionService, PositionService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IOrgChartService, OrgChartService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDepartmentService, OutlookInboxManagement.Services.Admin.DepartmentService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IPositionService, OutlookInboxManagement.Services.Admin.PositionService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IEmployeeService, OutlookInboxManagement.Services.Admin.EmployeeService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IOrgChartService, OutlookInboxManagement.Services.Admin.OrgChartService>();
 
 // Register Archive Services
-builder.Services.AddScoped<Application.Interfaces.Archive.IArchiveCategoryService, Infrastructure.Services.Archive.ArchiveCategoryService>();
-builder.Services.AddScoped<Application.Interfaces.Archive.ICorrespondenceService, Infrastructure.Services.Archive.CorrespondenceService>();
-builder.Services.AddScoped<Application.Interfaces.Archive.IPdfConversionService, Infrastructure.Services.Archive.PdfConversionService>();
+builder.Services.AddScoped<IArchiveCategoryService, ArchiveCategoryService>();
+builder.Services.AddScoped<ICorrespondenceService, CorrespondenceService>();
+builder.Services.AddScoped<IPdfConversionService, PdfConversionService>();
 
 // Register Admin Services
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDashboardService, OutlookInboxManagement.Services.Admin.DashboardService>();
 builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IReportService, OutlookInboxManagement.Services.Admin.ReportService>();
 
 // Register DMS Services
-builder.Services.AddScoped<Application.Interfaces.DMS.IDocumentService, Infrastructure.Services.DMS.DocumentService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -119,11 +139,51 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configure Authentication
+// Configure JWT Settings
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSettings);
+
+var secretKey = jwtSettings.Get<JwtSettings>()?.SecretKey
+    ?? throw new InvalidOperationException("JWT Secret Key not configured");
+var key = Encoding.UTF8.GetBytes(secretKey);
+
+// Configure Authentication with JWT Bearer
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = "Bearer";
-    options.DefaultChallengeScheme = "Bearer";
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Get<JwtSettings>()?.Issuer,
+        ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    // Support JWT in SignalR connections via query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // Add Response Caching
