@@ -34,6 +34,11 @@
   <ItemGroup>
     <!-- Exclude NewProgram.cs from build - keeping as reference only -->
     <Compile Remove="NewProgram.cs" />
+    <!-- Exclude Backend.API controllers - incomplete new architecture migration -->
+    <Compile Remove="API\**\*.cs" />
+    <!-- Exclude incomplete Admin services with architecture conflicts -->
+    <Compile Remove="Services\Admin\DashboardService.cs" />
+    <Compile Remove="Services\Admin\ReportService.cs" />
   </ItemGroup>
 
 </Project>

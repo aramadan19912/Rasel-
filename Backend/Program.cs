@@ -64,9 +64,7 @@ builder.Services.AddScoped<IInboxService, InboxService>();
 builder.Services.AddScoped<IMessageRuleEngine, MessageRuleEngine>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<OutlookInboxManagement.Services.ICalendarService, CalendarService>();
-builder.Services.AddScoped<Backend.Application.Interfaces.IContactsService, Backend.Infrastructure.Services.ContactsService>();
-builder.Services.AddScoped<Backend.Application.Interfaces.IUserService, Backend.Infrastructure.Services.UserService>();
-builder.Services.AddScoped<Backend.Application.Interfaces.IJwtService, Backend.Infrastructure.Services.JwtService>();
+builder.Services.AddScoped<OutlookInboxManagement.Services.IContactsService, OutlookInboxManagement.Services.ContactsService>();
 builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
 
 // Register Organization Services
@@ -79,10 +77,6 @@ builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IOrgChartServic
 builder.Services.AddScoped<IArchiveCategoryService, ArchiveCategoryService>();
 builder.Services.AddScoped<ICorrespondenceService, CorrespondenceService>();
 builder.Services.AddScoped<IPdfConversionService, PdfConversionService>();
-
-// Register Admin Services
-builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IDashboardService, OutlookInboxManagement.Services.Admin.DashboardService>();
-builder.Services.AddScoped<OutlookInboxManagement.Services.Admin.IReportService, OutlookInboxManagement.Services.Admin.ReportService>();
 
 // Register DMS Services
 builder.Services.AddScoped<IDocumentService, DocumentService>();
