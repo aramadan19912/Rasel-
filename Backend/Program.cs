@@ -1,5 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OutlookInboxManagement.Data;
 using OutlookInboxManagement.Helpers;
 using OutlookInboxManagement.Hubs;
@@ -8,6 +11,7 @@ using OutlookInboxManagement.Services;
 using Backend.Application.Interfaces;
 using Backend.Infrastructure.Services;
 using Backend.Infrastructure.Data;
+using Backend.Infrastructure.Configuration;
 using Backend.Application.Interfaces.Archive;
 using Backend.Infrastructure.Services.Archive;
 using Backend.Application.Interfaces.DMS;
@@ -62,6 +66,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<OutlookInboxManagement.Services.ICalendarService, CalendarService>();
 builder.Services.AddScoped<Backend.Application.Interfaces.IContactsService, Backend.Infrastructure.Services.ContactsService>();
 builder.Services.AddScoped<Backend.Application.Interfaces.IUserService, Backend.Infrastructure.Services.UserService>();
+builder.Services.AddScoped<Backend.Application.Interfaces.IJwtService, Backend.Infrastructure.Services.JwtService>();
 builder.Services.AddScoped<Backend.Services.IVideoConferenceService, Backend.Services.VideoConferenceService>();
 
 // Register Organization Services
@@ -134,11 +139,51 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Configure Authentication
+// Configure JWT Settings
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSettings);
+
+var secretKey = jwtSettings.Get<JwtSettings>()?.SecretKey
+    ?? throw new InvalidOperationException("JWT Secret Key not configured");
+var key = Encoding.UTF8.GetBytes(secretKey);
+
+// Configure Authentication with JWT Bearer
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = "Bearer";
-    options.DefaultChallengeScheme = "Bearer";
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Get<JwtSettings>()?.Issuer,
+        ValidAudience = jwtSettings.Get<JwtSettings>()?.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
+
+    // Support JWT in SignalR connections via query string
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // Add Response Caching
